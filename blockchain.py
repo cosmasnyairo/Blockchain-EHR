@@ -10,7 +10,8 @@ owner = 'Cosmas'
 participants = {'Cosmas'}
 # We will Store patient details in the blockchain
 
-#work on transaction validity
+# work on transaction validity
+
 
 def hash_block(block):
     return '-'.join([str(block[key])for key in block])
@@ -60,13 +61,15 @@ def get_transaction():
     prescription = [input('Enter Prescription(s): ')]
     lab_results = input('Enter lab result(s): ')
 
+
+
     tx_transaction_details = {
+        #'doctor_name':
         'medical_notes': medical_notes,
         'diagnosis': diagnosis,
         'prescription': prescription,
         'lab_results': lab_results
     }
-
     return tx_recipient, tx_transaction_details
 
 
