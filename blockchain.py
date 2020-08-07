@@ -17,8 +17,28 @@ participants = {'Cosmas'}
 
 
 def hash_block(block):
-    #We hash blocks in our blockchain
+    # We hash blocks in our blockchain
     return hashlib.sha256(json.dumps(block).encode()).hexdigest()
+
+
+def valid_proof(transactions, last_hash, proof_number):
+    """ Calculate validity of proof number \n
+        We can change the '00' value
+    """
+    guess = (str(transactions)+str(last_hash) + str(proof_number)).encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    print(guess_hash)
+    return guess_hash[0:2] == '00'
+
+def proof_of_work():
+    #  proof of work algorithm
+    last_block=blockchain[-1]
+    last_hash= hash_block(last_block)
+    proof=0
+    while valid_proof(open_transactions,last_hash,proof):
+        proof+=1
+    return proof
+    
 
 
 def last_blockchain_value():
@@ -26,6 +46,7 @@ def last_blockchain_value():
     if len(blockchain) < 1:
         return None
     return blockchain[-1]
+
 
 def add_transaction(receiver, sender=owner, details=1.0):
     """ Append a new value as well as the last blockchain value to the blockchain.
@@ -44,7 +65,7 @@ def add_transaction(receiver, sender=owner, details=1.0):
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
-    print(hashed_block )
+    print(hashed_block)
     block = {
         'previous_hash': hashed_block,
         'index': len(blockchain),
@@ -65,10 +86,8 @@ def get_transaction():
     prescription = [input('Enter Prescription(s): ')]
     lab_results = input('Enter lab result(s): ')
 
-
-
     tx_transaction_details = {
-        #'doctor_name':
+        # 'doctor_name':
         'medical_notes': medical_notes,
         'diagnosis': diagnosis,
         'prescription': prescription,
