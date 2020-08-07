@@ -1,10 +1,14 @@
+# reward miners
 import hashlib
-import json
+from collections import OrderedDict
+
+from hash_util import hash_string_sha256, hash_block
 
 genesis_block = {
     'previous_hash': '',
     'index': 0,
     'transactions': [],
+    'proof': 100
 }
 blockchain = [genesis_block]
 
@@ -16,29 +20,23 @@ participants = {'Cosmas'}
 # work on transaction validity
 
 
-def hash_block(block):
-    # We hash blocks in our blockchain
-    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
-
-
 def valid_proof(transactions, last_hash, proof_number):
     """ Calculate validity of proof number \n
-        We can change the '00' value
+        We can change the '00' value to make the proof calculation complex
     """
     guess = (str(transactions)+str(last_hash) + str(proof_number)).encode()
-    guess_hash = hashlib.sha256(guess).hexdigest()
-    print(guess_hash)
+    guess_hash = hash_string_sha256(guess)
     return guess_hash[0:2] == '00'
+
 
 def proof_of_work():
     #  proof of work algorithm
-    last_block=blockchain[-1]
-    last_hash= hash_block(last_block)
-    proof=0
-    while valid_proof(open_transactions,last_hash,proof):
-        proof+=1
+    last_block = blockchain[-1]
+    last_hash = hash_block(last_block)
+    proof = 0
+    while not valid_proof(open_transactions, last_hash, proof):
+        proof += 1
     return proof
-    
 
 
 def last_blockchain_value():
@@ -56,7 +54,11 @@ def add_transaction(receiver, sender=owner, details=1.0):
             recipient:  Recepient of the details.
             details:    Details to be sent with the transaction.
     """
-    transaction = {'sender': sender, 'receiver': receiver, 'details': details}
+    transaction = OrderedDict([
+        ('sender', sender),
+        ('receiver', receiver),
+        ('details', details)
+    ])
     open_transactions.append(transaction)
     participants.add(sender)
     participants.add(recipient)
@@ -65,11 +67,12 @@ def add_transaction(receiver, sender=owner, details=1.0):
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
-    print(hashed_block)
+    proof = proof_of_work()
     block = {
         'previous_hash': hashed_block,
         'index': len(blockchain),
         'transactions': open_transactions,
+        'proof': proof
     }
     blockchain.append(block)
     return True
@@ -118,6 +121,9 @@ def verify_chain():
         if index == 0:
             continue
         if block['previous_hash'] != hash_block(blockchain[index-1]):
+            return False
+        if not valid_proof(block['transactions'], block['previous_hash'], block['proof']):
+            print('Proof of work invalid')
             return False
     return True
 
