@@ -1,3 +1,6 @@
+import hashlib
+import json
+
 genesis_block = {
     'previous_hash': '',
     'index': 0,
@@ -14,7 +17,8 @@ participants = {'Cosmas'}
 
 
 def hash_block(block):
-    return '-'.join([str(block[key])for key in block])
+    #We hash blocks in our blockchain
+    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
 
 
 def last_blockchain_value():
@@ -22,7 +26,6 @@ def last_blockchain_value():
     if len(blockchain) < 1:
         return None
     return blockchain[-1]
-
 
 def add_transaction(receiver, sender=owner, details=1.0):
     """ Append a new value as well as the last blockchain value to the blockchain.
@@ -41,6 +44,7 @@ def add_transaction(receiver, sender=owner, details=1.0):
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
+    print(hashed_block )
     block = {
         'previous_hash': hashed_block,
         'index': len(blockchain),
