@@ -1,2 +1,2 @@
-[{"previous_hash": "", "index": 0, "transactions": [], "proof": 100}, {"previous_hash": "68da5267793e1fc7bd98d9cc01cf91e38daa67cbbd7b646bcd99b4dc3df93eb1", "index": 1, "transactions": [], "proof": 119}, {"previous_hash": "b6f70b4574baecc2164f0861528011d85b16c25428f65e3b58900bc448dbd0f9", "index": 2, "transactions": [], "proof": 290}]
+[{"previous_hash": "", "index": 0, "transactions": [], "proof": 100}, {"previous_hash": "68da5267793e1fc7bd98d9cc01cf91e38daa67cbbd7b646bcd99b4dc3df93eb1", "index": 1, "transactions": [], "proof": 119}]
 []
