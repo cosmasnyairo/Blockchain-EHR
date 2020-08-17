@@ -4,21 +4,15 @@ import hashlib
 import json
 
 # these two can be used to reduce the memory size of the blockchain and files storing it
-#import pickle
-#import sqlite3
+# import pickle
+# import sqlite3
 
 from collections import OrderedDict
 
 from hash_util import hash_string_sha256, hash_block
 
-genesis_block = {
-    'previous_hash': '',
-    'index': 0,
-    'transactions': [],
-    'proof': 100
-}
-blockchain = [genesis_block]
 
+blockchain = []
 open_transactions = []
 owner = 'Cosmas'
 participants = {'Cosmas'}
@@ -36,43 +30,53 @@ participants = {'Cosmas'}
 #     conn.commit()
 
 def load_data():
+    global blockchain
+    global open_transactions
     # load data from the txt file
-    with open('blockchain.txt', mode='r') as f:
-        file_content = f.readlines()
-        global blockchain
-        global open_transactions
+    try:
+        with open('blockchain.txt', mode='r') as f:
+            file_content = f.readlines()
 
-        # we escape the \n using range
-        blockchain = json.loads(file_content[0][:-1])
-        open_transactions = json.loads(file_content[1])
-        
-        # ordered dicts bring an error on blockchain and open transactions so we fix it here
-        updated_blockchain = []
-        for block in blockchain:
-            updated_block = {
-                'previous_hash': block['previous_hash'],
-                'index': block['index'],
-                'transactions': [
-                    OrderedDict([
-                        ('sender', tx['sender']),
-                        ('receiver', tx['receiver']),
-                        ('details', tx['details'])
-                    ]) for tx in block['transactions']
-                ],
-                'proof': block['proof'],
-            }
-            updated_blockchain.append(updated_block)
-        blockchain = updated_blockchain
+            # we escape the \n using range
+            blockchain = json.loads(file_content[0][:-1])
+            open_transactions = json.loads(file_content[1])
 
-        updated_transactions = []
-        for tx in open_transactions:
-            updated_transaction = OrderedDict([
-                ('sender', tx['sender']),
-                ('receiver', tx['receiver']),
-                ('details', tx['details'])
-            ])
-            updated_transactions.append(updated_transaction)
-        open_transactions = updated_transactions
+            # ordered dicts bring an error on blockchain and open transactions so we fix it here
+            updated_blockchain = []
+            for block in blockchain:
+                updated_block = {
+                    'previous_hash': block['previous_hash'],
+                    'index': block['index'],
+                    'transactions': [
+                        OrderedDict([
+                            ('sender', tx['sender']),
+                            ('receiver', tx['receiver']),
+                            ('details', tx['details'])
+                        ]) for tx in block['transactions']
+                    ],
+                    'proof': block['proof'],
+                }
+                updated_blockchain.append(updated_block)
+            blockchain = updated_blockchain
+
+            updated_transactions = []
+            for tx in open_transactions:
+                updated_transaction = OrderedDict([
+                    ('sender', tx['sender']),
+                    ('receiver', tx['receiver']),
+                    ('details', tx['details'])
+                ])
+                updated_transactions.append(updated_transaction)
+            open_transactions = updated_transactions
+    except IOError:
+        genesis_block = {
+            'previous_hash': '',
+            'index': 0,
+            'transactions': [],
+            'proof': 100
+        }
+        blockchain = [genesis_block]
+        open_transactions = []
 
 
 load_data()
@@ -82,10 +86,13 @@ def save_data():
     # createtable()
     # cursor.execute("INSERT INTO blockchainstore VALUES(?,?)", (str(blockchain), str(open_transactions)))
     # conn.commit()
-    with open('blockchain.txt', mode='w') as f:
-        f.write(json.dumps(blockchain))
-        f.write('\n')
-        f.write(json.dumps(open_transactions))
+    try:
+        with open('blockchain.txt', mode='w') as f:
+            f.write(json.dumps(blockchain))
+            f.write('\n')
+            f.write(json.dumps(open_transactions))
+    except IOError:
+        print('Saving Failed')
 
 
 def valid_proof(transactions, last_hash, proof_number):
