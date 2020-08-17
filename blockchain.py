@@ -11,6 +11,8 @@ from collections import OrderedDict
 
 from hash_util import hash_string_sha256, hash_block
 
+# import block class
+from block import Block
 
 blockchain = []
 open_transactions = []
@@ -43,19 +45,22 @@ def load_data():
 
             # ordered dicts bring an error on blockchain and open transactions so we fix it here
             updated_blockchain = []
+
             for block in blockchain:
-                updated_block = {
-                    'previous_hash': block['previous_hash'],
-                    'index': block['index'],
-                    'transactions': [
-                        OrderedDict([
-                            ('sender', tx['sender']),
-                            ('receiver', tx['receiver']),
-                            ('details', tx['details'])
-                        ]) for tx in block['transactions']
-                    ],
-                    'proof': block['proof'],
-                }
+                converted_transaction = [
+                    OrderedDict([
+                        ('sender', tx['sender']),
+                        ('receiver', tx['receiver']),
+                        ('details', tx['details'])
+                    ]) for tx in block['transactions']
+                ]
+                updated_block = Block(
+                    block['index'],
+                    block['previous_hash'],
+                    converted_transaction,
+                    block['proof'],
+                    block['timestamp'],
+                )
                 updated_blockchain.append(updated_block)
             blockchain = updated_blockchain
 
@@ -68,13 +73,8 @@ def load_data():
                 ])
                 updated_transactions.append(updated_transaction)
             open_transactions = updated_transactions
-    except IOError:
-        genesis_block = {
-            'previous_hash': '',
-            'index': 0,
-            'transactions': [],
-            'proof': 100
-        }
+    except (IOError, IndexError):
+        genesis_block = Block(0, '', [], 100, 0)
         blockchain = [genesis_block]
         open_transactions = []
 
@@ -88,7 +88,8 @@ def save_data():
     # conn.commit()
     try:
         with open('blockchain.txt', mode='w') as f:
-            f.write(json.dumps(blockchain))
+            saveable_chain = [block.__dict__ for block in blockchain]
+            f.write(json.dumps(saveable_chain))
             f.write('\n')
             f.write(json.dumps(open_transactions))
     except IOError:
@@ -145,12 +146,7 @@ def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
     proof = proof_of_work()
-    block = {
-        'previous_hash': hashed_block,
-        'index': len(blockchain),
-        'transactions': open_transactions,
-        'proof': proof
-    }
+    block = Block(len(blockchain), hashed_block, open_transactions, proof)
     blockchain.append(block)
     save_data()
     return True
@@ -198,9 +194,9 @@ def verify_chain():
     for (index, block) in enumerate(blockchain):
         if index == 0:
             continue
-        if block['previous_hash'] != hash_block(blockchain[index-1]):
+        if block.previous_hash != hash_block(blockchain[index-1]):
             return False
-        if not valid_proof(block['transactions'], block['previous_hash'], block['proof']):
+        if not valid_proof(block.transactions, block.previous_hash, block.proof):
             print('Proof of work invalid')
             return False
     return True
@@ -214,7 +210,6 @@ while user_inputted:
     print('2: Mine a new block')
     print('3: Output participants')
     print('4: Output blocks')
-    print('m: Manipulate blockchain')
     print('e: Exit')
 
     user_choice = get_choice()
@@ -235,23 +230,6 @@ while user_inputted:
 
     elif user_choice == '4':
         print_blockchain()
-
-    elif user_choice == 'm':
-        if len(blockchain) >= 1:
-            blockchain[0] = {
-                'previous_hash': '',
-                'index': 0,
-                'transactions': [{
-                    'sender': 'Cosmas',
-                    'receiver': 'Cos',
-                    'details': {
-                        'medical_notes': 'fjda',
-                        'diagnosis': 'ju, fdj',
-                        'prescription': ['dk.g, gr, dsuf'],
-                        'lab_results': 'nhyfd'
-                    }
-                }],
-            }
 
     elif user_choice == 'e':
         # exits from the blockchain
