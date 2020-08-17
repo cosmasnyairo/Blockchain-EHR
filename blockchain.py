@@ -1,5 +1,12 @@
-# reward miners
+# To do: 1. Reward miners
+
 import hashlib
+import json
+
+# these two can be used to reduce the memory size of the blockchain and files storing it
+#import pickle
+#import sqlite3
+
 from collections import OrderedDict
 
 from hash_util import hash_string_sha256, hash_block
@@ -20,10 +27,72 @@ participants = {'Cosmas'}
 # work on transaction validity
 
 
+# conn = sqlite3.connect('blockchain.db')
+# cursor = conn.cursor()
+
+# def createtable():
+#     cursor.execute(
+#         "CREATE TABLE IF NOT EXISTS blockchainstore(item Text,quantity Text)")
+#     conn.commit()
+
+def load_data():
+    # load data from the txt file
+    with open('blockchain.txt', mode='r') as f:
+        file_content = f.readlines()
+        global blockchain
+        global open_transactions
+
+        # we escape the \n using range
+        blockchain = json.loads(file_content[0][:-1])
+        open_transactions = json.loads(file_content[1])
+        
+        # ordered dicts bring an error on blockchain and open transactions so we fix it here
+        updated_blockchain = []
+        for block in blockchain:
+            updated_block = {
+                'previous_hash': block['previous_hash'],
+                'index': block['index'],
+                'transactions': [
+                    OrderedDict([
+                        ('sender', tx['sender']),
+                        ('receiver', tx['receiver']),
+                        ('details', tx['details'])
+                    ]) for tx in block['transactions']
+                ],
+                'proof': block['proof'],
+            }
+            updated_blockchain.append(updated_block)
+        blockchain = updated_blockchain
+
+        updated_transactions = []
+        for tx in open_transactions:
+            updated_transaction = OrderedDict([
+                ('sender', tx['sender']),
+                ('receiver', tx['receiver']),
+                ('details', tx['details'])
+            ])
+            updated_transactions.append(updated_transaction)
+        open_transactions = updated_transactions
+
+
+load_data()
+
+
+def save_data():
+    # createtable()
+    # cursor.execute("INSERT INTO blockchainstore VALUES(?,?)", (str(blockchain), str(open_transactions)))
+    # conn.commit()
+    with open('blockchain.txt', mode='w') as f:
+        f.write(json.dumps(blockchain))
+        f.write('\n')
+        f.write(json.dumps(open_transactions))
+
+
 def valid_proof(transactions, last_hash, proof_number):
     """ Calculate validity of proof number \n
         We can change the '00' value to make the proof calculation complex
     """
+    # guess has all hash inputs
     guess = (str(transactions)+str(last_hash) + str(proof_number)).encode()
     guess_hash = hash_string_sha256(guess)
     return guess_hash[0:2] == '00'
@@ -62,6 +131,7 @@ def add_transaction(receiver, sender=owner, details=1.0):
     open_transactions.append(transaction)
     participants.add(sender)
     participants.add(recipient)
+    save_data()
 
 
 def mine_block():
@@ -75,6 +145,7 @@ def mine_block():
         'proof': proof
     }
     blockchain.append(block)
+    save_data()
     return True
 
 
@@ -150,6 +221,7 @@ while user_inputted:
     elif user_choice == '2':
         if mine_block():
             open_transactions = []
+            save_data()
 
     elif user_choice == '3':
         print(participants)
