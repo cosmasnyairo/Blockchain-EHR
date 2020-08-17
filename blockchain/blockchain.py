@@ -12,7 +12,7 @@ from collections import OrderedDict
 from hash_util import hash_string_sha256, hash_block
 
 # import block class
-from block import Block
+from classes.block import Block
 
 blockchain = []
 open_transactions = []
@@ -36,7 +36,7 @@ def load_data():
     global open_transactions
     # load data from the txt file
     try:
-        with open('blockchain.txt', mode='r') as f:
+        with open('data/blockchain.txt', mode='r') as f:
             file_content = f.readlines()
 
             # we escape the \n using range
@@ -87,7 +87,7 @@ def save_data():
     # cursor.execute("INSERT INTO blockchainstore VALUES(?,?)", (str(blockchain), str(open_transactions)))
     # conn.commit()
     try:
-        with open('blockchain.txt', mode='w') as f:
+        with open('data/blockchain.txt', mode='w') as f:
             saveable_chain = [block.__dict__ for block in blockchain]
             f.write(json.dumps(saveable_chain))
             f.write('\n')
