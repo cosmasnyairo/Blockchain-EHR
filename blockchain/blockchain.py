@@ -7,17 +7,15 @@ import json
 # import pickle
 # import sqlite3
 
-from collections import OrderedDict
-
 from hash_util import hash_string_sha256, hash_block
 
 # import block class
 from classes.block import Block
+from classes.transaction import Transaction
 
 blockchain = []
 open_transactions = []
 owner = 'Cosmas'
-participants = {'Cosmas'}
 # We will Store patient details in the blockchain
 
 # work on transaction validity
@@ -44,16 +42,16 @@ def load_data():
             open_transactions = json.loads(file_content[1])
 
             # ordered dicts bring an error on blockchain and open transactions so we fix it here
+            # ordered dicts aid in using odering to calculate the guess in valid proof
             updated_blockchain = []
 
             for block in blockchain:
-                converted_transaction = [
-                    OrderedDict([
-                        ('sender', tx['sender']),
-                        ('receiver', tx['receiver']),
-                        ('details', tx['details'])
-                    ]) for tx in block['transactions']
-                ]
+                converted_transaction = [Transaction(
+                    tx['sender'],
+                    tx['receiver'],
+                    tx['details'],
+                ) for tx in block['transactions']]
+
                 updated_block = Block(
                     block['index'],
                     block['previous_hash'],
@@ -66,11 +64,11 @@ def load_data():
 
             updated_transactions = []
             for tx in open_transactions:
-                updated_transaction = OrderedDict([
-                    ('sender', tx['sender']),
-                    ('receiver', tx['receiver']),
-                    ('details', tx['details'])
-                ])
+                updated_transaction = Transaction(
+                    tx['sender'],
+                    tx['receiver'],
+                    tx['details'],
+                )
                 updated_transactions.append(updated_transaction)
             open_transactions = updated_transactions
     except (IOError, IndexError):
@@ -88,10 +86,19 @@ def save_data():
     # conn.commit()
     try:
         with open('data/blockchain.txt', mode='w') as f:
-            saveable_chain = [block.__dict__ for block in blockchain]
+            saveable_chain = [block.__dict__ for block in [
+                #convert transactions to transaction object that can be json dumped
+                Block(
+                    bl.index,
+                    bl.previous_hash,
+                    [tx.__dict__ for tx in bl.transactions],
+                    bl.proof,
+                    bl.timestamp
+                )for bl in blockchain]]
             f.write(json.dumps(saveable_chain))
             f.write('\n')
-            f.write(json.dumps(open_transactions))
+            saveable_tx = [tx.__dict__ for tx in open_transactions]
+            f.write(json.dumps(saveable_tx))
     except IOError:
         print('Saving Failed')
 
@@ -101,7 +108,8 @@ def valid_proof(transactions, last_hash, proof_number):
         We can change the '00' value to make the proof calculation complex
     """
     # guess has all hash inputs
-    guess = (str(transactions)+str(last_hash) + str(proof_number)).encode()
+    guess = (str([tx.to_ordered_dict() for tx in transactions]) +
+             str(last_hash) + str(proof_number)).encode()
     guess_hash = hash_string_sha256(guess)
     return guess_hash[0:2] == '00'
 
@@ -131,14 +139,8 @@ def add_transaction(receiver, sender=owner, details=1.0):
             recipient:  Recepient of the details.
             details:    Details to be sent with the transaction.
     """
-    transaction = OrderedDict([
-        ('sender', sender),
-        ('receiver', receiver),
-        ('details', details)
-    ])
+    transaction = Transaction(sender, receiver, details)
     open_transactions.append(transaction)
-    participants.add(sender)
-    participants.add(recipient)
     save_data()
 
 
@@ -146,6 +148,11 @@ def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
     proof = proof_of_work()
+    # reward miners
+    # allow users to add their details
+    # we will append them here if need be
+    # replace open transactions with a list of our details we want to add
+    
     block = Block(len(blockchain), hashed_block, open_transactions, proof)
     blockchain.append(block)
     save_data()
@@ -208,8 +215,7 @@ while user_inputted:
     print('Please choose')
     print('1: Add new transaction')
     print('2: Mine a new block')
-    print('3: Output participants')
-    print('4: Output blocks')
+    print('3: Output blocks')
     print('e: Exit')
 
     user_choice = get_choice()
@@ -226,9 +232,6 @@ while user_inputted:
             save_data()
 
     elif user_choice == '3':
-        print(participants)
-
-    elif user_choice == '4':
         print_blockchain()
 
     elif user_choice == 'e':
