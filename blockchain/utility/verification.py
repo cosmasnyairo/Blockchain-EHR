@@ -1,6 +1,6 @@
 import os
 
-from hash_util import hash_string_sha256, hash_block
+from utility.hash_util import hash_string_sha256, hash_block
 
 
 class Verification:
