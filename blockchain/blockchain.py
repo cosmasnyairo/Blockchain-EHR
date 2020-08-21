@@ -1,5 +1,4 @@
 # To do: 1. Reward miners
-
 import hashlib
 import json
 
@@ -7,19 +6,18 @@ import json
 # import pickle
 # import sqlite3
 
-from hash_util import hash_string_sha256, hash_block
-
 # import block class
 from classes.block import Block
 from classes.transaction import Transaction
+from classes.verification import Verification
+from hash_util import hash_block
 
 blockchain = []
 open_transactions = []
 owner = 'Cosmas'
+
 # We will Store patient details in the blockchain
-
 # work on transaction validity
-
 
 # conn = sqlite3.connect('blockchain.db')
 # cursor = conn.cursor()
@@ -87,7 +85,7 @@ def save_data():
     try:
         with open('data/blockchain.txt', mode='w') as f:
             saveable_chain = [block.__dict__ for block in [
-                #convert transactions to transaction object that can be json dumped
+                # convert transactions to transaction object that can be json dumped
                 Block(
                     bl.index,
                     bl.previous_hash,
@@ -103,23 +101,13 @@ def save_data():
         print('Saving Failed')
 
 
-def valid_proof(transactions, last_hash, proof_number):
-    """ Calculate validity of proof number \n
-        We can change the '00' value to make the proof calculation complex
-    """
-    # guess has all hash inputs
-    guess = (str([tx.to_ordered_dict() for tx in transactions]) +
-             str(last_hash) + str(proof_number)).encode()
-    guess_hash = hash_string_sha256(guess)
-    return guess_hash[0:2] == '00'
-
-
 def proof_of_work():
     #  proof of work algorithm
     last_block = blockchain[-1]
     last_hash = hash_block(last_block)
     proof = 0
-    while not valid_proof(open_transactions, last_hash, proof):
+    verifier=Verification()
+    while not verifier.valid_proof(open_transactions, last_hash, proof):
         proof += 1
     return proof
 
@@ -152,7 +140,7 @@ def mine_block():
     # allow users to add their details
     # we will append them here if need be
     # replace open transactions with a list of our details we want to add
-    
+
     block = Block(len(blockchain), hashed_block, open_transactions, proof)
     blockchain.append(block)
     save_data()
@@ -190,23 +178,10 @@ def print_blockchain():
     """ Output blocks of the blockchain. """
 
     for i, block in enumerate(blockchain):
-        print('Block index', i)
+        print('Index', i)
         print(block)
     else:
         print('-' * 20)
-
-
-def verify_chain():
-    """ Verify the current blockchain and return True if it's valid."""
-    for (index, block) in enumerate(blockchain):
-        if index == 0:
-            continue
-        if block.previous_hash != hash_block(blockchain[index-1]):
-            return False
-        if not valid_proof(block.transactions, block.previous_hash, block.proof):
-            print('Proof of work invalid')
-            return False
-    return True
 
 
 user_inputted = True
@@ -242,8 +217,8 @@ while user_inputted:
 
     else:
         print('Input was invalid, please pick a value from the list!')
-
-    if not verify_chain():
+    verifier=Verification()
+    if not verifier.verify_chain(blockchain):
         print_blockchain()
         print('Blockchain is invalid!')
         break
