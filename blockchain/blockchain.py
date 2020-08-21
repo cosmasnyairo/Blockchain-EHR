@@ -9,8 +9,8 @@ import json
 # import block class
 from block import Block
 from transaction import Transaction
-from verification import Verification
-from hash_util import hash_block
+from utility.verification import Verification
+from utility.hash_util import hash_block
 
 
 class Blockchain:
@@ -44,7 +44,7 @@ class Blockchain:
     def load_data(self):
         # load data from the txt file
         try:
-            with open('../data/blockchain.txt', mode='r') as f:
+            with open('data/blockchain.txt', mode='r') as f:
                 file_content = f.readlines()
 
                 # we escape the \n using range
@@ -88,7 +88,7 @@ class Blockchain:
         # cursor.execute("INSERT INTO blockchainstore VALUES(?,?)", (str(blockchain), str(open_transactions)))
         # conn.commit()
         try:
-            with open('../data/blockchain.txt', mode='w') as f:
+            with open('data/blockchain.txt', mode='w') as f:
                 saveable_chain = [block.__dict__ for block in [
                     # convert transactions to transaction object that can be json dumped
                     Block(
