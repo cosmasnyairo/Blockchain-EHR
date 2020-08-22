@@ -8,6 +8,7 @@ print('dna')
 
 class Wallet:
     def __init__(self):
+<<<<<<< HEAD
 
         self.private_key = None
         self.public_key = None
@@ -20,6 +21,13 @@ class Wallet:
     def load_keys(self):
         pass
 
+=======
+        private_key, public_key = self.generate_keys()
+
+        self.private_key = private_key
+        self.public_key = public_key
+
+>>>>>>> 6653fc9420edfd85f2b58caa67163cd9f40a3712
     def generate_keys(self):
         private_key = RSA.generate(1024, Crypto.Random.new().read)
         public_key = private_key.publickey()
