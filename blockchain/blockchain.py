@@ -58,6 +58,7 @@ class Blockchain:
                     converted_transaction = [Transaction(
                         tx['sender'],
                         tx['receiver'],
+                        tx['signature'],
                         tx['details'],
                     ) for tx in block['transactions']]
 
@@ -76,6 +77,7 @@ class Blockchain:
                     updated_transaction = Transaction(
                         tx['sender'],
                         tx['receiver'],
+                        tx['signature'],
                         tx['details'],
                     )
                     updated_transactions.append(updated_transaction)
@@ -120,17 +122,18 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_transaction(self, receiver, sender, details=1.0):
+    def add_transaction(self, receiver, sender, signature, details):
         """ Append a new value as well as the last blockchain value to the blockchain.
 
             Arguments:
                 sender:     Sender of the details.
                 recipient:  Recepient of the details.
+                signature:  Signature of the transaction
                 details:    Details to be sent with the transaction.
         """
         if self.hosting_node == None:
             return False
-        transaction = Transaction(sender, receiver, details)
+        transaction = Transaction(sender, receiver, signature, details)
         self.__open_transactions.append(transaction)
         self.save_data()
 
@@ -150,7 +153,7 @@ class Blockchain:
         #     'mining_points': Gold_points,
         # }
 
-        # mined_transaction = Transaction('MINING', node, mined_details)
+        # mined_transaction = Transaction('MINING', self.hosting_node, ,'', mined_details)
         # copied_tx = self.__open_transactions[:]
         # copied_tx.append(mined_transaction)
 

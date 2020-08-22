@@ -1,4 +1,7 @@
 from Crypto.PublicKey import RSA
+
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
 import Crypto.Random
 
 import binascii
@@ -45,3 +48,13 @@ class Wallet:
             binascii.hexlify(public_key.exportKey(
                 format='DER')).decode('ascii')
         )
+
+    def sign_transaction(self, sender, recipient, details):
+        signer = PKCS1_v1_5.new(RSA.importKey(
+            binascii.unhexlify(self.private_key)))
+        h = SHA256.new((str(sender)+str(recipient) +
+                        str(details)).encode('utf8 '))
+        signature = signer.sign(h)
+        print(signature)
+        print(binascii.hexlify(signature).decode('ascii'))
+        return binascii.hexlify(signature).decode('ascii')

@@ -64,10 +64,16 @@ class Node:
             if user_choice == '1':
                 tx_data = self.get_transaction()
                 recipient, transaction_details = tx_data
+                signature = self.wallet.sign_transaction(
+                    self.wallet.public_key,
+                    recipient,
+                    transaction_details
+                )
                 self.blockchain.add_transaction(
                     recipient,
                     self.wallet.public_key,
-                    details=transaction_details
+                    signature,
+                    transaction_details
                 )
                 print(self.blockchain.get_open_transactions())
 
@@ -93,7 +99,7 @@ class Node:
             elif user_choice == 'e':
                 # exits from the blockchain
                 print('Exited from the blockchain')
-                print('Blockchain is : ', self.blockchain)
+                self.print_blockchain()
                 user_inputted = False
 
             else:
