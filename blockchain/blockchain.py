@@ -118,7 +118,7 @@ class Blockchain:
         """ Returns the last value of the current blockchain. """
         if len(self.__chain) < 1:
             return None
-        return self.blockchain[-1]
+        return self.__chain[-1]
 
     def add_transaction(self, receiver, sender, details=1.0):
         """ Append a new value as well as the last blockchain value to the blockchain.
