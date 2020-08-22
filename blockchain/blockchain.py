@@ -128,40 +128,45 @@ class Blockchain:
                 recipient:  Recepient of the details.
                 details:    Details to be sent with the transaction.
         """
+        if self.hosting_node == None:
+            return False
         transaction = Transaction(sender, receiver, details)
         self.__open_transactions.append(transaction)
         self.save_data()
 
     def mine_block(self):
-        if len(self.__open_transactions) > 0:
-            last_block = self.__chain[-1]
-            hashed_block = hash_block(last_block)
-            proof = self.proof_of_work()
+        if self.hosting_node == None:
+            print('No wallet')
+            return False
+        if len(self.__open_transactions) <= 0:
+            print('No transactions to add')
+            return False
+        last_block = self.__chain[-1]
+        hashed_block = hash_block(last_block)
+        proof = self.proof_of_work()
 
-            # mined_details = {
-            #     'visit_date': time,
-            #     'mining_points': Gold_points,
-            # }
+        # mined_details = {
+        #     'visit_date': time,
+        #     'mining_points': Gold_points,
+        # }
 
-            # mined_transaction = Transaction('MINING', node, mined_details)
-            # copied_tx = self.__open_transactions[:]
-            # copied_tx.append(mined_transaction)
+        # mined_transaction = Transaction('MINING', node, mined_details)
+        # copied_tx = self.__open_transactions[:]
+        # copied_tx.append(mined_transaction)
 
-            # #alternatively append open transactions instead of copied_tx
+        # #alternatively append open transactions instead of copied_tx
 
-            block = Block(
-                len(self.__chain),
-                hashed_block,
-                self.__open_transactions,
-                proof
-            )
-            self.__chain.append(block)
-            self.__open_transactions = []
-            self.save_data()
-            print('Mined Transaction')
-            return True
-        else:
-            print('No transactions to mine to blockchain ')
+        block = Block(
+            len(self.__chain),
+            hashed_block,
+            self.__open_transactions,
+            proof
+        )
+        self.__chain.append(block)
+        self.__open_transactions = []
+        self.save_data()
+        print('Mined Transaction')
+        return True
 
     def __repr__(self):
         return str(self.__dict__)

@@ -10,6 +10,7 @@ class Node:
     def __init__(self):
         #self.wallet = str(uuid4())
         self.wallet = Wallet()
+        self.wallet.create_keys()
         self.blockchain = Blockchain(self.wallet.public_key)
 
     def get_transaction(self):
@@ -55,6 +56,7 @@ class Node:
             print('3: Output blocks')
             print('4: Create wallet')
             print('5: Load wallet')
+            print('6: Save Keys')
             print('e: Exit')
 
             user_choice = self.get_choice()
@@ -70,15 +72,24 @@ class Node:
                 print(self.blockchain.get_open_transactions())
 
             elif user_choice == '2':
-                self.blockchain.mine_block()
+                if not self.blockchain.mine_block():
+                    print('Mining Failed!')
+                    print('-' * 20)
 
             elif user_choice == '3':
                 self.print_blockchain()
 
             elif user_choice == '4':
                 self.wallet.create_keys()
+                self.blockchain = Blockchain(self.wallet.public_key)
+
             elif user_choice == '5':
-                pass
+                self.wallet.load_keys()
+                self.blockchain = Blockchain(self.wallet.public_key)
+
+            elif user_choice == '6':
+                self.wallet.save_keys()
+
             elif user_choice == 'e':
                 # exits from the blockchain
                 print('Exited from the blockchain')
