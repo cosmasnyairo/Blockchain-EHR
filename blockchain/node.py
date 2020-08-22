@@ -9,9 +9,8 @@ class Node:
 
     def __init__(self):
         #self.wallet = str(uuid4())
-        self.wallet = 'ABC'
-        self.blockchain = Blockchain(self.wallet)
-        
+        self.wallet = Wallet()
+        self.blockchain = Blockchain(self.wallet.public_key)
 
     def get_transaction(self):
         tx_recipient = input('Enter recipeint of transaction: ')
@@ -65,7 +64,7 @@ class Node:
                 recipient, transaction_details = tx_data
                 self.blockchain.add_transaction(
                     recipient,
-                    self.wallet,
+                    self.wallet.public_key,
                     details=transaction_details
                 )
                 print(self.blockchain.get_open_transactions())
@@ -77,7 +76,7 @@ class Node:
                 self.print_blockchain()
 
             elif user_choice == '4':
-                wallet = Wallet()
+                self.wallet.create_keys()
             elif user_choice == '5':
                 pass
             elif user_choice == 'e':
