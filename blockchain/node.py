@@ -2,14 +2,16 @@ from uuid import uuid4
 
 from blockchain import Blockchain
 from utility.verification import Verification
+from wallet import Wallet
 
 
 class Node:
 
     def __init__(self):
-        #self.id = str(uuid4())
-        self.id = 'ABC'
-        self.blockchain = Blockchain(self.id)
+        #self.wallet = str(uuid4())
+        self.wallet = 'ABC'
+        self.blockchain = Blockchain(self.wallet)
+        
 
     def get_transaction(self):
         tx_recipient = input('Enter recipeint of transaction: ')
@@ -63,7 +65,7 @@ class Node:
                 recipient, transaction_details = tx_data
                 self.blockchain.add_transaction(
                     recipient,
-                    self.id,
+                    self.wallet,
                     details=transaction_details
                 )
                 print(self.blockchain.get_open_transactions())
@@ -75,9 +77,9 @@ class Node:
                 self.print_blockchain()
 
             elif user_choice == '4':
-
+                wallet = Wallet()
             elif user_choice == '5':
-
+                pass
             elif user_choice == 'e':
                 # exits from the blockchain
                 print('Exited from the blockchain')
