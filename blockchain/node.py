@@ -52,6 +52,8 @@ class Node:
             print('1: Add new transaction')
             print('2: Mine a new block')
             print('3: Output blocks')
+            print('4: Create wallet')
+            print('5: Load wallet')
             print('e: Exit')
 
             user_choice = self.get_choice()
@@ -71,6 +73,10 @@ class Node:
 
             elif user_choice == '3':
                 self.print_blockchain()
+
+            elif user_choice == '4':
+
+            elif user_choice == '5':
 
             elif user_choice == 'e':
                 # exits from the blockchain
