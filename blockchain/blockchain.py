@@ -128,25 +128,25 @@ class Blockchain:
 
             Arguments:
                 sender:     Sender of the details.
-                recipient:  Recepient of the details.
+                receiver:  Recepient of the details.
                 signature:  Signature of the transaction
                 details:    Details to be sent with the transaction.
         """
         if self.hosting_node == None:
             return False
         transaction = Transaction(sender, receiver, signature, details)
+        print(transaction)
         if not Wallet.verify_transaction(transaction):
             return False
         self.__open_transactions.append(transaction)
         self.save_data()
+        return True
 
     def mine_block(self):
         if self.hosting_node == None:
-            print('No wallet')
-            return False
+            return None
         if len(self.__open_transactions) <= 0:
-            print('No transactions to add')
-            return False
+            return 0
         last_block = self.__chain[-1]
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
@@ -170,13 +170,12 @@ class Blockchain:
         )
         for tx in block.transactions:
             if not Wallet.verify_transaction(tx):
-                return False
+                return None
 
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
-        print('Mined Transaction')
-        return True
+        return block
 
     def __repr__(self):
         return str(self.__dict__)
