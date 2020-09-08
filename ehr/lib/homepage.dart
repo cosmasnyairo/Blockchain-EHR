@@ -36,7 +36,6 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomButton('ADD RECORD', () {}),
-                SizedBox(width: 50),
                 CustomButton('SHARE RECORDS', () {})
               ],
             ),
@@ -53,7 +52,7 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 150,
+                  width: 180,
                   child: Card(
                     elevation: 7,
                     child: Row(
@@ -71,9 +70,8 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 50),
                 Container(
-                  width: 150,
+                  width: 180,
                   child: Card(
                     elevation: 7,
                     child: Row(
