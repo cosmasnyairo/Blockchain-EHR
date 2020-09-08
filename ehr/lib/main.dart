@@ -1,5 +1,6 @@
-import 'package:ehr/homepage.dart';
 import 'package:flutter/material.dart';
+
+import 'screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xff3FD5AE),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: Screen(),
     );
   }
 }
