@@ -1,7 +1,8 @@
-import 'package:ehr/widgets/custom_button.dart';
-import 'package:ehr/widgets/custom_text.dart';
-import 'package:ehr/widgets/record.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets/custom_button.dart';
+import 'widgets/custom_text.dart';
+import 'widgets/record.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -35,71 +36,22 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomButton('ADD RECORD', () {}),
+                CustomButton(
+                  'ADD RECORD',
+                  () {
+                    Navigator.of(context).pushNamed('add_record');
+                  },
+                ),
                 CustomButton('SHARE RECORDS', () {})
               ],
             ),
             SizedBox(height: 20),
-            Row(
-              children: [
-                Icon(Icons.calendar_today),
-                CustomText('Dates', fontweight: FontWeight.bold)
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 180,
-                  child: Card(
-                    elevation: 7,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CustomText('17/07/2017'),
-                        IconButton(
-                          icon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          onPressed: null,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 180,
-                  child: Card(
-                    elevation: 7,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CustomText('23/07/2017'),
-                        IconButton(
-                          icon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          onPressed: null,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
             CustomText('RECORDS', fontweight: FontWeight.bold),
             SizedBox(height: 10),
-            Container(
-              child: Expanded(
-                child: ListView.builder(
-                  itemBuilder: (ctx, i) => RecordCard(),
-                  itemCount: 10,
-                ),
+            Expanded(
+              child: ListView.builder(
+                itemBuilder: (ctx, i) => RecordCard(i),
+                itemCount: 10,
               ),
             )
           ],
