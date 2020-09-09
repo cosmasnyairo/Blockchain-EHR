@@ -1,6 +1,8 @@
+import 'package:ehr/add_record.dart';
 import 'package:flutter/material.dart';
 
 import 'screen.dart';
+import 'view_record.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +20,10 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Screen(),
+      routes: {
+        'view_record': (ctx) => ViewRecord(),
+        'add_record': (ctx) => AddRecord(),
+      },
     );
   }
 }

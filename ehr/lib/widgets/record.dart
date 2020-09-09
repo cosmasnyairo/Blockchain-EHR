@@ -1,23 +1,25 @@
-import 'package:ehr/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_text.dart';
+import 'custom_button.dart';
 
 class RecordCard extends StatelessWidget {
+  final int index;
+  RecordCard(this.index);
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
     return Container(
-      padding: EdgeInsets.only(top: 20, bottom: 20),
-      height: h * 0.3,
+      height: h * 0.2,
       width: w,
+      padding: EdgeInsets.all(5),
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         elevation: 7,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -28,48 +30,23 @@ class RecordCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10),
             Divider(),
-            Column(
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 20),
-                  alignment: Alignment.centerLeft,
-                  child: CustomText(
-                    'Summary of your visit:',
-                    fontweight: FontWeight.bold,
-                    fontsize: 16,
-                  ),
+                CustomText(
+                  'Date: 17/07/2017',
+                  fontsize: 16,
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                            'Location: Nairobi',
-                            fontsize: 16,
-                          ),
-                          CustomText(
-                            'Doctor: Dr Xavier',
-                            fontsize: 16,
-                          ),
-                          CustomText(
-                            'Date: Dr Xavier',
-                            fontsize: 16,
-                          ),
-                        ],
-                      ),
-                      CustomButton(
-                        'VIEW RECORD',
-                        () {},
-                        fontWeight: FontWeight.bold,
-                      )
-                    ],
-                  ),
+                CustomButton(
+                  'VIEW RECORD',
+                  () => {
+                    Navigator.of(context)
+                        .pushNamed('view_record', arguments: index)
+                  },
+                  fontWeight: FontWeight.bold,
                 )
               ],
             ),

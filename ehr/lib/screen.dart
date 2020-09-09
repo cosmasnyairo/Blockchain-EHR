@@ -1,8 +1,9 @@
-import 'package:ehr/homepage.dart';
-import 'package:ehr/profile.dart';
-import 'package:ehr/settings.dart';
-import 'package:ehr/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+
+import 'homepage.dart';
+import 'profile.dart';
+import 'settings.dart';
+import 'widgets/custom_text.dart';
 
 class Screen extends StatefulWidget {
   @override
