@@ -17,11 +17,11 @@ class Node:
         tx_recipient = input('Enter recipeint of transaction: ')
 
         # visit_time = float(input('Time of visit:'))
-        medical_notes = input('Enter Medical notes: ')
-        diagnosis = input('Enter Diagnosis: ')
+        medical_notes = [input('Enter Medical notes: ')]
+        diagnosis = [input('Enter Diagnosis: ')]
         # split converts to a list
         prescription = [input('Enter Prescription(s): ')]
-        lab_results = input('Enter lab result(s): ')
+        lab_results = [input('Enter lab result(s): ')]
 
         tx_transaction_details = {
             # 'doctor_name':

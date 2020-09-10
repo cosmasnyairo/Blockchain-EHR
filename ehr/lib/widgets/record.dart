@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'custom_text.dart';
 import 'custom_button.dart';
 
 class RecordCard extends StatelessWidget {
-  final int index;
-  RecordCard(this.index);
+  final String index;
+  final String timestamp;
+  RecordCard(this.index, this.timestamp);
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
+    final f = DateFormat('dd-MM-yyyy hh:mm');
+    String date = f.format(DateTime.fromMillisecondsSinceEpoch(
+        double.parse(timestamp).toInt() * 1000));
+
     return Container(
       height: h * 0.2,
       width: w,
@@ -37,7 +43,7 @@ class RecordCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CustomText(
-                  'Date: 17/07/2017',
+                  'Date: $date',
                   fontsize: 16,
                 ),
                 CustomButton(
