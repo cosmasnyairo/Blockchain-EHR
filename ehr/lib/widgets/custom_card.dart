@@ -4,9 +4,9 @@ import 'custom_text.dart';
 
 class CustomCard extends StatefulWidget {
   final String title;
-  final String data;
+  final List details;
 
-  CustomCard({this.data, this.title});
+  CustomCard({this.details, this.title});
 
   @override
   _CustomCardState createState() => _CustomCardState();
@@ -18,7 +18,7 @@ class _CustomCardState extends State<CustomCard> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 400),
-      height: _expanded ? 300 : 100,
+      height: _expanded ? 200 : 100,
       child: Card(
         elevation: 7,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
@@ -77,8 +77,19 @@ class _CustomCardState extends State<CustomCard> {
             ),
             AnimatedContainer(
               duration: Duration(milliseconds: 400),
-              height: _expanded ? 200 : 0,
-              child: CustomText(widget.data),
+              height: _expanded ? 100 : 0,
+              padding: EdgeInsets.only(left: 20),
+              child: ListView.builder(
+                itemBuilder: (ctx, i) => Row(
+                  children: [
+                    CustomText('\u2022'),
+                    CustomText(
+                      widget.details[i].toString(),
+                    ),
+                  ],
+                ),
+                itemCount: widget.details.length,
+              ),
             ),
           ],
         ),

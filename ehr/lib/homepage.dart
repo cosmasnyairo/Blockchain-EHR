@@ -6,7 +6,7 @@ import 'models/block.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
-import 'widgets/record.dart';
+import 'widgets/record_card.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,7 +38,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     List<Block> _records =
         Provider.of<RecordsProvider>(context, listen: false).records;
-    _records = _records.skip(1).toList();
+    List<Block> _updatedrecords = _records.skip(1).toList();
+    final length = _updatedrecords.length;
 
     return _isloading
         ? Scaffold(
@@ -85,15 +86,28 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  CustomText('RECORDS', fontweight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomButton('CREATE WALLET', () {}),
+                      CustomButton('LOAD WALLET', () {})
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  CustomText(
+                    'RECORDS ( $length )',
+                    fontweight: FontWeight.bold,
+                  ),
                   SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
                       itemBuilder: (ctx, i) => RecordCard(
-                        _records[i].index,
-                        _records[i].timestamp,
+                        _updatedrecords[i].index,
+                        _updatedrecords[i].timestamp,
+                        _updatedrecords[i],
                       ),
-                      itemCount: _records.length,
+                      itemCount: _updatedrecords.length,
                     ),
                   )
                 ],
