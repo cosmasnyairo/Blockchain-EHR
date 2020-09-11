@@ -1,3 +1,4 @@
+import 'package:ehr/models/block.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -7,7 +8,8 @@ import 'custom_button.dart';
 class RecordCard extends StatelessWidget {
   final String index;
   final String timestamp;
-  RecordCard(this.index, this.timestamp);
+  final Block block;
+  RecordCard(this.index, this.timestamp, this.block);
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -50,7 +52,7 @@ class RecordCard extends StatelessWidget {
                   'VIEW RECORD',
                   () => {
                     Navigator.of(context)
-                        .pushNamed('view_record', arguments: index)
+                        .pushNamed('view_record', arguments: block)
                   },
                   fontWeight: FontWeight.bold,
                 )

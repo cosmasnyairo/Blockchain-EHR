@@ -1,5 +1,6 @@
 import 'package:ehr/add_record.dart';
 import 'package:ehr/providers/record_provider.dart';
+import 'package:ehr/widgets/transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         home: Screen(),
         routes: {
           'view_record': (ctx) => ViewRecord(),
+          'view_transaction': (ctx) => ViewTransaction(),
           'add_record': (ctx) => AddRecord(),
         },
       ),
