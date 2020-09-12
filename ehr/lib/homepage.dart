@@ -38,7 +38,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     List<Block> _records =
         Provider.of<RecordsProvider>(context, listen: false).records;
-    List<Block> _updatedrecords = _records.skip(1).toList();
+    List<Block> _updatedrecords = _records.skip(1).toList().reversed.toList();
+
     final length = _updatedrecords.length;
 
     return _isloading

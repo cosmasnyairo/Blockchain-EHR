@@ -15,7 +15,7 @@ class RecordsProvider with ChangeNotifier {
 
   Future<void> getChain() async {
     try {
-      final url = 'http://192.168.137.1:5000/chain';
+      final url = 'http://192.168.100.18:5000/chain';
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as List;
 

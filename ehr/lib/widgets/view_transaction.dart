@@ -16,10 +16,10 @@ class _ViewTransactionState extends State<ViewTransaction> {
   Widget build(BuildContext context) {
     Transaction transaction = ModalRoute.of(context).settings.arguments;
     final width = MediaQuery.of(context).size.width;
-    var medicalNotes;
-    var labResults;
-    var prescription;
-    var diagnosis;
+    List medicalNotes;
+    List labResults;
+    List prescription;
+    List diagnosis;
     for (var item in transaction.details) {
       medicalNotes = item.medicalnotes;
       diagnosis = item.diagnosis;
@@ -60,7 +60,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   width: width * 0.6,
                   height: 40,
                   child: CustomText(
-                    transaction.sender,
+                    transaction.receiver,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -71,7 +71,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
                       ClipboardData(text: transaction.receiver.toString()),
                     );
                     // to do : add snackbar
-                    print('copied');
                   },
                   height: 40,
                 )

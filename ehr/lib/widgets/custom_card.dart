@@ -16,6 +16,10 @@ class _CustomCardState extends State<CustomCard> {
   var _expanded = false;
   @override
   Widget build(BuildContext context) {
+    List<String> detailsList = [];
+    for (var item in widget.details) {
+      detailsList = item.toString().split(',');
+    }
     return AnimatedContainer(
       duration: Duration(milliseconds: 400),
       height: _expanded ? 200 : 100,
@@ -82,13 +86,18 @@ class _CustomCardState extends State<CustomCard> {
               child: ListView.builder(
                 itemBuilder: (ctx, i) => Row(
                   children: [
-                    CustomText('\u2022'),
                     CustomText(
-                      widget.details[i].toString(),
+                      '\u2022',
+                      fontweight: FontWeight.bold,
+                      fontsize: 20,
+                    ),
+                    SizedBox(width: 10),
+                    CustomText(
+                      detailsList[i].toString(),
                     ),
                   ],
                 ),
-                itemCount: widget.details.length,
+                itemCount: detailsList.length,
               ),
             ),
           ],
