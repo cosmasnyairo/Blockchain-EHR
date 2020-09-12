@@ -1,9 +1,9 @@
-import 'package:ehr/add_record.dart';
-import 'package:ehr/providers/record_provider.dart';
-import 'package:ehr/widgets/transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'add_record.dart';
+import 'providers/record_provider.dart';
+import 'widgets/view_transaction.dart';
 import 'screen.dart';
 import 'view_record.dart';
 

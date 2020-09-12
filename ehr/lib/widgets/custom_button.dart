@@ -7,8 +7,10 @@ class CustomButton extends StatelessWidget {
   final FontWeight fontWeight;
   final Function onpressed;
   final double height;
+  final double elevation;
 
-  const CustomButton(this.text, this.onpressed, {this.fontWeight, this.height});
+  const CustomButton(this.text, this.onpressed,
+      {this.fontWeight, this.height, this.elevation});
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +20,7 @@ class CustomButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(7),
       ),
+      elevation: elevation,
       color: Theme.of(context).primaryColor,
       child: CustomText(
         text,
