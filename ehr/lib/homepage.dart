@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isloading = true;
     });
+    _loadKeys();
     _getRecords().then(
       (value) => {
         setState(() {
@@ -28,6 +29,10 @@ class _HomePageState extends State<HomePage> {
       },
     );
     super.didChangeDependencies();
+  }
+
+  Future _loadKeys() async {
+    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
   }
 
   Future _getRecords() async {
@@ -39,7 +44,6 @@ class _HomePageState extends State<HomePage> {
     List<Block> _records =
         Provider.of<RecordsProvider>(context, listen: false).records;
     List<Block> _updatedrecords = _records.skip(1).toList().reversed.toList();
-
     final length = _updatedrecords.length;
 
     return _isloading
@@ -87,14 +91,14 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomButton('CREATE WALLET', () {}),
-                      CustomButton('LOAD WALLET', () {})
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     CustomButton('CREATE WALLET', () {}),
+                  //     CustomButton('LOAD WALLET', () {})
+                  //   ],
+                  // ),
                   SizedBox(height: 20),
                   CustomText(
                     'RECORDS ( $length )',

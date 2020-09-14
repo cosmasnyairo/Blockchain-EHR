@@ -60,7 +60,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   width: width * 0.6,
                   height: 40,
                   child: CustomText(
-                    transaction.receiver,
+                    transaction.receiver.toString(),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
