@@ -30,6 +30,10 @@
 .pub/
 /build/
 
+
+../blockchain_backend/data/blockchain.txt
+../blockchain_backend/data/wallet.txt
+
 # Web related
 lib/generated_plugin_registrant.dart
 
