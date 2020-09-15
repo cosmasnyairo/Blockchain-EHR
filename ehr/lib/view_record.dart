@@ -24,7 +24,7 @@ class ViewRecord extends StatelessWidget {
               elevation: 7,
               child: ListTile(
                 title: CustomText(
-                  'Transaction',
+                  'Transaction  (${(i + 1).toString()})',
                   fontweight: FontWeight.bold,
                   fontsize: 16,
                 ),
@@ -52,10 +52,6 @@ class ViewRecord extends StatelessWidget {
               ),
             ),
           ),
-          // ViewTransaction(
-          //   index: block.index,
-          //   transaction: block.transaction[i],
-          // ),
           itemCount: block.transaction.length,
         ),
       ),
