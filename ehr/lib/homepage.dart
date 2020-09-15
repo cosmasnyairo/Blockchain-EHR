@@ -1,9 +1,11 @@
+import 'package:ehr/models/transaction.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
 import 'models/block.dart';
 import 'providers/record_provider.dart';
+import 'widgets/badge.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
 import 'widgets/record_card.dart';
@@ -15,19 +17,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var _isloading = false;
+
   @override
-  void didChangeDependencies() {
+  void initState() {
     setState(() {
       _isloading = true;
     });
     _loadKeys();
-    _getRecords().then(
+    _getRecords(false).then(
       (value) => {
         setState(() {
           _isloading = false;
         }),
       },
     );
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _getRecords(true);
     super.didChangeDependencies();
   }
 
@@ -35,15 +44,19 @@ class _HomePageState extends State<HomePage> {
     await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
   }
 
-  Future _getRecords() async {
-    await Provider.of<RecordsProvider>(context, listen: false).getChain();
+  Future _getRecords(bool listen) async {
+    final provider = Provider.of<RecordsProvider>(context, listen: listen);
+    await provider.getChain();
+    await provider.getOpenTransactions();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Block> _records =
-        Provider.of<RecordsProvider>(context, listen: false).records;
+    final provider = Provider.of<RecordsProvider>(context, listen: false);
+    List<Block> _records = provider.records;
     List<Block> _updatedrecords = _records.skip(1).toList().reversed.toList();
+    List<Transaction> _opentransactions = provider.opentransactions;
+
     final length = _updatedrecords.length;
 
     return _isloading
@@ -72,6 +85,34 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
+              actions: [
+                Consumer<RecordsProvider>(
+                  builder: (_, records, child) => Badge(
+                    value: records.opentransactions.length.toString(),
+                    child: child,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 15,
+                      top: 15,
+                      right: 20,
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.assignment,
+                        size: 30,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          'view_open_transaction',
+                          arguments: _opentransactions,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
             body: Container(
               padding: EdgeInsets.all(20),
@@ -82,12 +123,12 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomButton(
-                        'ADD RECORD',
+                        'Add record',
                         () {
                           Navigator.of(context).pushNamed('add_record');
                         },
                       ),
-                      CustomButton('SHARE RECORDS', () {})
+                      CustomButton('Share records', () {})
                     ],
                   ),
                   SizedBox(height: 20),
@@ -101,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                   // ),
                   SizedBox(height: 20),
                   CustomText(
-                    'RECORDS ( $length )',
+                    'RECORDS ($length)',
                     fontweight: FontWeight.bold,
                   ),
                   SizedBox(height: 10),
@@ -117,6 +158,24 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  'view_open_transaction',
+                  arguments: _opentransactions,
+                );
+              },
+              label: Row(
+                children: [
+                  CustomText(
+                    'Open transactions (${_opentransactions.length.toString()})',
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              backgroundColor: Theme.of(context).primaryColor,
             ),
           );
   }

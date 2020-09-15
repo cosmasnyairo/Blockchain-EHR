@@ -12,14 +12,14 @@ class RecordsProvider with ChangeNotifier {
   String _publickey;
   String _privatekey;
   List<Block> _records = [];
-  List<Block> _pendingrecords = [];
+  List<Transaction> _opentransactions = [];
 
   List<Block> get records {
     return [..._records];
   }
 
-  List<Block> get pendingrecords {
-    return [..._pendingrecords];
+  List<Transaction> get opentransactions {
+    return [..._opentransactions];
   }
 
   String get publickey {
@@ -123,15 +123,8 @@ class RecordsProvider with ChangeNotifier {
           "Content-Type": "application/json",
         },
       );
-      print(response.body);
-      if (response.statusCode == 400) {
-        final res = json.decode(response.body);
-        throw res["message"];
-      }
-      if (response.statusCode == 201) {
-        final res = json.decode(response.body);
-        throw res["message"];
-      }
+      final res = json.decode(response.body);
+      throw res["message"];
     } catch (e) {
       throw e;
     }
@@ -140,7 +133,9 @@ class RecordsProvider with ChangeNotifier {
   Future<void> mine() async {
     try {
       final url = '$apiurl/mine';
-      await http.post(url);
+      final response = await http.post(url);
+      final res = json.decode(response.body);
+      throw res["message"];
     } catch (e) {
       throw e;
     }
@@ -151,11 +146,36 @@ class RecordsProvider with ChangeNotifier {
       final url = '$apiurl/get_opentransactions';
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as List;
+      final List<Transaction> loadedtransactions = [];
+
+      extractedData.forEach(
+        (transaction) {
+          loadedtransactions.add(
+            Transaction(
+              sender: transaction['sender'],
+              receiver: transaction['receiver'],
+              details: List<dynamic>.from([transaction['details']])
+                  .map(
+                    (f) => Details(
+                      medicalnotes: f['medical_notes'],
+                      labresults: f['lab_results'],
+                      prescription: f['prescription'],
+                      diagnosis: f['diagnosis'],
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
+        },
+      );
+      _opentransactions = loadedtransactions;
+      notifyListeners();
     } catch (e) {
       throw e;
     }
   }
 
+//signup
   Future<void> createKeys() async {
     try {
       final url = '$apiurl/create_keys';
@@ -166,6 +186,7 @@ class RecordsProvider with ChangeNotifier {
     } catch (e) {}
   }
 
+//onlogin
   Future<void> loadKeys() async {
     try {
       final url = '$apiurl/load_keys';
