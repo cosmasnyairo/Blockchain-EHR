@@ -1,3 +1,5 @@
+import json
+
 from Crypto.PublicKey import RSA
 
 from Crypto.Signature import PKCS1_v1_5
@@ -21,10 +23,12 @@ class Wallet:
     def save_keys(self):
         if self.private_key != None and self.public_key != None:
             try:
-                with open('data/wallet.txt', mode='w') as f:
-                    f.write(self.public_key)
-                    f.write('\n')
-                    f.write(self.private_key)
+                with open('data/wallet.json', mode='w') as f:
+                    data = {}
+                    data["public_key"] = self.public_key
+                    data["private_key"] = self.private_key
+                    json.dump(data, f)
+
                 return True
             except (IOError, IndexError):
                 print('Saving wallet failed')
@@ -32,10 +36,10 @@ class Wallet:
 
     def load_keys(self):
         try:
-            with open('data/wallet.txt', mode='r') as f:
-                keys = f.readlines()
-                public_key = keys[0][:-1]
-                private_key = keys[1]
+            with open('data/wallet.json', mode='r') as f:
+                keys = json.load(f)
+                public_key = keys["public_key"]
+                private_key = keys["private_key"]
                 self.public_key = public_key
                 self.private_key = private_key
             return True

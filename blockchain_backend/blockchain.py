@@ -45,12 +45,11 @@ class Blockchain:
     def load_data(self):
         # load data from the txt file
         try:
-            with open('data/blockchain.txt', mode='r') as f:
-                file_content = f.readlines()
-
+            with open('data/blockchain.json', mode='r') as f:
+                file_content = json.load(f)
                 # we escape the \n using range
-                blockchain = json.loads(file_content[0][:-1])
-                open_transactions = json.loads(file_content[1])
+                blockchain = file_content["blockchain"]
+                open_transactions = file_content["opentransactions"]
 
                 # ordered dicts aid in using odering to calculate the guess in valid proof
                 updated_blockchain = []
@@ -91,7 +90,11 @@ class Blockchain:
         # cursor.execute("INSERT INTO blockchainstore VALUES(?,?)", (str(blockchain), str(open_transactions)))
         # conn.commit()
         try:
-            with open('data/blockchain.txt', mode='w') as f:
+
+            with open('data/blockchain.json', mode='w') as f:
+                data = {}
+                data["blockchain"]=[]
+                data["opentransactions"]=[]
                 saveable_chain = [block.__dict__ for block in [
                     # convert transactions to transaction object that can be json dumped
                     Block(
@@ -101,12 +104,16 @@ class Blockchain:
                         bl.proof,
                         bl.timestamp
                     )for bl in self.__chain]]
-                f.write(json.dumps(saveable_chain))
-                f.write('\n')
+                # f.write(json.dumps(saveable_chain))
                 saveable_tx = [tx.__dict__ for tx in self.__open_transactions]
-                f.write(json.dumps(saveable_tx))
+                # f.write(json.dumps(saveable_tx))
+
+                data["blockchain"]=saveable_chain
+                data["opentransactions"]=saveable_tx
+                print(data["blockchain"])
+                json.dump(data, f)
         except IOError:
-            print('Saving Failed')
+            print('Saving Failed'+IOError.message)
 
     def proof_of_work(self):
         #  proof of work algorithm
