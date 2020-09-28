@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import 'add_record.dart';
 import 'providers/record_provider.dart';
+import 'providers/node_provider.dart';
+import 'share_record.dart';
 import 'widgets/view_transaction.dart';
 import 'screen.dart';
 import 'view_record.dart';
@@ -20,6 +22,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (ctx) => RecordsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => NodeProvider(),
         )
       ],
       child: MaterialApp(
@@ -34,6 +39,7 @@ class MyApp extends StatelessWidget {
           'view_record': (ctx) => ViewRecord(),
           'view_transaction': (ctx) => ViewTransaction(),
           'add_record': (ctx) => AddRecord(),
+          'share_record': (ctx) => ShareRecord(),
           'view_open_transaction': (ctx) => ViewOpenTransactions()
         },
       ),
