@@ -99,7 +99,6 @@ class Node:
             elif user_choice == 'e':
                 # exits from the blockchain
                 print('Exited from the blockchain')
-                self.print_blockchain()
                 user_inputted = False
 
             else:

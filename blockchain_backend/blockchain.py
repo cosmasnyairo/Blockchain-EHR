@@ -22,8 +22,9 @@ class Blockchain:
         # Empty blockchain
         self.__chain = [genesis_block]
         self.__open_transactions = []
-        self.load_data()
         self.hosting_node = hosting_node_id
+        self.__peer_nodes = set()
+        self.load_data()
 
         # We will Store patient details in the blockchain
         # work on transaction validity
@@ -50,6 +51,7 @@ class Blockchain:
                 # we escape the \n using range
                 blockchain = file_content["blockchain"]
                 open_transactions = file_content["opentransactions"]
+                peer_nodes = file_content["peer_nodes"]
 
                 # ordered dicts aid in using odering to calculate the guess in valid proof
                 updated_blockchain = []
@@ -82,19 +84,20 @@ class Blockchain:
                     )
                     updated_transactions.append(updated_transaction)
                 self.__open_transactions = updated_transactions
+
+                self.__peer_nodes = set(peer_nodes)
+
         except (IOError, IndexError):
             pass
 
     def save_data(self):
-        # createtable()
-        # cursor.execute("INSERT INTO blockchainstore VALUES(?,?)", (str(blockchain), str(open_transactions)))
-        # conn.commit()
         try:
 
             with open('data/blockchain.json', mode='w') as f:
                 data = {}
-                data["blockchain"]=[]
-                data["opentransactions"]=[]
+                data["blockchain"] = []
+                data["opentransactions"] = []
+                data["peer_nodes"] = []
                 saveable_chain = [block.__dict__ for block in [
                     # convert transactions to transaction object that can be json dumped
                     Block(
@@ -108,9 +111,9 @@ class Blockchain:
                 saveable_tx = [tx.__dict__ for tx in self.__open_transactions]
                 # f.write(json.dumps(saveable_tx))
 
-                data["blockchain"]=saveable_chain
-                data["opentransactions"]=saveable_tx
-                print(data["blockchain"])
+                data["blockchain"] = saveable_chain
+                data["opentransactions"] = saveable_tx
+                data["peer_nodes"] = list(self.__peer_nodes)
                 json.dump(data, f)
         except IOError:
             print('Saving Failed'+IOError.message)
@@ -142,7 +145,6 @@ class Blockchain:
         if self.hosting_node == None:
             return False
         transaction = Transaction(sender, receiver, signature, details)
-        print(transaction)
         if not Wallet.verify_transaction(transaction):
             return False
         self.__open_transactions.append(transaction)
@@ -186,3 +188,25 @@ class Blockchain:
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def add_peer_node(self, node):
+        """Adds a new node to peer set \n
+        Arguments: \n
+            node: node url to be added
+        """
+        self.__peer_nodes.add(node)
+        self.save_data()
+
+    def remove_peer_node(self, node):
+        """Removes a new node to peer set \n
+        Arguments: \n
+            node: node url to be removed
+        """
+        self.__peer_nodes.discard(node)
+        self.save_data()
+
+    def get_peer_nodes(self):
+        """
+        Returns all peer nodes
+        """
+        return list(self.__peer_nodes)[:]

@@ -23,7 +23,7 @@ def create_keys():
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
         }
-        return jsonify(response), 201
+        return jsonify(response), 200
     else:
         response = {'message': 'Saving keys failed!', }
         return jsonify(response), 500
@@ -38,7 +38,7 @@ def load_keys():
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
         }
-        return jsonify(response), 201
+        return jsonify(response), 200
     else:
         response = {'message': 'Loading keys failed!', }
         return jsonify(response), 500
@@ -77,7 +77,7 @@ def add_transaction():
                 'details': details,
             }
         }
-        return jsonify(response), 201
+        return jsonify(response), 200
     else:
         response = {'message': 'Creating transaction failed!'}
         return jsonify(response), 500
@@ -97,7 +97,7 @@ def mine():
             'message': 'Block added succesfully!',
             'block': dt
         }
-        return jsonify(response), 201
+        return jsonify(response), 200
     else:
         response = {
             'message': 'Adding block failed!',
@@ -123,6 +123,48 @@ def get_chain():
     return jsonify(dict_chain), 200
 
 
+@app.route('/add_node', methods=['POST'])
+def add_node():
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+    if 'node' not in values:
+        response = {'message': 'No nodes found!'}
+        return jsonify(response), 400
+
+    node = values['node']
+    blockchain.add_peer_node(node)
+
+    response = {
+        'message': 'Node added successfully!',
+        'nodes': blockchain.get_peer_nodes()
+    }
+    return jsonify(response), 200
+
+
+@app.route('/remove_node/<node_url>', methods=['DELETE'])
+def remove_node(node_url):
+
+    if node_url == '' or node_url == None:
+        response = {'message': 'No node found!'}
+        return jsonify(response), 400
+
+    blockchain.remove_peer_node(node_url)
+    response = {
+        'message': 'Node removed successfully!',
+        'nodes': blockchain.get_peer_nodes()
+    }
+    return jsonify(response), 200
+
+
+@app.route('/get_nodes', methods=['GET'])
+def get_nodes():
+    nodes = blockchain.get_peer_nodes()
+    response = {'nodes': nodes}
+    return jsonify(response), 200
+
+
 if __name__ == '__main__':
-    #use local ip address
-    app.run(host='192.168.100.18',port=5000)
+    # use local ip address
+    app.run(host='192.168.100.18', port=5000)

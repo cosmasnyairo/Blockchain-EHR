@@ -1,9 +1,11 @@
 import 'package:ehr/models/transaction.dart';
+import 'package:ehr/providers/node_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
 import 'models/block.dart';
+import 'models/node.dart';
 import 'providers/record_provider.dart';
 import 'widgets/badge.dart';
 import 'widgets/custom_button.dart';
@@ -23,6 +25,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isloading = true;
     });
+    _getNodes();
     _loadKeys();
     _getRecords(false).then(
       (value) => {
@@ -50,6 +53,10 @@ class _HomePageState extends State<HomePage> {
     await provider.getOpenTransactions();
   }
 
+  Future _getNodes() async {
+    await Provider.of<NodeProvider>(context, listen: false).getNodes();
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
@@ -57,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     List<Block> _updatedrecords = _records.skip(1).toList().reversed.toList();
     List<Transaction> _opentransactions = provider.opentransactions;
 
+    List<Node> _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
     final length = _updatedrecords.length;
 
     return _isloading
@@ -128,18 +136,12 @@ class _HomePageState extends State<HomePage> {
                           Navigator.of(context).pushNamed('add_record');
                         },
                       ),
-                      CustomButton('Share records', () {})
+                      CustomButton('Share records', () {
+                        Navigator.of(context)
+                            .pushNamed('share_record', arguments: _nodes);
+                      })
                     ],
                   ),
-                  SizedBox(height: 20),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     CustomButton('CREATE WALLET', () {}),
-                  //     CustomButton('LOAD WALLET', () {})
-                  //   ],
-                  // ),
                   SizedBox(height: 20),
                   CustomText(
                     'RECORDS ($length)',

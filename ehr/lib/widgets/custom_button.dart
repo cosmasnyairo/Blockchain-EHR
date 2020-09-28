@@ -8,7 +8,6 @@ class CustomButton extends StatelessWidget {
   final Function onpressed;
   final double height;
   final double elevation;
-
   const CustomButton(this.text, this.onpressed,
       {this.fontWeight, this.height, this.elevation});
 
