@@ -1,6 +1,6 @@
 # To do: 1. Reward miners
-import hashlib
 import json
+import requests
 
 # these two can be used to reduce the memory size of the blockchain and files storing it
 # import pickle
@@ -13,17 +13,20 @@ from utility.verification import Verification
 from utility.hash_util import hash_block
 from wallet import Wallet
 
+import secrets
+
 
 class Blockchain:
 
-    def __init__(self, hosting_node_id):
+    def __init__(self, public_key, node_id):
         # Genesis block
         genesis_block = Block(0, '', [], 100, 0)
         # Empty blockchain
         self.__chain = [genesis_block]
         self.__open_transactions = []
-        self.hosting_node = hosting_node_id
+        self.public_key = public_key
         self.__peer_nodes = set()
+        self.node_id = node_id
         self.load_data()
 
         # We will Store patient details in the blockchain
@@ -46,7 +49,7 @@ class Blockchain:
     def load_data(self):
         # load data from the txt file
         try:
-            with open('data/blockchain.json', mode='r') as f:
+            with open('data/blockchain-{}.json'.format(self.node_id), mode='r') as f:
                 file_content = json.load(f)
                 # we escape the \n using range
                 blockchain = file_content["blockchain"]
@@ -93,7 +96,7 @@ class Blockchain:
     def save_data(self):
         try:
 
-            with open('data/blockchain.json', mode='w') as f:
+            with open('data/blockchain-{}.json'.format(self.node_id), mode='w') as f:
                 data = {}
                 data["blockchain"] = []
                 data["opentransactions"] = []
@@ -133,7 +136,7 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_transaction(self, receiver, sender, signature, details):
+    def add_transaction(self, receiver, sender, signature, details, is_receiving=False):
         """ Append a new value as well as the last blockchain value to the blockchain.
 
             Arguments:
@@ -142,17 +145,33 @@ class Blockchain:
                 signature:  Signature of the transaction
                 details:    Details to be sent with the transaction.
         """
-        if self.hosting_node == None:
+        if self.public_key == None:
             return False
         transaction = Transaction(sender, receiver, signature, details)
         if not Wallet.verify_transaction(transaction):
             return False
         self.__open_transactions.append(transaction)
         self.save_data()
+        if not is_receiving:
+            for node in self.__peer_nodes:
+                url = 'http://{}:{}/broadcast_transaction'.format(
+                    secrets.ip_address, node)
+                try:
+                    response = requests.post(url, json={
+                        'sender':   sender,
+                        'receiver':  receiver,
+                        'signature':  signature,
+                        'details':    details})
+                    if response.status_code == 400 or response.status_code == 500:
+                        print('Transaction declined, needs resolving')
+                        return False
+                except requests.exceptions.ConnectionError:
+                    # continue to next node
+                    continue
         return True
 
     def mine_block(self):
-        if self.hosting_node == None:
+        if self.public_key == None:
             return None
         if len(self.__open_transactions) <= 0:
             return 0
@@ -165,7 +184,7 @@ class Blockchain:
         #     'mining_points': Gold_points,
         # }
 
-        # mined_transaction = Transaction('MINING', self.hosting_node, ,'', mined_details)
+        # mined_transaction = Transaction('MINING', self.public_key, ,'', mined_details)
         # copied_tx = self.__open_transactions[:]
         # copied_tx.append(mined_transaction)
 

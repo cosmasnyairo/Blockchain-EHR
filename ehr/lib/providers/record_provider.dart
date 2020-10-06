@@ -7,7 +7,10 @@ import '../models/details.dart';
 import '../models/transaction.dart';
 
 class RecordsProvider with ChangeNotifier {
-  final String _apiurl = 'http://192.168.100.18:5000';
+  final String _apiport;
+  RecordsProvider(this._apiport);
+
+  final String _apiurl = 'http://192.168.100.18:';
 
   String _publickey;
   String _privatekey;
@@ -32,7 +35,7 @@ class RecordsProvider with ChangeNotifier {
 
   Future<void> getChain() async {
     try {
-      final url = '$_apiurl/chain';
+      final url = '$_apiurl$_apiport/chain';
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as List;
 
@@ -115,7 +118,7 @@ class RecordsProvider with ChangeNotifier {
       "receiver": receiver
     };
     try {
-      final url = '$_apiurl/add_transaction';
+      final url = '$_apiurl$_apiport/add_transaction';
       final response = await http.post(
         url,
         body: json.encode(transaction),
@@ -132,7 +135,7 @@ class RecordsProvider with ChangeNotifier {
 
   Future<void> mine() async {
     try {
-      final url = '$_apiurl/mine';
+      final url = '$_apiurl$_apiport/mine';
       final response = await http.post(url);
       final res = json.decode(response.body);
       throw res["message"];
@@ -143,7 +146,7 @@ class RecordsProvider with ChangeNotifier {
 
   Future<void> getOpenTransactions() async {
     try {
-      final url = '$_apiurl/get_opentransactions';
+      final url = '$_apiurl$_apiport/get_opentransactions';
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as List;
       final List<Transaction> loadedtransactions = [];
@@ -178,7 +181,7 @@ class RecordsProvider with ChangeNotifier {
 //signup
   Future<void> createKeys() async {
     try {
-      final url = '$_apiurl/create_keys';
+      final url = '$_apiurl$_apiport/create_keys';
       final response = await http.post(url);
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
@@ -189,7 +192,7 @@ class RecordsProvider with ChangeNotifier {
 //onlogin
   Future<void> loadKeys() async {
     try {
-      final url = '$_apiurl/load_keys';
+      final url = '$_apiurl$_apiport/load_keys';
       final response = await http.get(url);
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];

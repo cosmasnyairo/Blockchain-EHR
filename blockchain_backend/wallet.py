@@ -10,10 +10,10 @@ import binascii
 
 
 class Wallet:
-    def __init__(self):
-
+    def __init__(self, node_id):
         self.private_key = None
         self.public_key = None
+        self.node_id = node_id
 
     def create_keys(self):
         private_key, public_key = self.generate_keys()
@@ -23,7 +23,7 @@ class Wallet:
     def save_keys(self):
         if self.private_key != None and self.public_key != None:
             try:
-                with open('data/wallet.json', mode='w') as f:
+                with open('data/wallet-{}.json'.format(self.node_id), mode='w') as f:
                     data = {}
                     data["public_key"] = self.public_key
                     data["private_key"] = self.private_key
@@ -36,7 +36,7 @@ class Wallet:
 
     def load_keys(self):
         try:
-            with open('data/wallet.json', mode='r') as f:
+            with open('data/wallet-{}.json'.format(self.node_id), mode='r') as f:
                 keys = json.load(f)
                 public_key = keys["public_key"]
                 private_key = keys["private_key"]
