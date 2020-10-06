@@ -2,5 +2,5 @@
 __pycache__/
 env/
 venv/
-blockchain_backend/data/blockchain.json
-blockchain_backend/data/wallet.json
+blockchain_backend/data/*
+blockchain_backend/secrets.py

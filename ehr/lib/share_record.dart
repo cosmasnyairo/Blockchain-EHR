@@ -37,10 +37,11 @@ class _ShareRecordState extends State<ShareRecord> {
             ),
             SizedBox(height: 10),
             Container(
-              height: height * 0.15,
+              height: height * 0.18,
               child: Form(
                 key: _formkey,
-                child: ListView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
                       decoration: InputDecoration(
@@ -49,8 +50,12 @@ class _ShareRecordState extends State<ShareRecord> {
                     ),
                     SizedBox(height: 10),
                     Align(
-                        alignment: Alignment.centerLeft,
-                        child: CustomButton('Add node', () {}))
+                      alignment: Alignment.centerLeft,
+                      child: CustomButton(
+                        'Add node',
+                        () {},
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -69,13 +74,11 @@ class _ShareRecordState extends State<ShareRecord> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
-                itemBuilder: (ctx, i) => SizedBox(
-                  height: 100,
-                  child: DismissibleNode(
-                    node: _nodes[i],
-                    id: i.toString(),
-                  ),
+              child: ListView.separated(
+                separatorBuilder: (ctx, i) => SizedBox(height: 10),
+                itemBuilder: (ctx, i) => DismissibleNode(
+                  node: _nodes[i],
+                  id: i.toString(),
                 ),
                 itemCount: _nodes.length,
               ),

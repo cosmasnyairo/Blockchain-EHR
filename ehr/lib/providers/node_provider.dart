@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/node.dart';
+import '../secrets.dart' as secrets;
 
 class NodeProvider extends ChangeNotifier {
-  final String _apiurl = 'http://192.168.100.18:5000';
+  final String _apiport;
+
+  final String _apiurl = secrets.apiurl;
+
+  NodeProvider(this._apiport);
 
   List<Node> _nodes = [];
 
@@ -14,7 +19,7 @@ class NodeProvider extends ChangeNotifier {
 
   Future<void> getNodes() async {
     try {
-      final url = '$_apiurl/get_nodes';
+      final url = '$_apiurl$_apiport/get_nodes';
       final response = await http.get(url);
       var extractedData = json.decode(response.body) as Map<String, dynamic>;
       List<Node> loadednodes = [];

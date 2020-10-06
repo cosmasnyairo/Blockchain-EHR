@@ -4,10 +4,10 @@ from flask_cors import CORS
 from wallet import Wallet
 from blockchain import Blockchain
 
+import secrets
+
 
 app = Flask(__name__)
-wallet = Wallet()
-blockchain = Blockchain(wallet.public_key)
 
 # enables opening up app to other nodes
 CORS(app)
@@ -18,7 +18,7 @@ def create_keys():
     wallet.create_keys()
     if wallet.save_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key)
+        blockchain = Blockchain(wallet.public_key, port)
         response = {
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
@@ -33,7 +33,7 @@ def create_keys():
 def load_keys():
     if wallet.load_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key)
+        blockchain = Blockchain(wallet.public_key, port)
         response = {
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
@@ -47,6 +47,36 @@ def load_keys():
 @app.route('/', methods=['GET'])
 def get_ui():
     return 'It Works!'
+
+
+@app.route('/broadcast_transaction', methods=['POST'])
+def broadcast_transaction():
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+
+    required_fields = ['sender', 'receiver', 'details', 'signature']
+    if not all(key in values for key in required_fields):
+        response = {'message': 'Required data missing!'}
+        return jsonify(response), 400
+    success = blockchain.add_transaction(
+        values['receiver'], values['sender'],
+        values['details'], values['signature'], is_receiving=True)
+    if success:
+        response = {
+            'message': 'Succesfully added transaction!',
+            'transaction': {
+                'sender': values['sender'],
+                'receiver': values['receiver'],
+                'signature': values['signature'],
+                'details': values['details'],
+            }
+        }
+        return jsonify(response), 200
+    else:
+        response = {'message': 'Creating transaction failed!'}
+        return jsonify(response), 500
 
 
 @app.route('/add_transaction', methods=['POST'])
@@ -166,5 +196,12 @@ def get_nodes():
 
 
 if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('-p', '--port', type=int, default=5000)
+    args = parser.parse_args()
+    port = args.port
+    wallet = Wallet(port)
+    blockchain = Blockchain(wallet.public_key, port)
     # use local ip address
-    app.run(host='192.168.100.18', port=5000)
+    app.run(host=secrets.ip_address, port=port)

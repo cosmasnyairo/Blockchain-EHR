@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isloading = true;
     });
-    _getNodes();
+    _getNodes(false);
     _loadKeys();
     _getRecords(false).then(
       (value) => {
@@ -53,13 +53,14 @@ class _HomePageState extends State<HomePage> {
     await provider.getOpenTransactions();
   }
 
-  Future _getNodes() async {
-    await Provider.of<NodeProvider>(context, listen: false).getNodes();
+  Future _getNodes(bool listen) async {
+    await Provider.of<NodeProvider>(context, listen: listen).getNodes();
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
+    String _publicKey = provider.publickey;
     List<Block> _records = provider.records;
     List<Block> _updatedrecords = _records.skip(1).toList().reversed.toList();
     List<Transaction> _opentransactions = provider.opentransactions;
@@ -90,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     'Kenneth Erickson',
                     fontsize: 20,
                     fontweight: FontWeight.bold,
-                  )
+                  ),
                 ],
               ),
               actions: [
@@ -126,6 +127,7 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.all(20),
               child: Column(
                 children: [
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.of(context).pushNamed('add_record');
                         },
                       ),
-                      CustomButton('Share records', () {
+                      CustomButton('Add visit', () {
                         Navigator.of(context)
                             .pushNamed('share_record', arguments: _nodes);
                       })
