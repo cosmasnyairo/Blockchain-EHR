@@ -170,6 +170,33 @@ class Blockchain:
                     continue
         return True
 
+    def add_block(self, block):
+        transactions = [Transaction(
+            tx['sender'], tx['receiver'], tx['signature'], tx['details']) for tx in block['transactions']]
+        proof_isvalid = Verification.valid_proof(
+            transactions, block['previous_hash'], block['proof'])
+        hashes_match = hash_block(self.__chain[-1]) != block['previous_hash']
+        if not proof_isvalid or not hashes_match:
+            return False
+        converted_block = Block(
+            block['index'], block['previous_hash'],
+            transactions, block['proof'], block['timestamp'],)
+        self.__chain.append(converted_block)
+        stored_transactions = self.__open_transactions[:]
+        for incomingtx in block['transactions']:
+            for opentx in stored_transactions:
+                print(opentx==incomingtx)
+                if opentx.sender == incomingtx['sender'] and opentx.receiver == incomingtx['receiver'] and opentx.details == incomingtx['details'] and opentx.signature == incomingtx['signature']:
+                    try:
+                        print(opentx)
+                        self.__open_transactions.remove(opentx)
+                    except ValueError:
+                        print('Item was already removed')
+
+
+        self.save_data()
+        return True
+
     def mine_block(self):
         if self.public_key == None:
             return None
@@ -203,6 +230,20 @@ class Blockchain:
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
+        for node in self.__peer_nodes:
+            url = 'http://{}:{}/broadcast_block'.format(
+                secrets.ip_address, node)
+            converted_block = block.__dict__.copy()
+            converted_block['transactions'] = [
+                tx.__dict__ for tx in converted_block['transactions']]
+            try:
+                response = requests.post(url, json={
+                    'block':   converted_block, })
+                if response.status_code == 400 or response.status_code == 500:
+                    print('Block declined, needs resolving')
+            except requests.exceptions.ConnectionError:
+                # continue to next node
+                continue
         return block
 
     def __repr__(self):
