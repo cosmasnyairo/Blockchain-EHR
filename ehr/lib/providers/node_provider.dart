@@ -7,7 +7,7 @@ import '../secrets.dart' as secrets;
 class NodeProvider extends ChangeNotifier {
   final String _apiport;
 
-  final String _apiurl = secrets.apiurl;
+  final String _apiurl = secrets.url;
 
   NodeProvider(this._apiport);
 
