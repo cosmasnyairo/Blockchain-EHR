@@ -144,6 +144,17 @@ class RecordsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> resolveConflicts() async {
+    try {
+      final url = '$_apiurl$_apiport/resolve_conflicts';
+      final response = await http.post(url);
+      final res = json.decode(response.body);
+      throw res["message"];
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> getOpenTransactions() async {
     try {
       final url = '$_apiurl$_apiport/get_opentransactions';

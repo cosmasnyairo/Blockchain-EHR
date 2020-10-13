@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.of(context).pushNamed('add_record');
                         },
                       ),
-                      CustomButton('Add visit', () {
+                      CustomButton('Add Doctor ', () {
                         Navigator.of(context)
                             .pushNamed('share_record', arguments: _nodes);
                       })
