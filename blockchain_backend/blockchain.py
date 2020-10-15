@@ -20,7 +20,7 @@ class Blockchain:
 
     def __init__(self, public_key, node_id):
         # Genesis block
-        genesis_block = Block(0, '', [], 100, 0)
+        genesis_block = Block(0, '', '', [], 100, 0)
         # Empty blockchain
         self.__chain = [genesis_block]
         self.__open_transactions = []
@@ -70,6 +70,7 @@ class Blockchain:
 
                     updated_block = Block(
                         block['index'],
+                        block['user_public_key'],
                         block['previous_hash'],
                         converted_transaction,
                         block['proof'],
@@ -106,6 +107,7 @@ class Blockchain:
                     # convert transactions to transaction object that can be json dumped
                     Block(
                         bl.index,
+                        bl.user_public_key,
                         bl.previous_hash,
                         [tx.__dict__ for tx in bl.transactions],
                         bl.proof,
@@ -180,8 +182,13 @@ class Blockchain:
         if not proof_isvalid or not hashes_match:
             return False
         converted_block = Block(
-            block['index'], block['previous_hash'],
-            transactions, block['proof'], block['timestamp'],)
+            block['index'],
+            block['user_public_key'],
+            block['previous_hash'],
+            transactions,
+            block['proof'],
+            block['timestamp']
+        )
         self.__chain.append(converted_block)
         stored_transactions = self.__open_transactions[:]
         for incomingtx in block['transactions']:
@@ -218,6 +225,7 @@ class Blockchain:
 
         block = Block(
             len(self.__chain),
+            self.public_key,
             hashed_block,
             self.__open_transactions,
             proof
@@ -259,6 +267,7 @@ class Blockchain:
                 node_chain = response.json()
                 node_chain = [Block(
                     block['index'],
+                    block['user_public_key'],
                     block['previous_hash'],
                     [Transaction(
                      tx['sender'],
