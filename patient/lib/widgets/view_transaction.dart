@@ -15,6 +15,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
   @override
   Widget build(BuildContext context) {
     Transaction transaction = ModalRoute.of(context).settings.arguments;
+
     final width = MediaQuery.of(context).size.width;
     List medicalNotes;
     List labResults;
@@ -29,7 +30,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: CustomText('EHR RECORD'),
+        title: CustomText('Health Record'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
@@ -43,7 +44,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
             CustomText(
               'Dr. Xavier',
               fontweight: FontWeight.bold,
-              fontsize: 20,
+              fontsize: 16,
             ),
             SizedBox(height: 10),
             CustomText(

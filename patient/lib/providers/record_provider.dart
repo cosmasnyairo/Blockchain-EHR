@@ -39,38 +39,6 @@ class RecordsProvider with ChangeNotifier {
       final extractedData = json.decode(response.body) as List;
 
       final List<Block> loadedblocks = [];
-      // extractedData.forEach(
-      //   (element) {
-      //     loadedblocks.add(
-      //       Block(
-      //         index: element['index'].toString(),
-      //         timestamp: element['timestamp'].toString(),
-      //         transaction: (element['transactions']).forEach(
-      //           (transaction) {
-      //             loadedtransaction.add(
-      //               Transaction(
-      //                 sender: transaction['sender'],
-      //                 receiver: transaction['receiver'],
-      //                 details: [transaction['details']].forEach(
-      //                   (detail) {
-      //                     loadeddetails.add(
-      //                       Details(
-      //                         medicalnotes: detail['medical_notes'],
-      //                         labresults: detail['lab_results'],
-      //                         prescription: detail['prescription'],
-      //                         diagnosis: detail['diagnosis'],
-      //                       ),
-      //                     );
-      //                   },
-      //                 ) as List,
-      //               ),
-      //             );
-      //           },
-      //         ),
-      //       ),
-      //     );
-      //   },
-      // );
       extractedData.forEach(
         (element) {
           loadedblocks.add(
@@ -104,88 +72,6 @@ class RecordsProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print(e);
-    }
-  }
-
-  Future<void> addTransaction(List<Details> details, String receiver) async {
-    Map<String, dynamic> transaction = {
-      "details": {
-        "diagnosis": details[0].diagnosis.toList(),
-        "lab_results": details[0].labresults.toList(),
-        "medical_notes": details[0].medicalnotes.toList(),
-        "prescription": details[0].prescription.toList(),
-      },
-      "receiver": receiver
-    };
-    try {
-      final url = '$_apiurl/add_transaction';
-      final response = await http.post(
-        url,
-        body: json.encode(transaction),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      );
-      final res = json.decode(response.body);
-      throw res["message"];
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  Future<void> mine() async {
-    try {
-      final url = '$_apiurl/mine';
-      final response = await http.post(url);
-      final res = json.decode(response.body);
-      throw res["message"];
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  Future<void> resolveConflicts() async {
-    try {
-      final url = '$_apiurl/resolve_conflicts';
-      final response = await http.post(url);
-      final res = json.decode(response.body);
-      throw res["message"];
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  Future<void> getOpenTransactions() async {
-    try {
-      final url = '$_apiurl/get_opentransactions';
-      final response = await http.get(url);
-      final extractedData = json.decode(response.body) as List;
-      final List<Transaction> loadedtransactions = [];
-
-      extractedData.forEach(
-        (transaction) {
-          loadedtransactions.add(
-            Transaction(
-              sender: transaction['sender'],
-              receiver: transaction['receiver'],
-              details: List<dynamic>.from([transaction['details']])
-                  .map(
-                    (f) => Details(
-                      medicalnotes: f['medical_notes'],
-                      labresults: f['lab_results'],
-                      prescription: f['prescription'],
-                      diagnosis: f['diagnosis'],
-                    ),
-                  )
-                  .toList(),
-            ),
-          );
-        },
-      );
-      _opentransactions = loadedtransactions;
-      notifyListeners();
-    } catch (e) {
-      throw e;
     }
   }
 

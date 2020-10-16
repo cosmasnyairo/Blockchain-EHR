@@ -13,23 +13,20 @@ class RecordCard extends StatelessWidget {
   RecordCard(this.index, this.publicKey, this.timestamp, this.block);
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
-    final w = MediaQuery.of(context).size.width;
+    final deviceheight = MediaQuery.of(context).size.height;
     final f = DateFormat('dd-MM-yyyy hh:mm');
     String date = f.format(DateTime.fromMillisecondsSinceEpoch(
         double.parse(timestamp).toInt() * 1000));
+
     return Container(
-      height: h * 0.2,
-      width: w,
-      padding: EdgeInsets.all(5),
+      height: deviceheight * 0.16,
+      padding: EdgeInsets.all(10),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         elevation: 7,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        child: Center(
+          child: ListTile(
+            title: Row(
               children: [
                 Icon(Icons.apps),
                 CustomText(
@@ -38,27 +35,20 @@ class RecordCard extends StatelessWidget {
                 ),
               ],
             ),
-            Divider(),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomText(
-                  'Date: $date',
-                  fontsize: 16,
-                ),
-                CustomButton(
-                  'VIEW RECORD',
-                  () => {
-                    Navigator.of(context)
-                        .pushNamed('view_record', arguments: block)
-                  },
-                  fontWeight: FontWeight.bold,
-                )
-              ],
+            isThreeLine: true,
+            subtitle: CustomText(
+              'Date: $date',
+              fontsize: 16,
             ),
-          ],
+            trailing: CustomButton(
+              'VIEW RECORD',
+              () => {
+                Navigator.of(context).pushNamed('view_record', arguments: block)
+              },
+              elevation: 0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
