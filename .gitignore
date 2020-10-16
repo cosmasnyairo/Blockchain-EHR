@@ -2,6 +2,5 @@
 __pycache__/
 env/
 venv/
-blockchain_backend/data/*
-blockchain_backend/secrets.py
-
+patient/lib/secrets.dart
+patient/lib/secrets.dart

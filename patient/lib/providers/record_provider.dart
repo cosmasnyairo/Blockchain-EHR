@@ -9,7 +9,7 @@ import '../models/transaction.dart';
 import '../secrets.dart' as secrets;
 
 class RecordsProvider with ChangeNotifier {
-  final String _apiurl = secrets.apiurl;
+  final String _apiurl = secrets.url;
 
   String _publickey;
   String _privatekey;
