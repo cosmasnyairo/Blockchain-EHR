@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'share_record.dart';
+import 'add_visit.dart';
 import 'providers/record_provider.dart';
 import 'providers/node_provider.dart';
 import 'widgets/view_transaction.dart';
@@ -16,6 +17,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xff3FD5AE),
+      systemNavigationBarColor: Color(0xff3FD5AE),
+    ));
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -36,7 +41,7 @@ class MyApp extends StatelessWidget {
         routes: {
           'view_record': (ctx) => ViewRecord(),
           'view_transaction': (ctx) => ViewTransaction(),
-          'share_record': (ctx) => ShareRecord(),
+          'share_record': (ctx) => AddVisit(),
         },
       ),
     );

@@ -10,7 +10,7 @@ class ViewRecord extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: CustomText('EHR RECORD'),
+        title: CustomText('Ehr Transactions'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
