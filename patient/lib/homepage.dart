@@ -16,7 +16,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var _isloading = false;
-
   @override
   void initState() {
     setState(() {
@@ -52,7 +51,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
-    final _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     String _publicKey = provider.publickey;
     List<Block> _updatedrecords =
@@ -92,8 +90,9 @@ class _HomePageState extends State<HomePage> {
                     child: CustomButton(
                       'ADD VISIT',
                       () {
-                        Navigator.of(context)
-                            .pushNamed('share_record', arguments: _nodes);
+                        Navigator.of(context).pushNamed(
+                          'share_record',
+                        );
                       },
                       fontWeight: FontWeight.bold,
                     ),
@@ -131,18 +130,18 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: _nodes.length > 0
-                ? FloatingActionButton.extended(
-                    onPressed: () {
-                      print('pressed');
-                    },
-                    backgroundColor: Theme.of(context).errorColor,
-                    label: CustomText('End ongoing visit'),
-                    icon: Icon(Icons.cancel),
-                  )
-                : SizedBox(),
+            // floatingActionButtonLocation:
+            //     FloatingActionButtonLocation.centerFloat,
+            // floatingActionButton: _ongoingvisit
+            //     ? FloatingActionButton.extended(
+            //         onPressed: () {
+            //           print('pressed');
+            //         },
+            //         backgroundColor: Theme.of(context).errorColor,
+            //         label: CustomText('You have an ongoing visit'),
+            //         icon: Icon(Icons.cancel),
+            //       )
+            //     : SizedBox(),
           );
   }
 }
