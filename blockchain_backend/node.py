@@ -225,7 +225,6 @@ def remove_node(node_url):
     blockchain.remove_peer_node(node_url)
     response = {
         'message': 'Node removed successfully!',
-        'nodes': blockchain.get_peer_nodes()
     }
     return jsonify(response), 200
 
