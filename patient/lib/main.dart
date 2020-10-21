@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         routes: {
           'view_record': (ctx) => ViewRecord(),
           'view_transaction': (ctx) => ViewTransaction(),
-          'share_record': (ctx) => AddVisit(),
+          'add_visit': (ctx) => AddVisit(),
         },
       ),
     );

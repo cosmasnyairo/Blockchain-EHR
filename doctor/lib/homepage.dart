@@ -25,7 +25,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isloading = true;
     });
-    _getNodes(false);
     _loadKeys();
     _getRecords(false).then(
       (value) => {
@@ -50,26 +49,20 @@ class _HomePageState extends State<HomePage> {
   Future _getRecords(bool listen) async {
     final provider = Provider.of<RecordsProvider>(context, listen: listen);
     await provider.getChain();
-    await provider.getOpenTransactions();
-  }
-
-  Future _getNodes(bool listen) async {
-    await Provider.of<NodeProvider>(context, listen: listen).getNodes();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<RecordsProvider>(context, listen: false);
-    String _publicKey = provider.publickey;
+    String _publicKey =
+        Provider.of<RecordsProvider>(context, listen: false).publickey;
 
-    List<Block> _records = provider.records;
-    List<Block> _updatedrecords = _records.skip(1).toList().reversed.toList();
-    List<Transaction> _opentransactions = provider.opentransactions;
-    List<Node> _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
-
-    _updatedrecords
-        .removeWhere((element) => element.userPublicKey != _publicKey);
-    final length = _updatedrecords.length;
+    List<Block> _updatedrecords =
+        Provider.of<RecordsProvider>(context, listen: false)
+            .records
+            .skip(1)
+            .toList()
+            .reversed
+            .toList();
 
     return _isloading
         ? Scaffold(
@@ -98,58 +91,42 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               actions: [
-                Consumer<RecordsProvider>(
-                  builder: (_, records, child) => Badge(
-                    value: records.opentransactions.length.toString(),
-                    child: child,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 15,
-                      top: 15,
-                      right: 20,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.assignment,
-                        size: 30,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(
-                          'view_open_transaction',
-                          arguments: _opentransactions,
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomButton('Add Visit', () {
+                    Navigator.of(context)
+                        .pushNamed('add_visit', arguments: _publicKey);
+                  }),
+                )
               ],
             ),
             body: Container(
               padding: EdgeInsets.all(20),
               child: Column(
                 children: [
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomButton(
-                        'Add record',
-                        () {
-                          Navigator.of(context).pushNamed('add_record');
-                        },
-                      ),
-                      CustomButton('Add Doctor ', () {
-                        Navigator.of(context)
-                            .pushNamed('share_record', arguments: _nodes);
-                      })
-                    ],
-                  ),
+                  // SizedBox(height: 10),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     CustomButton(
+                  //       'Add records',
+                  //       () {
+                  //         Navigator.of(context).pushNamed('add_record');
+                  //       },
+                  //     ),
+                  //     CustomButton(
+                  //       'Add Visit ',
+                  //       () {
+                  //         Navigator.of(context)
+                  //             .pushNamed('share_record', arguments: _nodes);
+                  //       },
+                  //     )
+                  //   ],
+                  // ),
                   SizedBox(height: 20),
                   CustomText(
-                    'RECORDS ($length)',
+                    'Patient Records (${_updatedrecords.length})',
                     fontweight: FontWeight.bold,
                   ),
                   SizedBox(height: 10),
@@ -167,24 +144,24 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context).pushNamed(
-                  'view_open_transaction',
-                  arguments: _opentransactions,
-                );
-              },
-              label: Row(
-                children: [
-                  CustomText(
-                    'Open transactions (${_opentransactions.length.toString()})',
-                  ),
-                ],
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              backgroundColor: Theme.of(context).primaryColor,
-            ),
+            // floatingActionButton: FloatingActionButton.extended(
+            //   onPressed: () {
+            //     Navigator.of(context).pushNamed(
+            //       'view_open_transaction',
+            //       arguments: _opentransactions,
+            //     );
+            //   },
+            //   label: Row(
+            //     children: [
+            //       CustomText(
+            //         'Pending records (${_opentransactions.length.toString()})',
+            //       ),
+            //     ],
+            //   ),
+            //   shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(10)),
+            //   backgroundColor: Theme.of(context).primaryColor,
+            // ),
           );
   }
 }

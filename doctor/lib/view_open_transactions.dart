@@ -1,3 +1,4 @@
+import 'models/node.dart';
 import 'models/transaction.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_text.dart';
@@ -5,10 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'widgets/custom_button.dart';
-import 'widgets/custom_text.dart';
 
 class ViewOpenTransactions extends StatefulWidget {
-  bool _isloading = false;
   @override
   _ViewOpenTransactionsState createState() => _ViewOpenTransactionsState();
 }
@@ -16,7 +15,11 @@ class ViewOpenTransactions extends StatefulWidget {
 class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
   @override
   Widget build(BuildContext context) {
-    List<Transaction> transaction = ModalRoute.of(context).settings.arguments;
+    bool _isloading = false;
+
+    List<dynamic> args = ModalRoute.of(context).settings.arguments;
+    List<Transaction> transaction = args[0];
+    List<Node> nodes = args[1];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -25,7 +28,7 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
-      body: widget._isloading
+      body: _isloading
           ? Center(
               child: CircularProgressIndicator(),
             )
@@ -72,102 +75,57 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: transaction.length <= 0
           ? null
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton.extended(
-                  isExtended: true,
-                  heroTag: null,
-                  label: CustomText('Resolve conflicts'),
-                  icon: Icon(Icons.error),
-                  backgroundColor: Theme.of(context).primaryColor,
-                  onPressed: () async {
-                    setState(() {
-                      widget._isloading = true;
-                    });
-                    try {
-                      await Provider.of<RecordsProvider>(context, listen: false)
-                          .resolveConflicts();
-                      setState(() {
-                        widget._isloading = false;
-                      });
-                    } catch (e) {
-                      await showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+          : FloatingActionButton.extended(
+              label: CustomText('Confirm add records'),
+              icon: Icon(Icons.check),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              backgroundColor: Theme.of(context).primaryColor,
+              onPressed: () async {
+                setState(() {
+                  _isloading = true;
+                });
+                try {
+                  await Provider.of<RecordsProvider>(context, listen: false)
+                      .mine();
+                  await Provider.of<RecordsProvider>(context, listen: false)
+                      .resolveConflicts();
+                  for (var i = 0; i < nodes.length; i++) {
+                    await Provider.of<RecordsProvider>(context, listen: false)
+                        .resolvePatientConflicts(nodes[i].node);
+                  }
+                  setState(() {
+                    _isloading = false;
+                  });
+                } catch (e) {
+                  await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 2,
+                      title: CustomText('Error'),
+                      content: CustomText(e.toString()),
+                      actions: <Widget>[
+                        Center(
+                          child: CustomButton(
+                            'Ok',
+                            () {
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          elevation: 2,
-                          title: CustomText('Error'),
-                          content: CustomText(e.toString()),
-                          actions: <Widget>[
-                            Center(
-                              child: CustomButton(
-                                'Ok',
-                                () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      ).then((value) {
-                        setState(() {
-                          widget._isloading = false;
-                        });
-                      });
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
-                FloatingActionButton.extended(
-                  label: CustomText('Confirm add records'),
-                  icon: Icon(Icons.check),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  backgroundColor: Theme.of(context).primaryColor,
-                  onPressed: () async {
+                        )
+                      ],
+                    ),
+                  ).then((value) {
                     setState(() {
-                      widget._isloading = true;
+                      _isloading = false;
+                      Navigator.of(context).pop();
                     });
-                    try {
-                      await Provider.of<RecordsProvider>(context, listen: false)
-                          .mine();
-                      setState(() {
-                        widget._isloading = false;
-                      });
-                    } catch (e) {
-                      await showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          elevation: 2,
-                          title: CustomText('Error'),
-                          content: CustomText(e.toString()),
-                          actions: <Widget>[
-                            Center(
-                              child: CustomButton(
-                                'Ok',
-                                () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      ).then((value) {
-                        setState(() {
-                          widget._isloading = false;
-                          Navigator.of(context).pop();
-                        });
-                      });
-                    }
-                  },
-                ),
-              ],
+                  });
+                }
+              },
             ),
     );
   }

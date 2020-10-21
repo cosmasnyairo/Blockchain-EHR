@@ -33,11 +33,40 @@ class NodeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addNodes() async {
-    try {} catch (e) {}
+  Future<void> addNodes(String node) async {
+    try {
+      final url = '$_apiurl/add_node';
+      Map<String, String> addednode = {
+        "node": node,
+      };
+      final response = await http.post(
+        url,
+        body: json.encode(addednode),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      final res = json.decode(response.body);
+      throw res["message"];
+    } catch (e) {
+      throw (e);
+    }
   }
 
-  Future<void> removeNode() async {
-    try {} catch (e) {}
+  Future<void> removeNode(String node) async {
+    try {
+      final url = '$_apiurl/remove_node/$node';
+      print(url);
+      final response = await http.delete(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      final res = json.decode(response.body);
+      throw res["message"];
+    } catch (e) {
+      throw e;
+    }
   }
 }

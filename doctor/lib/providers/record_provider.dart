@@ -76,7 +76,7 @@ class RecordsProvider with ChangeNotifier {
           loadedblocks.add(
             Block(
               index: element['index'].toString(),
-              userPublicKey: element['user_public_key'].toString(),
+              userPort: element['user_port'].toString(),
               timestamp: element['timestamp'].toString(),
               transaction: (element['transactions'] as List<dynamic>)
                   .map(
@@ -107,7 +107,8 @@ class RecordsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addTransaction(List<Details> details, String receiver) async {
+  Future<void> addTransaction(List<Details> details, String receiver,
+      {String port}) async {
     Map<String, dynamic> transaction = {
       "details": {
         "diagnosis": details[0].diagnosis.toList(),
@@ -115,10 +116,10 @@ class RecordsProvider with ChangeNotifier {
         "medical_notes": details[0].medicalnotes.toList(),
         "prescription": details[0].prescription.toList(),
       },
-      "receiver": receiver
+      "receiver": port
     };
     try {
-      final url = '$_apiurl/add_transaction';
+      final url = '${secrets.apiip}:$port/add_transaction';
       final response = await http.post(
         url,
         body: json.encode(transaction),
@@ -150,6 +151,16 @@ class RecordsProvider with ChangeNotifier {
       final response = await http.post(url);
       final res = json.decode(response.body);
       throw res["message"];
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> resolvePatientConflicts(String port) async {
+    try {
+      print(port);
+      final url = '${secrets.apiip}:$port/resolve_conflicts';
+      await http.post(url);
     } catch (e) {
       throw e;
     }

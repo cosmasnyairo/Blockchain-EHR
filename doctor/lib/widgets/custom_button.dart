@@ -8,8 +8,9 @@ class CustomButton extends StatelessWidget {
   final Function onpressed;
   final double height;
   final double elevation;
+  final Color color;
   const CustomButton(this.text, this.onpressed,
-      {this.fontWeight, this.height, this.elevation});
+      {this.fontWeight, this.height, this.elevation, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,7 @@ class CustomButton extends StatelessWidget {
         text,
         fontweight: fontWeight,
       ),
+      disabledColor: color,
     );
   }
 }

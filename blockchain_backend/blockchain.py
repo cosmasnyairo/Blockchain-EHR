@@ -70,7 +70,7 @@ class Blockchain:
 
                     updated_block = Block(
                         block['index'],
-                        block['user_public_key'],
+                        block['user_port'],
                         block['previous_hash'],
                         converted_transaction,
                         block['proof'],
@@ -107,7 +107,7 @@ class Blockchain:
                     # convert transactions to transaction object that can be json dumped
                     Block(
                         bl.index,
-                        bl.user_public_key,
+                        bl.user_port,
                         bl.previous_hash,
                         [tx.__dict__ for tx in bl.transactions],
                         bl.proof,
@@ -183,7 +183,7 @@ class Blockchain:
             return False
         converted_block = Block(
             block['index'],
-            block['user_public_key'],
+            block['user_port'],
             block['previous_hash'],
             transactions,
             block['proof'],
@@ -267,7 +267,7 @@ class Blockchain:
                 node_chain = response.json()
                 node_chain = [Block(
                     block['index'],
-                    block['user_public_key'],
+                    block['user_port'],
                     block['previous_hash'],
                     [Transaction(
                      tx['sender'],
