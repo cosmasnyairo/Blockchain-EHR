@@ -1,4 +1,5 @@
 import 'models/details.dart';
+import 'models/node.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class AddRecord extends StatefulWidget {
 
 class _AddRecordState extends State<AddRecord> {
   final _formkey = GlobalKey<FormState>();
+  String connectednodeport;
   String _doctorkey;
   List drugname = [];
   List dose = [];
@@ -26,6 +28,7 @@ class _AddRecordState extends State<AddRecord> {
   List<Widget> _prescriptionwidgets = [];
 
   Future<void> _saveForm() async {
+    print(_doctorkey);
     final isvalid = _formkey.currentState.validate();
     if (!isvalid) {
       return;
@@ -44,7 +47,7 @@ class _AddRecordState extends State<AddRecord> {
 
     try {
       await Provider.of<RecordsProvider>(context, listen: false)
-          .addTransaction(_enteredDetails, _doctorkey);
+          .addTransaction(_enteredDetails, _doctorkey, port: connectednodeport);
     } catch (e) {
       drugname = [];
       dose = [];
@@ -93,6 +96,13 @@ class _AddRecordState extends State<AddRecord> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> args = ModalRoute.of(context).settings.arguments;
+    String _publickey = args[0];
+    List<Node> _nodes = args[1];
+    connectednodeport = _nodes[0].node;
+
+    _doctorkey = _publickey;
+
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -111,20 +121,12 @@ class _AddRecordState extends State<AddRecord> {
             child: ListView(
               children: [
                 SizedBox(height: 10),
-                CustomText('Enter Doctor Key', fontsize: 16),
+                CustomText('Doctor Key', fontsize: 16),
                 SizedBox(height: 10),
                 TextFormField(
+                  enabled: false,
+                  initialValue: _publickey,
                   decoration: InputDecoration(border: OutlineInputBorder()),
-                  textInputAction: TextInputAction.next,
-                  onSaved: (v) {
-                    _doctorkey = v;
-                  },
-                  validator: (value) {
-                    if (value.isEmpty || value == '') {
-                      return 'Enter Receiver key';
-                    }
-                    return null;
-                  },
                 ),
                 SizedBox(height: 10),
                 CustomText('Enter Medical Notes', fontsize: 16),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:patient/providers/node_provider.dart';
-import 'package:patient/widgets/custom_button.dart';
+import 'models/transaction.dart';
+import 'providers/node_provider.dart';
+import 'providers/record_provider.dart';
+import 'widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 
 import 'widgets/custom_text.dart';
@@ -21,13 +23,14 @@ class _AddVisitState extends State<AddVisit> {
     setState(() {
       _isloading = true;
     });
-    Provider.of<NodeProvider>(context, listen: false).getNodes().then(
-          (value) => {
-            setState(() {
-              _isloading = false;
-            })
-          },
-        );
+    Provider.of<RecordsProvider>(context, listen: false).getOpenTransactions();
+    Provider.of<NodeProvider>(context, listen: false)
+        .getNodes()
+        .then((value) => {
+              setState(() {
+                _isloading = false;
+              })
+            });
 
     super.initState();
   }
@@ -35,13 +38,20 @@ class _AddVisitState extends State<AddVisit> {
   @override
   void didChangeDependencies() {
     Provider.of<NodeProvider>(context, listen: true).getNodes();
+    Provider.of<RecordsProvider>(context, listen: true).getOpenTransactions();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
     final deviceheight = MediaQuery.of(context).size.height;
+    String _publickey = ModalRoute.of(context).settings.arguments;
+
+    List<Transaction> _opentransactions =
+        Provider.of<RecordsProvider>(context, listen: false).opentransactions;
+
+    final _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
+
     return _isloading
         ? Scaffold(
             body: Center(
@@ -71,7 +81,7 @@ class _AddVisitState extends State<AddVisit> {
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.person),
                               border: OutlineInputBorder(),
-                              labelText: 'Enter doctor node',
+                              labelText: 'Enter patient node',
                             ),
                             keyboardType: TextInputType.text,
                             style: GoogleFonts.montserrat(),
@@ -151,9 +161,10 @@ class _AddVisitState extends State<AddVisit> {
                     ),
                   ),
                   Divider(),
+                  SizedBox(height: 10),
                   CustomText('Ongoing visits:'),
                   LimitedBox(
-                    maxHeight: deviceheight * 0.5,
+                    maxHeight: deviceheight * 0.15,
                     child: ListView.separated(
                       separatorBuilder: (context, index) => Divider(),
                       itemBuilder: (ctx, i) => ListTile(
@@ -204,19 +215,59 @@ class _AddVisitState extends State<AddVisit> {
                               ).then((value) {
                                 setState(() {
                                   _isloading = false;
-
                                   Navigator.of(context).pop();
                                 });
-                              }); // TODO
+                              });
                             }
                           },
                         ),
                       ),
                       itemCount: _nodes.length,
                     ),
-                  )
+                  ),
                 ],
               ),
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('add_record',
+                        arguments: [_publickey, _nodes]);
+                  },
+                  heroTag: null,
+                  label: CustomText('Add records'),
+                  icon: Icon(Icons.add),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+                SizedBox(height: 20),
+                FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                      'view_open_transaction',
+                      arguments: [_opentransactions, _nodes],
+                    );
+                  },
+                  heroTag: null,
+                  label: CustomText(
+                    'Pending records (${_opentransactions.length.toString()})',
+                  ),
+                  icon: Icon(Icons.library_books),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: _opentransactions.length > 0
+                      ? Theme.of(context).errorColor
+                      : Theme.of(context).primaryColor,
+                ),
+                SizedBox(height: 10),
+              ],
             ),
           );
   }

@@ -56,9 +56,8 @@ class _HomePageState extends State<HomePage> {
     List<Block> _updatedrecords =
         provider.records.skip(1).toList().reversed.toList();
 
-    _updatedrecords
-        .removeWhere((element) => element.userPublicKey != _publicKey);
-
+    _updatedrecords.removeWhere((element) => element.userPublicKey != '5000');
+    print(_updatedrecords.length);
     return _isloading
         ? Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -91,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                       'ADD VISIT',
                       () {
                         Navigator.of(context).pushNamed(
-                          'share_record',
+                          'add_visit',
                         );
                       },
                       fontWeight: FontWeight.bold,

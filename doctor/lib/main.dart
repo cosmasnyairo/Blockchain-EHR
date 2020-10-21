@@ -7,6 +7,7 @@ import 'providers/node_provider.dart';
 import 'widgets/view_transaction.dart';
 import 'screen.dart';
 import 'view_record.dart';
+import 'add_visit.dart';
 import 'view_open_transactions.dart';
 
 void main() {
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
           'view_record': (ctx) => ViewRecord(),
           'view_transaction': (ctx) => ViewTransaction(),
           'add_record': (ctx) => AddRecord(),
-          'view_open_transaction': (ctx) => ViewOpenTransactions()
+          'view_open_transaction': (ctx) => ViewOpenTransactions(),
+          'add_visit': (ctx) => AddVisit(),
         },
       ),
     );
