@@ -20,7 +20,7 @@ class Blockchain:
 
     def __init__(self, public_key, node_id):
         # Genesis block
-        genesis_block = Block(0, '', '', [], 100, 0)
+        genesis_block = Block(0, '','', [], 100, 0)
         # Empty blockchain
         self.__chain = [genesis_block]
         self.__open_transactions = []
@@ -70,7 +70,7 @@ class Blockchain:
 
                     updated_block = Block(
                         block['index'],
-                        block['user_port'],
+                        block['user_key'],
                         block['previous_hash'],
                         converted_transaction,
                         block['proof'],
@@ -81,6 +81,7 @@ class Blockchain:
 
                 updated_transactions = []
                 for tx in open_transactions:
+
                     updated_transaction = Transaction(
                         tx['sender'],
                         tx['receiver'],
@@ -107,7 +108,7 @@ class Blockchain:
                     # convert transactions to transaction object that can be json dumped
                     Block(
                         bl.index,
-                        bl.user_port,
+                        bl.user_key,
                         bl.previous_hash,
                         [tx.__dict__ for tx in bl.transactions],
                         bl.proof,
@@ -183,7 +184,7 @@ class Blockchain:
             return False
         converted_block = Block(
             block['index'],
-            block['user_port'],
+            block['user_key'],
             block['previous_hash'],
             transactions,
             block['proof'],
@@ -267,7 +268,6 @@ class Blockchain:
                 node_chain = response.json()
                 node_chain = [Block(
                     block['index'],
-                    block['user_port'],
                     block['previous_hash'],
                     [Transaction(
                      tx['sender'],

@@ -25,30 +25,34 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isloading = true;
     });
-    _loadKeys();
-    _getRecords(false).then(
-      (value) => {
-        setState(() {
-          _isloading = false;
-        }),
-      },
-    );
+
+    fetch(false);
+
+    setState(() {
+      _isloading = false;
+    });
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    _getRecords(true);
+    setState(() {
+      _isloading = true;
+    });
+
+    fetch(false);
+
+    setState(() {
+      _isloading = false;
+    });
     super.didChangeDependencies();
   }
 
-  Future _loadKeys() async {
-    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
-  }
-
-  Future _getRecords(bool listen) async {
-    final provider = Provider.of<RecordsProvider>(context, listen: listen);
-    await provider.getChain();
+  void fetch(bool listen) async {
+    await Provider.of<RecordsProvider>(context, listen: listen).loadKeys();
+    await Provider.of<RecordsProvider>(context, listen: listen).getChain();
+    await Provider.of<RecordsProvider>(context, listen: listen)
+        .resolveConflicts();
   }
 
   @override

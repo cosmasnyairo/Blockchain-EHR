@@ -19,7 +19,7 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
 
     List<dynamic> args = ModalRoute.of(context).settings.arguments;
     List<Transaction> transaction = args[0];
-    List<Node> nodes = args[1];
+    List<Node> _receiver = args[1];
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -90,10 +90,7 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                       .mine();
                   await Provider.of<RecordsProvider>(context, listen: false)
                       .resolveConflicts();
-                  for (var i = 0; i < nodes.length; i++) {
-                    await Provider.of<RecordsProvider>(context, listen: false)
-                        .resolvePatientConflicts(nodes[i].node);
-                  }
+
                   setState(() {
                     _isloading = false;
                   });

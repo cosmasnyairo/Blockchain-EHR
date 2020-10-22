@@ -31,6 +31,7 @@ dependencies:
   google_fonts: ^1.1.0
   http: ^0.12.2
   provider: ^4.3.2+2
+  barcode_scan: ^2.0.1
 
 dev_dependencies:
   flutter_test:

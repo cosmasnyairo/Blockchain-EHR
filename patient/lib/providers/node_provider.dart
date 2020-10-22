@@ -47,6 +47,7 @@ class NodeProvider extends ChangeNotifier {
         },
       );
       final res = json.decode(response.body);
+      getNodes();
       throw res["message"];
     } catch (e) {
       throw (e);
@@ -64,6 +65,7 @@ class NodeProvider extends ChangeNotifier {
         },
       );
       final res = json.decode(response.body);
+      getNodes();
       throw res["message"];
     } catch (e) {
       throw e;
