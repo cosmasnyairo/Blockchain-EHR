@@ -17,6 +17,7 @@ class _AddRecordState extends State<AddRecord> {
   final _formkey = GlobalKey<FormState>();
   String connectednodeport;
   String _doctorkey;
+  String _receiver;
   List drugname = [];
   List dose = [];
   List interval = [];
@@ -28,7 +29,7 @@ class _AddRecordState extends State<AddRecord> {
   List<Widget> _prescriptionwidgets = [];
 
   Future<void> _saveForm() async {
-    print(_doctorkey);
+    print(_receiver);
     final isvalid = _formkey.currentState.validate();
     if (!isvalid) {
       return;
@@ -46,8 +47,11 @@ class _AddRecordState extends State<AddRecord> {
     );
 
     try {
-      await Provider.of<RecordsProvider>(context, listen: false)
-          .addTransaction(_enteredDetails, _doctorkey, port: connectednodeport);
+      await Provider.of<RecordsProvider>(context, listen: false).addTransaction(
+        _enteredDetails,
+        _doctorkey,
+        _receiver,
+      );
     } catch (e) {
       drugname = [];
       dose = [];
@@ -97,11 +101,9 @@ class _AddRecordState extends State<AddRecord> {
   @override
   Widget build(BuildContext context) {
     List<dynamic> args = ModalRoute.of(context).settings.arguments;
-    String _publickey = args[0];
-    List<Node> _nodes = args[1];
-    connectednodeport = _nodes[0].node;
-
-    _doctorkey = _publickey;
+    _doctorkey = args[0];
+    _receiver = args[1];
+    print(_receiver);
 
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -125,7 +127,7 @@ class _AddRecordState extends State<AddRecord> {
                 SizedBox(height: 10),
                 TextFormField(
                   enabled: false,
-                  initialValue: _publickey,
+                  initialValue: _doctorkey,
                   decoration: InputDecoration(border: OutlineInputBorder()),
                 ),
                 SizedBox(height: 10),

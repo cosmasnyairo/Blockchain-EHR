@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:patient/providers/node_provider.dart';
-
 import 'package:provider/provider.dart';
 
 import 'models/block.dart';
@@ -21,31 +19,33 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isloading = true;
     });
-    _loadnodes();
-    _getRecords(false).then(
-      (value) => {
-        setState(() {
-          _isloading = false;
-        }),
-      },
-    );
+
+    fetch(false);
+
+    setState(() {
+      _isloading = false;
+    });
+
     super.initState();
   }
 
+  void fetch(bool listen) async {
+    await Provider.of<RecordsProvider>(context, listen: listen).loadKeys();
+    await Provider.of<RecordsProvider>(context, listen: listen).getChain();
+    await Provider.of<RecordsProvider>(context, listen: listen)
+        .resolveConflicts();
+  }
+
   @override
-  void didChangeDependencies() {
-    _getRecords(true);
+  void didChangeDependencies() async {
+    setState(() {
+      _isloading = true;
+    });
+    fetch(false);
+    setState(() {
+      _isloading = false;
+    });
     super.didChangeDependencies();
-  }
-
-  Future _loadnodes() async {
-    await Provider.of<NodeProvider>(context, listen: false).getNodes();
-  }
-
-  Future _getRecords(bool listen) async {
-    final provider = Provider.of<RecordsProvider>(context, listen: listen);
-    await provider.getChain();
-    await provider.loadKeys();
   }
 
   @override
@@ -56,8 +56,9 @@ class _HomePageState extends State<HomePage> {
     List<Block> _updatedrecords =
         provider.records.skip(1).toList().reversed.toList();
 
-    _updatedrecords.removeWhere((element) => element.userPublicKey != '5000');
-    print(_updatedrecords.length);
+    // _updatedrecords
+    //     .removeWhere((element) => element.userPublicKey == _publicKey);
+
     return _isloading
         ? Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -89,9 +90,8 @@ class _HomePageState extends State<HomePage> {
                     child: CustomButton(
                       'ADD VISIT',
                       () {
-                        Navigator.of(context).pushNamed(
-                          'add_visit',
-                        );
+                        Navigator.of(context)
+                            .pushNamed('add_visit', arguments: _publicKey);
                       },
                       fontWeight: FontWeight.bold,
                     ),

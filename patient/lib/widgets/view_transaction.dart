@@ -61,6 +61,36 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   width: width * 0.6,
                   height: 40,
                   child: CustomText(
+                    transaction.sender.toString(),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                CustomButton(
+                  'Copy',
+                  () {
+                    Clipboard.setData(
+                      ClipboardData(text: transaction.sender.toString()),
+                    );
+                    // to do : add snackbar
+                  },
+                  height: 40,
+                )
+              ],
+            ),
+            CustomText(
+              'Patient\'s Key:',
+              fontsize: 16,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(border: Border.all()),
+                  padding: EdgeInsets.all(5),
+                  width: width * 0.6,
+                  height: 40,
+                  child: CustomText(
                     transaction.receiver.toString(),
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -39,44 +39,12 @@ class RecordsProvider with ChangeNotifier {
       final extractedData = json.decode(response.body) as List;
 
       final List<Block> loadedblocks = [];
-      // extractedData.forEach(
-      //   (element) {
-      //     loadedblocks.add(
-      //       Block(
-      //         index: element['index'].toString(),
-      //         timestamp: element['timestamp'].toString(),
-      //         transaction: (element['transactions']).forEach(
-      //           (transaction) {
-      //             loadedtransaction.add(
-      //               Transaction(
-      //                 sender: transaction['sender'],
-      //                 receiver: transaction['receiver'],
-      //                 details: [transaction['details']].forEach(
-      //                   (detail) {
-      //                     loadeddetails.add(
-      //                       Details(
-      //                         medicalnotes: detail['medical_notes'],
-      //                         labresults: detail['lab_results'],
-      //                         prescription: detail['prescription'],
-      //                         diagnosis: detail['diagnosis'],
-      //                       ),
-      //                     );
-      //                   },
-      //                 ) as List,
-      //               ),
-      //             );
-      //           },
-      //         ),
-      //       ),
-      //     );
-      //   },
-      // );
+
       extractedData.forEach(
         (element) {
           loadedblocks.add(
             Block(
               index: element['index'].toString(),
-              userPort: element['user_port'].toString(),
               timestamp: element['timestamp'].toString(),
               transaction: (element['transactions'] as List<dynamic>)
                   .map(
@@ -107,8 +75,8 @@ class RecordsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addTransaction(List<Details> details, String receiver,
-      {String port}) async {
+  Future<void> addTransaction(
+      List<Details> details, String sender, String receiver) async {
     Map<String, dynamic> transaction = {
       "details": {
         "diagnosis": details[0].diagnosis.toList(),
@@ -116,10 +84,11 @@ class RecordsProvider with ChangeNotifier {
         "medical_notes": details[0].medicalnotes.toList(),
         "prescription": details[0].prescription.toList(),
       },
-      "receiver": port
+      "receiver": receiver,
+      "sender": sender,
     };
     try {
-      final url = '${secrets.apiip}:$port/add_transaction';
+      final url = '${secrets.apiurl}/add_transaction';
       final response = await http.post(
         url,
         body: json.encode(transaction),
@@ -148,22 +117,8 @@ class RecordsProvider with ChangeNotifier {
   Future<void> resolveConflicts() async {
     try {
       final url = '$_apiurl/resolve_conflicts';
-      final response = await http.post(url);
-      final res = json.decode(response.body);
-      throw res["message"];
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  Future<void> resolvePatientConflicts(String port) async {
-    try {
-      print(port);
-      final url = '${secrets.apiip}:$port/resolve_conflicts';
       await http.post(url);
-    } catch (e) {
-      throw e;
-    }
+    } catch (e) {}
   }
 
   Future<void> getOpenTransactions() async {

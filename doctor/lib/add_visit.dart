@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'models/transaction.dart';
 import 'providers/node_provider.dart';
@@ -15,6 +16,7 @@ class AddVisit extends StatefulWidget {
 
 class _AddVisitState extends State<AddVisit> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _receiver;
   String _addednode;
   bool _isloading = false;
 
@@ -23,22 +25,27 @@ class _AddVisitState extends State<AddVisit> {
     setState(() {
       _isloading = true;
     });
-    Provider.of<RecordsProvider>(context, listen: false).getOpenTransactions();
-    Provider.of<NodeProvider>(context, listen: false)
-        .getNodes()
-        .then((value) => {
-              setState(() {
-                _isloading = false;
-              })
-            });
-
+    fetch(false);
+    setState(() {
+      _isloading = false;
+    });
     super.initState();
+  }
+
+  void fetch(bool listen) async {
+    Provider.of<NodeProvider>(context, listen: listen).getNodes();
+    Provider.of<RecordsProvider>(context, listen: listen).getOpenTransactions();
   }
 
   @override
   void didChangeDependencies() {
-    Provider.of<NodeProvider>(context, listen: true).getNodes();
-    Provider.of<RecordsProvider>(context, listen: true).getOpenTransactions();
+    setState(() {
+      _isloading = true;
+    });
+    fetch(false);
+    setState(() {
+      _isloading = false;
+    });
     super.didChangeDependencies();
   }
 
@@ -71,6 +78,25 @@ class _AddVisitState extends State<AddVisit> {
               padding: EdgeInsets.all(20),
               child: ListView(
                 children: [
+                  Center(
+                    child: CustomButton(
+                      'Scan Qr COde',
+                      () async {
+                        try {
+                          String codeSanner =
+                              await BarcodeScanner.scan(); //barcode scnner
+                          setState(() {
+                            _receiver = codeSanner;
+                          });
+                        } catch (e) {
+                          print(e);
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Divider(),
+                  SizedBox(height: 10),
                   Form(
                     key: _formKey,
                     child: LimitedBox(
@@ -162,7 +188,9 @@ class _AddVisitState extends State<AddVisit> {
                   ),
                   Divider(),
                   SizedBox(height: 10),
-                  CustomText('Ongoing visits:'),
+                  Center(
+                    child: CustomText('Ongoing visits:'),
+                  ),
                   LimitedBox(
                     maxHeight: deviceheight * 0.15,
                     child: ListView.separated(
@@ -229,14 +257,14 @@ class _AddVisitState extends State<AddVisit> {
               ),
             ),
             floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
+                FloatingActionButtonLocation.centerDocked,
             floatingActionButton: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 FloatingActionButton.extended(
                   onPressed: () {
                     Navigator.of(context).pushNamed('add_record',
-                        arguments: [_publickey, _nodes]);
+                        arguments: [_publickey, _receiver]);
                   },
                   heroTag: null,
                   label: CustomText('Add records'),
@@ -251,7 +279,7 @@ class _AddVisitState extends State<AddVisit> {
                   onPressed: () {
                     Navigator.of(context).pushNamed(
                       'view_open_transaction',
-                      arguments: [_opentransactions, _nodes],
+                      arguments: [_opentransactions, _receiver],
                     );
                   },
                   heroTag: null,

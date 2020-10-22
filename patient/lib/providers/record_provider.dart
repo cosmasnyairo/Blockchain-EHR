@@ -86,6 +86,14 @@ class RecordsProvider with ChangeNotifier {
     } catch (e) {}
   }
 
+  Future<void> resolveConflicts() async {
+    try {
+      final url = '$_apiurl/resolve_conflicts';
+      final response = await http.post(url);
+      json.decode(response.body);
+    } catch (e) {}
+  }
+
 //onlogin
   Future<void> loadKeys() async {
     try {

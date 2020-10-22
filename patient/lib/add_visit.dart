@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:patient/providers/node_provider.dart';
 import 'package:patient/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
+import 'providers/record_provider.dart';
 import 'widgets/custom_text.dart';
 
 class AddVisit extends StatefulWidget {
@@ -21,27 +23,20 @@ class _AddVisitState extends State<AddVisit> {
     setState(() {
       _isloading = true;
     });
-    Provider.of<NodeProvider>(context, listen: false).getNodes().then(
-          (value) => {
-            setState(() {
-              _isloading = false;
-            })
-          },
-        );
+    Provider.of<NodeProvider>(context, listen: false).getNodes();
+    setState(() {
+      _isloading = false;
+    });
 
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    Provider.of<NodeProvider>(context, listen: true).getNodes();
-    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
     final deviceheight = MediaQuery.of(context).size.height;
+    final _publicKey = ModalRoute.of(context).settings.arguments;
+
     return _isloading
         ? Scaffold(
             body: Center(
@@ -61,6 +56,17 @@ class _AddVisitState extends State<AddVisit> {
               padding: EdgeInsets.all(20),
               child: ListView(
                 children: [
+                  Center(
+                    child: Container(
+                      decoration: BoxDecoration(border: Border.all(width: 1.0)),
+                      child: QrImage(
+                        data: _publicKey,
+                        size: deviceheight * 0.4,
+                      ),
+                    ),
+                  ),
+                  Divider(),
+                  SizedBox(height: 10),
                   Form(
                     key: _formKey,
                     child: LimitedBox(
@@ -178,6 +184,9 @@ class _AddVisitState extends State<AddVisit> {
                               await Provider.of<NodeProvider>(context,
                                       listen: false)
                                   .removeNode(_nodes[i].node);
+                              await Provider.of<RecordsProvider>(context,
+                                      listen: false)
+                                  .resolveConflicts();
                               setState(() {
                                 _isloading = false;
                               });
@@ -204,10 +213,8 @@ class _AddVisitState extends State<AddVisit> {
                               ).then((value) {
                                 setState(() {
                                   _isloading = false;
-
-                                  Navigator.of(context).pop();
                                 });
-                              }); // TODO
+                              });
                             }
                           },
                         ),
