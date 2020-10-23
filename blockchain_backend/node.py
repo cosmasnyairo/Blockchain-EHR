@@ -1,3 +1,4 @@
+from transaction import Transaction
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -185,10 +186,47 @@ def get_opentransactions():
     return jsonify(dict_tx), 200
 
 
+def f(tx, receiver):
+    transaction = tx.__dict__.copy()
+    finaltransaction = {}
+    if(transaction['receiver'] == receiver):
+        finaltransaction = transaction
+    return finaltransaction
+
+
+@app.route('/patientchain', methods=['GET'])
+def get_patient_chain():
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+    required_fields = ['receiver']
+    if not all(f in values for f in required_fields):
+        response = {'message': 'Required data missing!'}
+        return jsonify(response), 400
+    receiver = values['receiver']
+
+    chain_snapshot = blockchain.get_chain()
+    dict_chain = [block.__dict__.copy() for block in chain_snapshot]
+
+    for dt in dict_chain:
+        dt['transactions'] = [f(tx, receiver) for tx in dt['transactions']]
+        #work on this duplicate
+        [dt['transactions'].remove(tx)
+         for tx in dt['transactions'] if tx == {}]
+        [dt['transactions'].remove(tx)
+         for tx in dt['transactions'] if tx == {}]
+
+    new_chain = [item for item in dict_chain if item['transactions'] != []]
+
+    return jsonify(new_chain), 200
+
+
 @app.route('/chain', methods=['GET'])
 def get_chain():
     chain_snapshot = blockchain.get_chain()
     dict_chain = [block.__dict__.copy() for block in chain_snapshot]
+
     for dt in dict_chain:
         dt['transactions'] = [tx.__dict__ for tx in dt['transactions']]
 
