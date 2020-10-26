@@ -16,19 +16,30 @@ class AddVisit extends StatefulWidget {
 class _AddVisitState extends State<AddVisit> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _addednode;
-  bool _isloading = false;
+
+  var _isInit = true;
+  var _isloading = false;
+
+  Future<void> fetch() async {
+    await Provider.of<NodeProvider>(context, listen: false).getNodes();
+    await Provider.of<RecordsProvider>(context, listen: false)
+        .resolveConflicts();
+  }
 
   @override
-  void initState() {
-    setState(() {
-      _isloading = true;
-    });
-    Provider.of<NodeProvider>(context, listen: false).getNodes();
-    setState(() {
-      _isloading = false;
-    });
-
-    super.initState();
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isloading = true;
+      });
+      fetch().then((value) => {
+            setState(() {
+              _isloading = false;
+            }),
+          });
+    }
+    super.didChangeDependencies();
+    _isInit = false;
   }
 
   @override
@@ -114,9 +125,6 @@ class _AddVisitState extends State<AddVisit> {
                                                   context,
                                                   listen: false)
                                               .addNodes(_addednode.trim());
-                                          setState(() {
-                                            _isloading = false;
-                                          });
                                         } catch (e) {
                                           await showDialog(
                                             context: context,
@@ -140,11 +148,12 @@ class _AddVisitState extends State<AddVisit> {
                                                 )
                                               ],
                                             ),
-                                          ).then((value) {
-                                            setState(() {
-                                              _isloading = false;
-                                            });
-                                          });
+                                          );
+                                          fetch().then((value) => {
+                                                setState(() {
+                                                  _isloading = false;
+                                                }),
+                                              });
                                         }
                                       } else {
                                         return false;
@@ -184,12 +193,6 @@ class _AddVisitState extends State<AddVisit> {
                               await Provider.of<NodeProvider>(context,
                                       listen: false)
                                   .removeNode(_nodes[i].node);
-                              await Provider.of<RecordsProvider>(context,
-                                      listen: false)
-                                  .resolveConflicts();
-                              setState(() {
-                                _isloading = false;
-                              });
                             } catch (e) {
                               await showDialog(
                                 context: context,
@@ -210,11 +213,12 @@ class _AddVisitState extends State<AddVisit> {
                                     )
                                   ],
                                 ),
-                              ).then((value) {
-                                setState(() {
-                                  _isloading = false;
-                                });
-                              });
+                              );
+                              fetch().then((value) => {
+                                    setState(() {
+                                      _isloading = false;
+                                    }),
+                                  });
                             }
                           },
                         ),

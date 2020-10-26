@@ -32,19 +32,25 @@ class RecordsProvider with ChangeNotifier {
     return _privatekey;
   }
 
-  Future<void> getChain() async {
+  Future<void> getPatientChain(String patientKey) async {
     try {
-      final url = '$_apiurl/chain';
-      final response = await http.get(url);
-      final extractedData = json.decode(response.body) as List;
+      final url = '$_apiurl/patientchain';
 
+      Map<String, String> patientrequest = {"receiver": patientKey};
+      final response = await http.post(
+        url,
+        body: json.encode(patientrequest),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      final extractedData = json.decode(response.body) as List;
       final List<Block> loadedblocks = [];
       extractedData.forEach(
         (element) {
           loadedblocks.add(
             Block(
               index: element['index'].toString(),
-              userPublicKey: element['user_public_key'].toString(),
               timestamp: element['timestamp'].toString(),
               transaction: (element['transactions'] as List<dynamic>)
                   .map(

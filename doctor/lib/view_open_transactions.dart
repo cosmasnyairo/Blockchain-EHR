@@ -17,9 +17,8 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
   Widget build(BuildContext context) {
     bool _isloading = false;
 
-    List<dynamic> args = ModalRoute.of(context).settings.arguments;
-    List<Transaction> transaction = args[0];
-    List<Node> _receiver = args[1];
+    List<Transaction> transaction = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -90,7 +89,6 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                       .mine();
                   await Provider.of<RecordsProvider>(context, listen: false)
                       .resolveConflicts();
-
                   setState(() {
                     _isloading = false;
                   });
