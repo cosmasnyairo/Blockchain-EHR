@@ -194,7 +194,7 @@ def f(tx, receiver):
     return finaltransaction
 
 
-@app.route('/patientchain', methods=['GET'])
+@app.route('/patientchain', methods=['POST'])
 def get_patient_chain():
     values = request.get_json()
     if not values:

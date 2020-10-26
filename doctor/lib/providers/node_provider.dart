@@ -56,7 +56,6 @@ class NodeProvider extends ChangeNotifier {
   Future<void> removeNode(String node) async {
     try {
       final url = '$_apiurl/remove_node/$node';
-      print(url);
       final response = await http.delete(
         url,
         headers: {

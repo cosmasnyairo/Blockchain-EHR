@@ -14,50 +14,43 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var _isloading = false;
-  @override
-  void initState() {
-    setState(() {
-      _isloading = true;
-    });
+  var _isInit = true;
+  String _publicKey;
 
-    fetch(false);
-
-    setState(() {
-      _isloading = false;
-    });
-
-    super.initState();
-  }
-
-  void fetch(bool listen) async {
-    await Provider.of<RecordsProvider>(context, listen: listen).loadKeys();
-    await Provider.of<RecordsProvider>(context, listen: listen).getChain();
-    await Provider.of<RecordsProvider>(context, listen: listen)
+  Future<void> fetch() async {
+    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
+    _publicKey = Provider.of<RecordsProvider>(context, listen: false).publickey;
+    await Provider.of<RecordsProvider>(context, listen: false)
+        .getPatientChain(_publicKey);
+    await Provider.of<RecordsProvider>(context, listen: false)
         .resolveConflicts();
   }
 
   @override
-  void didChangeDependencies() async {
-    setState(() {
-      _isloading = true;
-    });
-    fetch(false);
-    setState(() {
-      _isloading = false;
-    });
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isloading = true;
+      });
+      fetch().then((value) => {
+            setState(() {
+              _isloading = false;
+            }),
+          });
+    }
     super.didChangeDependencies();
+    _isInit = false;
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
-    final provider = Provider.of<RecordsProvider>(context, listen: false);
-    String _publicKey = provider.publickey;
-    List<Block> _updatedrecords =
-        provider.records.skip(1).toList().reversed.toList();
 
-    // _updatedrecords
-    //     .removeWhere((element) => element.userPublicKey == _publicKey);
+    List<Block> _updatedrecords =
+        Provider.of<RecordsProvider>(context, listen: false)
+            .records
+            .reversed
+            .toList();
 
     return _isloading
         ? Scaffold(
@@ -91,7 +84,17 @@ class _HomePageState extends State<HomePage> {
                       'ADD VISIT',
                       () {
                         Navigator.of(context)
-                            .pushNamed('add_visit', arguments: _publicKey);
+                            .pushNamed('add_visit', arguments: _publicKey)
+                            .then((value) => {
+                                  setState(() {
+                                    _isloading = true;
+                                  }),
+                                  fetch().then((value) => {
+                                        setState(() {
+                                          _isloading = false;
+                                        }),
+                                      }),
+                                });
                       },
                       fontWeight: FontWeight.bold,
                     ),
@@ -129,18 +132,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // floatingActionButtonLocation:
-            //     FloatingActionButtonLocation.centerFloat,
-            // floatingActionButton: _ongoingvisit
-            //     ? FloatingActionButton.extended(
-            //         onPressed: () {
-            //           print('pressed');
-            //         },
-            //         backgroundColor: Theme.of(context).errorColor,
-            //         label: CustomText('You have an ongoing visit'),
-            //         icon: Icon(Icons.cancel),
-            //       )
-            //     : SizedBox(),
           );
   }
 }
