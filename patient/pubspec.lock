@@ -235,7 +235,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.2.0"
-<<<<<<< HEAD
   simple_gesture_detector:
     dependency: transitive
     description:
@@ -278,7 +277,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-<<<<<<< HEAD
   table_calendar:
     dependency: "direct main"
     description:
@@ -286,8 +284,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.0"
-=======
->>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
   term_glyph:
     dependency: transitive
     description:
