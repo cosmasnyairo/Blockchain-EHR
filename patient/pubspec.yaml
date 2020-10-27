@@ -28,10 +28,7 @@ dependencies:
   http: ^0.12.2
   provider: ^4.3.2+2
   qr_flutter: ^3.2.0
-<<<<<<< HEAD
   table_calendar: ^2.3.0
-=======
->>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
 
 dev_dependencies:
   flutter_test:
