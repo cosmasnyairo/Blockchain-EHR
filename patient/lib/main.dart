@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'add_visit.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Color(0xff3FD5AE),
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          textTheme: GoogleFonts.montserratTextTheme(),
         ),
         home: Screen(),
         routes: {
