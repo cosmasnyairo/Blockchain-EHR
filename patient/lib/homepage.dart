@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:patient/recordscalender.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+=======
+import 'package:provider/provider.dart';
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
 
 import 'models/block.dart';
 import 'providers/record_provider.dart';
@@ -19,6 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var _isloading = false;
   var _isInit = true;
+<<<<<<< HEAD
   List<Block> _updatedrecords;
   String _publicKey;
 
@@ -30,6 +35,10 @@ class _HomePageState extends State<HomePage> {
   Map<DateTime, List> _events = {};
   List _selectedEvents;
 
+=======
+  String _publicKey;
+
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
   Future<void> fetch() async {
     await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
     _publicKey = Provider.of<RecordsProvider>(context, listen: false).publickey;
@@ -37,6 +46,7 @@ class _HomePageState extends State<HomePage> {
         .getPatientChain(_publicKey);
     await Provider.of<RecordsProvider>(context, listen: false)
         .resolveConflicts();
+<<<<<<< HEAD
     _updatedrecords =
         Provider.of<RecordsProvider>(context, listen: false).records;
   }
@@ -51,6 +61,8 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _calendarController.dispose();
     super.dispose();
+=======
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
   }
 
   @override
@@ -59,6 +71,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _isloading = true;
       });
+<<<<<<< HEAD
       fetch().then((value) {
         while (i < _updatedrecords.length) {
           _events.putIfAbsent(
@@ -73,6 +86,13 @@ class _HomePageState extends State<HomePage> {
           _isloading = false;
         });
       });
+=======
+      fetch().then((value) => {
+            setState(() {
+              _isloading = false;
+            }),
+          });
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
     }
     super.didChangeDependencies();
     _isInit = false;
@@ -82,6 +102,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
 
+<<<<<<< HEAD
+=======
+    List<Block> _updatedrecords =
+        Provider.of<RecordsProvider>(context, listen: false)
+            .records
+            .reversed
+            .toList();
+
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
     return _isloading
         ? Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -135,6 +164,7 @@ class _HomePageState extends State<HomePage> {
             ),
             body: Container(
               height: deviceheight,
+<<<<<<< HEAD
               padding: EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -178,11 +208,38 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 10),
                   Expanded(child: _buildEventList(_chosen)),
+=======
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.all(10),
+                children: [
+                  Center(
+                    child: CustomText(
+                      'MY RECORDS (${_updatedrecords.length})',
+                      fontweight: FontWeight.bold,
+                      fontsize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    height: deviceheight * 0.9,
+                    child: ListView.builder(
+                      itemBuilder: (ctx, i) => RecordCard(
+                        _updatedrecords[i].index,
+                        _publicKey,
+                        _updatedrecords[i].timestamp,
+                        _updatedrecords[i],
+                      ),
+                      itemCount: _updatedrecords.length,
+                    ),
+                  ),
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
                 ],
               ),
             ),
           );
   }
+<<<<<<< HEAD
 
   Widget _buildEventsMarker(DateTime date, List events) {
     return AnimatedContainer(
@@ -219,4 +276,6 @@ class _HomePageState extends State<HomePage> {
           .length,
     );
   }
+=======
+>>>>>>> 10a495011023fac3f4194ba712cf1670b310e806
 }
