@@ -7,7 +7,7 @@ import 'models/block.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
-import 'widgets/record_card.dart';
+import 'records_detail.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -110,20 +110,7 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.all(8),
                     child: CustomButton(
                       'ADD VISIT',
-                      () {
-                        Navigator.of(context)
-                            .pushNamed('add_visit', arguments: _publicKey)
-                            .then((value) => {
-                                  setState(() {
-                                    _isloading = true;
-                                  }),
-                                  fetch().then((value) => {
-                                        setState(() {
-                                          _isloading = false;
-                                        }),
-                                      }),
-                                });
-                      },
+                      () {},
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -135,7 +122,7 @@ class _HomePageState extends State<HomePage> {
               height: deviceheight,
               padding: EdgeInsets.all(10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   TableCalendar(
                     headerStyle: HeaderStyle(centerHeaderTitle: true),
@@ -174,9 +161,31 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Expanded(child: _buildEventList(_chosen)),
+                  SizedBox(height: 30),
+                  _buildEventList(_chosen),
                 ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed('add_visit', arguments: _publicKey)
+                    .then((value) => {
+                          setState(() {
+                            _isloading = true;
+                          }),
+                          fetch().then((value) => {
+                                setState(() {
+                                  _isloading = false;
+                                }),
+                              }),
+                        });
+              },
+              label: CustomText('Add Visit'),
+              icon: Icon(Icons.add),
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           );
@@ -199,22 +208,20 @@ class _HomePageState extends State<HomePage> {
   Widget _buildEventList(DateTime day) {
     final f = DateFormat('dd-MM-yyyy');
     String chosenday = f.format(day);
-    return ListView.separated(
-      separatorBuilder: (context, index) => Divider(),
-      itemBuilder: (ctx, i) => RecordCard(
-        _updatedrecords
-            .where((element) =>
-                f.format(DateTime.fromMillisecondsSinceEpoch(
-                    double.parse(element.timestamp).toInt() * 1000)) ==
-                chosenday)
-            .toList()[i],
-      ),
-      itemCount: _updatedrecords
-          .where((element) =>
-              f.format(DateTime.fromMillisecondsSinceEpoch(
-                  double.parse(element.timestamp).toInt() * 1000)) ==
-              chosenday)
-          .length,
-    );
+    final _newupdatedrecords = _updatedrecords
+        .where((element) =>
+            f.format(DateTime.fromMillisecondsSinceEpoch(
+                double.parse(element.timestamp).toInt() * 1000)) ==
+            chosenday)
+        .toList();
+    return _newupdatedrecords.length > 0
+        ? CustomButton(
+            'View Ehr Records',
+            () {
+              Navigator.of(context)
+                  .pushNamed('records_detail', arguments: _newupdatedrecords);
+            },
+          )
+        : SizedBox();
   }
 }
