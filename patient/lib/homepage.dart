@@ -86,35 +86,21 @@ class _HomePageState extends State<HomePage> {
           )
         : Scaffold(
             backgroundColor: Colors.white,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(deviceheight * 0.08),
-              child: AppBar(
-                backgroundColor: Colors.white,
-                elevation: 0,
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      'Welcome,',
-                      color: Colors.black54,
-                      fontsize: 16,
-                    ),
-                    CustomText(
-                      'Kenneth Erickson',
-                      fontsize: 20,
-                    ),
-                  ],
-                ),
-                actions: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: CustomButton(
-                      'ADD VISIT',
-                      () {},
-                      fontWeight: FontWeight.bold,
-                    ),
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    'Welcome,',
+                    color: Colors.black54,
+                    fontsize: 16,
                   ),
-                  SizedBox(width: 10)
+                  CustomText(
+                    'Kenneth Erickson',
+                    fontsize: 20,
+                  ),
                 ],
               ),
             ),
