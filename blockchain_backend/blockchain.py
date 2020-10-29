@@ -42,7 +42,7 @@ class Blockchain:
         #     conn.commit()
 
     def get_chain(self):
-  
+
         return self.__chain[:]
 
     def get_open_transactions(self):
@@ -67,6 +67,7 @@ class Blockchain:
                         tx['receiver'],
                         tx['signature'],
                         tx['details'],
+                        tx['timestamp']
                     ) for tx in block['transactions']]
 
                     updated_block = Block(
@@ -87,6 +88,7 @@ class Blockchain:
                         tx['receiver'],
                         tx['signature'],
                         tx['details'],
+                        tx['timestamp']
                     )
                     updated_transactions.append(updated_transaction)
                 self.__open_transactions = updated_transactions
@@ -139,7 +141,7 @@ class Blockchain:
             return None
         return self.__chain[-1]
 
-    def add_transaction(self, receiver, sender, signature, details, is_receiving=False):
+    def add_transaction(self, receiver, sender, signature, details, timestamp, is_receiving=False):
         """ Append a new value as well as the last blockchain value to the blockchain.
 
             Arguments:
@@ -150,7 +152,8 @@ class Blockchain:
         """
         if self.public_key == None:
             return False
-        transaction = Transaction(sender, receiver, signature, details)
+        transaction = Transaction(
+            sender, receiver, signature, details, timestamp)
         if not Wallet.verify_transaction(transaction):
             return False
         self.__open_transactions.append(transaction)
@@ -164,7 +167,8 @@ class Blockchain:
                         'sender':   sender,
                         'receiver':  receiver,
                         'signature':  signature,
-                        'details':    details})
+                        'details':    details,
+                        'timestamp': timestamp})
                     if response.status_code == 400 or response.status_code == 500:
                         print('Transaction declined, needs resolving')
                         return False
@@ -175,7 +179,7 @@ class Blockchain:
 
     def add_block(self, block):
         transactions = [Transaction(
-            tx['sender'], tx['receiver'], tx['signature'], tx['details']) for tx in block['transactions']]
+            tx['sender'], tx['receiver'], tx['signature'], tx['details'], tx['timestamp']) for tx in block['transactions']]
         proof_isvalid = Verification.valid_proof(
             transactions, block['previous_hash'], block['proof'])
         hashes_match = hash_block(self.__chain[-1]) != block['previous_hash']
@@ -271,6 +275,7 @@ class Blockchain:
                      tx['receiver'],
                      tx['signature'],
                      tx['details'],
+                     tx['timestamp'],
                      ) for tx in block['transactions']],
                     block['proof'],
                     block['timestamp'],

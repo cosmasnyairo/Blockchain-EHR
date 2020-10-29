@@ -1,16 +1,13 @@
-import 'models/transaction.dart';
-import 'providers/node_provider.dart';
-import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'models/block.dart';
-import 'models/node.dart';
 import 'providers/record_provider.dart';
-import 'widgets/badge.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
-import 'widgets/record_card.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,10 +17,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var _isloading = false;
   var _isInit = true;
+  List<Block> _updatedrecords;
+
+  CalendarController _calendarController;
+  var i = 0;
+  var _chosen = DateTime.now();
+
+  final _selectedDay = DateTime.now();
+  Map<DateTime, List> _events = {};
+  List _selectedEvents;
 
   @override
   void initState() {
+    _calendarController = CalendarController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _calendarController.dispose();
+    super.dispose();
   }
 
   @override
@@ -32,11 +45,21 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _isloading = true;
       });
-      fetch().then((value) => {
-            setState(() {
-              _isloading = false;
-            }),
-          });
+      fetch().then((value) {
+        while (i < _updatedrecords.length) {
+          _events.putIfAbsent(
+            DateTime.fromMillisecondsSinceEpoch(
+                double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
+            () => _updatedrecords[i].transaction,
+          );
+          i++;
+        }
+        _selectedEvents = _events[_selectedDay] ?? [];
+        _calendarController = CalendarController();
+        setState(() {
+          _isloading = false;
+        });
+      });
     }
     super.didChangeDependencies();
     _isInit = false;
@@ -47,25 +70,18 @@ class _HomePageState extends State<HomePage> {
     await Provider.of<RecordsProvider>(context, listen: false).getChain();
     await Provider.of<RecordsProvider>(context, listen: false)
         .resolveConflicts();
+    _updatedrecords =
+        Provider.of<RecordsProvider>(context, listen: false).records;
   }
 
   @override
   Widget build(BuildContext context) {
+    final deviceheight = MediaQuery.of(context).size.height;
     String _publicKey =
         Provider.of<RecordsProvider>(context, listen: false).publickey;
 
-    List<Block> _updatedrecords =
-        Provider.of<RecordsProvider>(context, listen: false)
-            .records
-            .reversed
-            .toList();
-
     return _isloading
-        ? Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+        ? Scaffold(body: Center(child: CircularProgressIndicator()))
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -86,50 +102,115 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomButton('Add Visit', () {
-                    Navigator.of(context)
-                        .pushNamed('add_visit', arguments: _publicKey)
-                        .then((value) => {
-                              setState(() {
-                                _isloading = true;
-                              }),
-                              fetch().then((value) => {
-                                    setState(() {
-                                      _isloading = false;
-                                    }),
-                                  }),
-                            });
-                  }),
-                )
-              ],
             ),
             body: Container(
+              height: deviceheight,
               padding: EdgeInsets.all(20),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20),
-                  CustomText(
-                    'Patient Records (${_updatedrecords.length})',
-                    fontweight: FontWeight.bold,
-                  ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (ctx, i) => RecordCard(
-                        _updatedrecords[i].index,
-                        _publicKey,
-                        _updatedrecords[i].timestamp,
-                        _updatedrecords[i],
-                      ),
-                      itemCount: _updatedrecords.length,
+                  TableCalendar(
+                    headerStyle: HeaderStyle(centerHeaderTitle: true),
+                    events: _events,
+                    availableCalendarFormats: {CalendarFormat.month: 'Month'},
+                    calendarController: _calendarController,
+                    startingDayOfWeek: StartingDayOfWeek.sunday,
+                    availableGestures: AvailableGestures.horizontalSwipe,
+                    initialCalendarFormat: CalendarFormat.month,
+                    calendarStyle: CalendarStyle(
+                      selectedColor:
+                          Theme.of(context).primaryColor.withOpacity(0.7),
+                      todayColor: Theme.of(context).primaryColor,
+                      markersColor: Theme.of(context).primaryColor,
+                      outsideDaysVisible: false,
                     ),
-                  )
+                    onDaySelected: (day, events, holidays) {
+                      _chosen = day;
+                      setState(() {
+                        _selectedEvents = events;
+                      });
+                    },
+                    builders: CalendarBuilders(
+                      markersBuilder: (context, date, events, holidays) {
+                        final children = <Widget>[];
+                        if (events.isNotEmpty) {
+                          children.add(
+                            Positioned(
+                              right: 1,
+                              bottom: 1,
+                              child: _buildEventsMarker(date, events),
+                            ),
+                          );
+                        }
+                        return children;
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  _buildEventList(_chosen),
                 ],
               ),
             ),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed('add_visit', arguments: _publicKey)
+                    .then((value) => {
+                          setState(() {
+                            _isloading = true;
+                          }),
+                          fetch().then((value) => {
+                                setState(() {
+                                  _isloading = false;
+                                }),
+                              }),
+                        });
+              },
+              label: CustomText('Add Visit'),
+              icon: Icon(Icons.add),
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
           );
+  }
+
+  Widget _buildEventsMarker(DateTime date, List events) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _calendarController.isSelected(date)
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).primaryColor.withOpacity(0.7),
+      ),
+      width: 8.0,
+      height: 8.0,
+    );
+  }
+
+  Widget _buildEventList(DateTime day) {
+    final f = DateFormat('dd-MM-yyyy');
+    String chosenday = f.format(day);
+    final _newupdatedrecords = _updatedrecords
+        .where(
+          (element) =>
+              f.format(
+                DateTime.fromMillisecondsSinceEpoch(
+                    double.parse(element.timestamp).toInt() * 1000),
+              ) ==
+              chosenday,
+        )
+        .toList();
+    return _newupdatedrecords.length > 0
+        ? CustomButton(
+            'View Visit',
+            () {
+              Navigator.of(context)
+                  .pushNamed('records_detail', arguments: _newupdatedrecords);
+            },
+          )
+        : SizedBox();
   }
 }

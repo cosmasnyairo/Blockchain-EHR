@@ -59,9 +59,10 @@ class _HomePageState extends State<HomePage> {
       fetch().then((value) {
         while (i < _updatedrecords.length) {
           _events.putIfAbsent(
-              DateTime.fromMillisecondsSinceEpoch(
-                  double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
-              () => _updatedrecords[i].transaction);
+            DateTime.fromMillisecondsSinceEpoch(
+                double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
+            () => _updatedrecords[i].transaction,
+          );
           i++;
         }
         _selectedEvents = _events[_selectedDay] ?? [];
@@ -80,9 +81,7 @@ class _HomePageState extends State<HomePage> {
     final deviceheight = MediaQuery.of(context).size.height;
 
     return _isloading
-        ? Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          )
+        ? Scaffold(body: Center(child: CircularProgressIndicator()))
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(

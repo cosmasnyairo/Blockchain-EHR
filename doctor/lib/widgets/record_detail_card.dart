@@ -7,20 +7,20 @@ import 'custom_text.dart';
 
 class RecordDetailCard extends StatelessWidget {
   final Block block;
-  final int index;
-  RecordDetailCard(this.block, this.index);
+  RecordDetailCard(this.block);
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
     final f = DateFormat.yMd().add_jm();
     return Container(
       padding: EdgeInsets.all(10),
-      height: deviceheight * 0.2,
-      child: ListView.builder(
+      height: deviceheight * 0.15,
+      child: ListView.separated(
+        separatorBuilder: (context, index) => Divider(),
         itemBuilder: (ctx, i) => Card(
           elevation: 7,
           child: ListTile(
-            title: CustomText('Visit $index'),
+            title: CustomText('View record'),
             subtitle: CustomText(
               'Date: ${f.format(
                 block.transaction[i].timestamp,

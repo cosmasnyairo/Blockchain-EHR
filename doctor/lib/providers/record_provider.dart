@@ -51,6 +51,7 @@ class RecordsProvider with ChangeNotifier {
                     (e) => Transaction(
                       sender: e['sender'],
                       receiver: e['receiver'],
+                      timestamp: DateTime.parse(e['timestamp']),
                       details: List<dynamic>.from([e['details']])
                           .map(
                             (f) => Details(
@@ -76,7 +77,11 @@ class RecordsProvider with ChangeNotifier {
   }
 
   Future<void> addTransaction(
-      List<Details> details, String sender, String receiver) async {
+    List<Details> details,
+    String sender,
+    String receiver,
+  ) async {
+    final timestamp = DateTime.now();
     Map<String, dynamic> transaction = {
       "details": {
         "diagnosis": details[0].diagnosis.toList(),
@@ -86,6 +91,7 @@ class RecordsProvider with ChangeNotifier {
       },
       "receiver": receiver,
       "sender": sender,
+      "timestamp": timestamp.toIso8601String(),
     };
     try {
       final url = '${secrets.apiurl}/add_transaction';
@@ -134,6 +140,7 @@ class RecordsProvider with ChangeNotifier {
             Transaction(
               sender: transaction['sender'],
               receiver: transaction['receiver'],
+              timestamp: transaction['timestamp'],
               details: List<dynamic>.from([transaction['details']])
                   .map(
                     (f) => Details(

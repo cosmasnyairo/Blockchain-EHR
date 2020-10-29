@@ -57,13 +57,14 @@ def broadcast_transaction():
         response = {'message': 'No data found!'}
         return jsonify(response), 400
 
-    required_fields = ['sender', 'receiver', 'details', 'signature']
+    required_fields = ['sender', 'receiver',
+                       'details', 'signature', 'timestamp']
     if not all(key in values for key in required_fields):
         response = {'message': 'Required data missing!'}
         return jsonify(response), 400
     success = blockchain.add_transaction(
         values['receiver'], values['sender'],
-        values['signature'],  values['details'], is_receiving=True)
+        values['signature'],  values['details'], values['timestamp'], is_receiving=True)
     if success:
         response = {
             'message': 'Succesfully added transaction!',
@@ -72,6 +73,7 @@ def broadcast_transaction():
                 'receiver': values['receiver'],
                 'signature': values['signature'],
                 'details': values['details'],
+                'timestamp': values['timestamp']
             }
         }
         return jsonify(response), 200
@@ -116,15 +118,17 @@ def add_transaction():
     if not values:
         response = {'message': 'No data found!'}
         return jsonify(response), 400
-    required_fields = ['receiver', 'details']
+    required_fields = ['receiver', 'details', 'timestamp']
     if not all(f in values for f in required_fields):
         response = {'message': 'Required data missing!'}
         return jsonify(response), 400
     receiver = values['receiver']
     details = values['details']
+    timestamp = values['timestamp']
     signature = wallet.sign_transaction(wallet.public_key, receiver, details)
+
     success = blockchain.add_transaction(
-        receiver, wallet.public_key, signature, details)
+        receiver, wallet.public_key, signature, details,timestamp)
     if success:
         response = {
             'message': 'Succesfully added transaction!',
@@ -133,6 +137,7 @@ def add_transaction():
                 'receiver': receiver,
                 'signature': signature,
                 'details': details,
+                'timestamp': timestamp,
             }
         }
         return jsonify(response), 200
@@ -211,7 +216,7 @@ def get_patient_chain():
 
     for dt in dict_chain:
         dt['transactions'] = [f(tx, receiver) for tx in dt['transactions']]
-        #work on this duplicate
+        # work on this duplicate
         [dt['transactions'].remove(tx)
          for tx in dt['transactions'] if tx == {}]
         [dt['transactions'].remove(tx)

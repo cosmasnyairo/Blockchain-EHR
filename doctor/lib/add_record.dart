@@ -1,5 +1,4 @@
 import 'models/details.dart';
-import 'models/node.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ class AddRecord extends StatefulWidget {
 
 class _AddRecordState extends State<AddRecord> {
   final _formkey = GlobalKey<FormState>();
+  String timestamp;
   String connectednodeport;
   String _doctorkey;
   String _receiver;
@@ -37,6 +37,7 @@ class _AddRecordState extends State<AddRecord> {
     _formkey.currentState.save();
     joinprescription();
     List<Details> _enteredDetails = [];
+
     _enteredDetails.add(
       Details(
         medicalnotes: _medicalnotes,
