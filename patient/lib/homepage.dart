@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage> {
         .toList();
     return _newupdatedrecords.length > 0
         ? CustomButton(
-            'View Ehr Records',
+            'View Visit',
             () {
               Navigator.of(context)
                   .pushNamed('records_detail', arguments: _newupdatedrecords);

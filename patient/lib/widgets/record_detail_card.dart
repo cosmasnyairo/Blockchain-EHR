@@ -1,14 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:patient/models/block.dart';
+import 'package:patient/widgets/custom_button.dart';
 
 import 'custom_text.dart';
 
 class RecordDetailCard extends StatefulWidget {
-  Block block;
-  int index;
+  final Block block;
+  final int index;
   RecordDetailCard(this.block, this.index);
   @override
   _RecordDetailCardState createState() => _RecordDetailCardState();
@@ -16,6 +15,7 @@ class RecordDetailCard extends StatefulWidget {
 
 class _RecordDetailCardState extends State<RecordDetailCard> {
   var _expanded = false;
+
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
@@ -32,51 +32,65 @@ class _RecordDetailCardState extends State<RecordDetailCard> {
         margin: EdgeInsets.all(10),
         elevation: 7,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ListTile(
               title: CustomText(
-                'Record (${widget.index})',
+                'Visit ${widget.index} of the day',
                 fontsize: 16,
               ),
               subtitle: CustomText('$date'),
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.arrow_drop_down_circle,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
+              trailing:
+                  //  IconButton(
+                  //   icon: Icon(
+                  //     Icons.arrow_drop_down_circle,
+                  //     color: Theme.of(context).primaryColor,
+                  //   ),
+                  //   onPressed: () {
+                  //     setState(() {
+                  //       _expanded = !_expanded;
+                  //     });
+                  //   },
+                  // ),
+                  CustomButton(
+                'View',
+                () {
                   setState(() {
                     _expanded = !_expanded;
                   });
                 },
+                elevation: 0,
               ),
+              isThreeLine: true,
             ),
             AnimatedContainer(
               duration: Duration(milliseconds: 400),
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(20),
               height: _expanded ? deviceheight * 0.15 : 0,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(),
-                itemBuilder: (ctx, i) => ListTile(
-                  title: CustomText('View this transaction'),
-                  trailing: IconButton(
-                    icon: Icon(
-                      Icons.navigate_next,
-                      color: Theme.of(context).primaryColor,
+              child: ListView.builder(
+                itemBuilder: (ctx, i) => Card(
+                  elevation: 7,
+                  child: ListTile(
+                    title: CustomText('View record ($i)'),
+                    trailing: IconButton(
+                      icon: Icon(
+                        Icons.navigate_next,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          'visit_detail',
+                          arguments: widget.block.transaction[i],
+                        );
+                      },
                     ),
-                    onPressed: () {
+                    onTap: () {
                       Navigator.of(context).pushNamed(
-                        'view_transaction',
+                        'visit_detail',
                         arguments: widget.block.transaction[i],
                       );
                     },
                   ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      'view_transaction',
-                      arguments: widget.block.transaction[i],
-                    );
-                  },
                 ),
                 itemCount: widget.block.transaction.length,
               ),

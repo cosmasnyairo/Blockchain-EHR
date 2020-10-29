@@ -14,7 +14,7 @@ class RecordsDetail extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: CustomText('EHR Health Record'),
+        title: CustomText('EHR Visits'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,

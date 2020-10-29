@@ -7,7 +7,7 @@ import 'add_visit.dart';
 import 'providers/record_provider.dart';
 import 'providers/node_provider.dart';
 import 'records_detail.dart';
-import 'widgets/view_transaction.dart';
+import 'widgets/visit_details.dart';
 import 'screen.dart';
 
 void main() {
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         home: Screen(),
         routes: {
           'records_detail': (ctx) => RecordsDetail(),
-          'view_transaction': (ctx) => ViewTransaction(),
+          'visit_detail': (ctx) => VisitDetails(),
           'add_visit': (ctx) => AddVisit(),
         },
       ),
