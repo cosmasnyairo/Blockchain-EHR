@@ -7,7 +7,6 @@ import 'models/block.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
-import 'records_detail.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -195,10 +194,14 @@ class _HomePageState extends State<HomePage> {
     final f = DateFormat('dd-MM-yyyy');
     String chosenday = f.format(day);
     final _newupdatedrecords = _updatedrecords
-        .where((element) =>
-            f.format(DateTime.fromMillisecondsSinceEpoch(
-                double.parse(element.timestamp).toInt() * 1000)) ==
-            chosenday)
+        .where(
+          (element) =>
+              f.format(
+                DateTime.fromMillisecondsSinceEpoch(
+                    double.parse(element.timestamp).toInt() * 1000),
+              ) ==
+              chosenday,
+        )
         .toList();
     return _newupdatedrecords.length > 0
         ? CustomButton(
