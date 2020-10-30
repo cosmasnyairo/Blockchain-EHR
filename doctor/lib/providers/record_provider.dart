@@ -140,7 +140,7 @@ class RecordsProvider with ChangeNotifier {
             Transaction(
               sender: transaction['sender'],
               receiver: transaction['receiver'],
-              timestamp: transaction['timestamp'],
+              timestamp: DateTime.parse(transaction['timestamp']),
               details: List<dynamic>.from([transaction['details']])
                   .map(
                     (f) => Details(

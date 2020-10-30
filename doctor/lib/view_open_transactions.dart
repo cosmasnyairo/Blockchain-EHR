@@ -1,4 +1,3 @@
-import 'models/node.dart';
 import 'models/transaction.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_text.dart';
@@ -55,14 +54,14 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                           ),
                           onPressed: () {
                             Navigator.of(context).pushNamed(
-                              'view_transaction',
+                              'visit_detail',
                               arguments: transaction[i],
                             );
                           },
                         ),
                         onTap: () {
                           Navigator.of(context).pushNamed(
-                            'view_transaction',
+                            'visit_detail',
                             arguments: transaction[i],
                           );
                         },
