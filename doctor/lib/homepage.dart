@@ -46,16 +46,6 @@ class _HomePageState extends State<HomePage> {
         _isloading = true;
       });
       fetch().then((value) {
-        while (i < _updatedrecords.length) {
-          _events.putIfAbsent(
-            DateTime.fromMillisecondsSinceEpoch(
-                double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
-            () => _updatedrecords[i].transaction,
-          );
-          i++;
-        }
-        _selectedEvents = _events[_selectedDay] ?? [];
-        _calendarController = CalendarController();
         setState(() {
           _isloading = false;
         });
@@ -72,6 +62,17 @@ class _HomePageState extends State<HomePage> {
         .resolveConflicts();
     _updatedrecords =
         Provider.of<RecordsProvider>(context, listen: false).records;
+
+    while (i < _updatedrecords.length) {
+      _events.putIfAbsent(
+        DateTime.fromMillisecondsSinceEpoch(
+            double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
+        () => _updatedrecords[i].transaction,
+      );
+      i++;
+    }
+    _selectedEvents = _events[_selectedDay] ?? [];
+    _calendarController = CalendarController();
   }
 
   @override
@@ -80,8 +81,23 @@ class _HomePageState extends State<HomePage> {
     String _publicKey =
         Provider.of<RecordsProvider>(context, listen: false).publickey;
 
+    Future<void> refreshdetails() async {
+      setState(() {
+        _isloading = true;
+      });
+      fetch().then((value) => {
+            setState(() {
+              _isloading = false;
+            }),
+          });
+    }
+
     return _isloading
-        ? Scaffold(body: Center(child: CircularProgressIndicator()))
+        ? Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -102,6 +118,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
+              actions: [
+                IconButton(
+                  padding: EdgeInsets.all(10),
+                  icon: Icon(Icons.refresh),
+                  onPressed: refreshdetails,
+                  iconSize: 30,
+                  color: Theme.of(context).primaryColor,
+                )
+              ],
             ),
             body: Container(
               height: deviceheight,
@@ -155,16 +180,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.of(context)
                     .pushNamed('add_visit', arguments: _publicKey)
-                    .then((value) => {
-                          setState(() {
-                            _isloading = true;
-                          }),
-                          fetch().then((value) => {
-                                setState(() {
-                                  _isloading = false;
-                                }),
-                              }),
-                        });
+                    .then((value) => refreshdetails());
               },
               label: CustomText('Add Visit'),
               icon: Icon(Icons.add),
@@ -211,6 +227,6 @@ class _HomePageState extends State<HomePage> {
                   .pushNamed('records_detail', arguments: _newupdatedrecords);
             },
           )
-        : SizedBox();
+        : CustomText('You have no visits for this date');
   }
 }

@@ -31,8 +31,6 @@ class _AddVisitState extends State<AddVisit> {
     await Provider.of<NodeProvider>(context, listen: false).getNodes();
     await Provider.of<RecordsProvider>(context, listen: false)
         .getOpenTransactions();
-    await Provider.of<RecordsProvider>(context, listen: false)
-        .resolveConflicts();
   }
 
   @override
@@ -78,33 +76,33 @@ class _AddVisitState extends State<AddVisit> {
               elevation: 0,
               backgroundColor: Colors.white,
             ),
-            body: Container(
-              height: deviceheight,
-              padding: EdgeInsets.all(20),
-              child: ListView(
-                children: [
-                  Center(
-                    child: CustomButton(
-                      'Scan Qr COde',
-                      () async {
-                        try {
-                          String codeSanner =
-                              await BarcodeScanner.scan(); //barcode scnner
-                          setState(() {
-                            _receiver = codeSanner;
-                            scanned = true;
-                          });
-                        } catch (e) {
-                          print(e);
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Divider(),
-                  SizedBox(height: 10),
-                  scanned
-                      ? Form(
+            body: scanned
+                ? Container(
+                    height: deviceheight,
+                    padding: EdgeInsets.all(20),
+                    child: ListView(
+                      children: [
+                        Center(
+                          child: CustomButton(
+                            'Scan Qr COde',
+                            () async {
+                              try {
+                                String codeSanner = await BarcodeScanner
+                                    .scan(); //barcode scnner
+                                setState(() {
+                                  _receiver = codeSanner;
+                                  scanned = true;
+                                });
+                              } catch (e) {
+                                print(e);
+                              }
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Divider(),
+                        SizedBox(height: 10),
+                        Form(
                           key: _formKey,
                           child: LimitedBox(
                             maxHeight: deviceheight * 0.20,
@@ -198,18 +196,16 @@ class _AddVisitState extends State<AddVisit> {
                               ],
                             ),
                           ),
-                        )
-                      : SizedBox(),
-                  Center(
-                    child: scanned
-                        ? CustomText('Ongoing visits:')
-                        : CustomText(
-                            'Scan QR code first',
-                            color: Theme.of(context).errorColor,
-                          ),
-                  ),
-                  scanned
-                      ? LimitedBox(
+                        ),
+                        Center(
+                          child: scanned
+                              ? CustomText('Ongoing visits:')
+                              : CustomText(
+                                  'Scan QR code first',
+                                  color: Theme.of(context).errorColor,
+                                ),
+                        ),
+                        LimitedBox(
                           maxHeight: deviceheight * 0.15,
                           child: ListView.separated(
                             separatorBuilder: (context, index) => Divider(),
@@ -257,7 +253,6 @@ class _AddVisitState extends State<AddVisit> {
                                         ],
                                       ),
                                     );
-
                                     fetch().then((value) => {
                                           setState(() {
                                             scanned = false;
@@ -272,10 +267,26 @@ class _AddVisitState extends State<AddVisit> {
                             itemCount: _nodes.length,
                           ),
                         )
-                      : SizedBox(),
-                ],
-              ),
-            ),
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CustomButton(
+                      'Scan Qr COde',
+                      () async {
+                        try {
+                          String codeSanner =
+                              await BarcodeScanner.scan(); //barcode scnner
+                          setState(() {
+                            _receiver = codeSanner;
+                            scanned = true;
+                          });
+                        } catch (e) {
+                          print(e);
+                        }
+                      },
+                    ),
+                  ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
             floatingActionButton: scanned
@@ -283,21 +294,43 @@ class _AddVisitState extends State<AddVisit> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       FloatingActionButton.extended(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('add_record',
-                              arguments: [
-                                _publickey,
-                                _receiver
-                              ]).then((value) => {
-                                setState(() {
-                                  _isloading = true;
-                                }),
-                                fetch().then((value) => {
-                                      setState(() {
-                                        _isloading = false;
-                                      }),
-                                    })
-                              });
+                        onPressed: () async {
+                          _nodes.length == 0
+                              ? await showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    elevation: 2,
+                                    title: CustomText('Message!'),
+                                    content: CustomText('Please provide node'),
+                                    actions: <Widget>[
+                                      Center(
+                                        child: CustomButton(
+                                          'Ok',
+                                          () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              : Navigator.of(context).pushNamed('add_record',
+                                  arguments: [
+                                      _publickey,
+                                      _receiver
+                                    ]).then((value) => {
+                                    setState(() {
+                                      _isloading = true;
+                                    }),
+                                    fetch().then((value) => {
+                                          setState(() {
+                                            _isloading = false;
+                                          }),
+                                        })
+                                  });
                         },
                         heroTag: null,
                         label: CustomText('Add records'),

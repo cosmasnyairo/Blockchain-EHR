@@ -130,9 +130,9 @@ class _AddVisitState extends State<AddVisit> {
                                             context: context,
                                             builder: (ctx) => AlertDialog(
                                               shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
                                               elevation: 2,
                                               title: CustomText('Message!'),
                                               content: CustomText(e.toString()),

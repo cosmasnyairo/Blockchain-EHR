@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../models/transaction.dart';
+import 'models/transaction.dart';
 
-import 'custom_card.dart';
-import 'custom_text.dart';
+import 'widgets/custom_card.dart';
+import 'widgets/custom_text.dart';
 
 class VisitDetails extends StatefulWidget {
   @override
@@ -35,24 +35,35 @@ class _VisitDetailsState extends State<VisitDetails> {
       ),
       body: Container(
         height: deviceheight,
+        width: double.infinity,
         padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
           children: [
-            ListTile(
-              title: CustomText('Doctor: Doctor'),
-              leading: Icon(
-                Icons.person,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            ListTile(
-              title: CustomText('Patient: Patient'),
-              leading: Icon(
-                Icons.person_outline,
-                color: Theme.of(context).primaryColor,
-              ),
+            Column(
+              children: [
+                Card(
+                  elevation: 7,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(10),
+                    title: CustomText('Doctor: Doctor'),
+                    leading: Icon(
+                      Icons.person,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+                Card(
+                  elevation: 7,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(10),
+                    title: CustomText('Patient: Patient'),
+                    leading: Icon(
+                      Icons.person_outline,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 10),
             Divider(),

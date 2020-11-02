@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'add_record.dart';
@@ -8,7 +9,7 @@ import 'records_detail.dart';
 import 'screen.dart';
 import 'add_visit.dart';
 import 'view_open_transactions.dart';
-import 'widgets/visit_details.dart';
+import 'visit_details.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +19,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Color(0xff3FD5AE),
+      ),
+    );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

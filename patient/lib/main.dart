@@ -7,7 +7,7 @@ import 'add_visit.dart';
 import 'providers/record_provider.dart';
 import 'providers/node_provider.dart';
 import 'records_detail.dart';
-import 'widgets/visit_details.dart';
+import 'visit_details.dart';
 import 'screen.dart';
 
 void main() {
@@ -18,10 +18,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color(0xff3FD5AE),
-      systemNavigationBarColor: Color(0xff3FD5AE),
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Color(0xff3FD5AE),
+      ),
+    );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

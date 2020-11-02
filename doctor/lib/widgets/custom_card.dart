@@ -9,17 +9,18 @@ class CustomCard extends StatelessWidget {
   CustomCard(this.details, this.icon);
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        elevation: 7,
-        child: ListView.separated(
-          separatorBuilder: (context, index) => Divider(),
-          itemBuilder: (ctx, i) => ListTile(
-            leading: Icon(icon, color: Theme.of(context).primaryColor),
-            title: CustomText('${details[i]}'),
-          ),
-          itemCount: details.length,
+    return Card(
+      elevation: 7,
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        separatorBuilder: (context, index) => Divider(),
+        itemBuilder: (ctx, i) => ListTile(
+          leading: Icon(icon, color: Theme.of(context).primaryColor),
+          title: CustomText('${details[i]}'),
         ),
+        padding: EdgeInsets.all(10),
+        itemCount: details.length,
       ),
     );
   }
