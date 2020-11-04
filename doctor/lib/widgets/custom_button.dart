@@ -9,8 +9,13 @@ class CustomButton extends StatelessWidget {
   final double height;
   final double elevation;
   final Color color;
+  final Color backgroundcolor;
   const CustomButton(this.text, this.onpressed,
-      {this.fontWeight, this.height, this.elevation, this.color});
+      {this.fontWeight,
+      this.height,
+      this.elevation,
+      this.color,
+      this.backgroundcolor});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,9 @@ class CustomButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
       ),
       elevation: elevation,
-      color: Theme.of(context).primaryColor,
+      color: backgroundcolor == null
+          ? Theme.of(context).primaryColor
+          : backgroundcolor,
       child: CustomText(
         text,
         fontweight: fontWeight,
