@@ -29,9 +29,6 @@ class _VisitDetailsState extends State<VisitDetails> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: CustomText('Health Record'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
       ),
       body: Container(
         height: deviceheight,

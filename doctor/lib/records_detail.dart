@@ -21,9 +21,6 @@ class RecordsDetail extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: CustomText('EHR Visits'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
       ),
       body: Container(
         height: deviceheight,

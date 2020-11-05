@@ -22,9 +22,6 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: CustomText('Open Transactions'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
       ),
       body: _isloading
           ? Center(

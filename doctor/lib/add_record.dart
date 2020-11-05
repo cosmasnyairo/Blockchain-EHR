@@ -2,10 +2,7 @@ import 'models/details.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
-import 'widgets/custom_text.dart';
 
 class AddRecord extends StatefulWidget {
   @override
@@ -32,10 +29,7 @@ class _AddRecordState extends State<AddRecord> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: CustomText('Add Ehr Record'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
+        title: Text('Add Ehr Record'),
       ),
       body: Container(
         height: deviceheight,
@@ -105,8 +99,8 @@ class _StepperBodyState extends State<StepperBody> {
             borderRadius: BorderRadius.circular(10),
           ),
           elevation: 2,
-          title: CustomText('An Error Occurred!'),
-          content: CustomText(e.toString()),
+          title: Text('An Error Occurred!'),
+          content: Text(e.toString()),
           actions: <Widget>[
             Center(
               child: CustomButton(
@@ -149,7 +143,7 @@ class _StepperBodyState extends State<StepperBody> {
     Scaffold.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: CustomText(message),
+        content: Text(message),
       ),
     );
   }
@@ -158,7 +152,7 @@ class _StepperBodyState extends State<StepperBody> {
   Widget build(BuildContext context) {
     List<Step> steps = [
       Step(
-        title: CustomText('Medical Notes'),
+        title: Text('Medical Notes'),
         isActive: true,
         state: StepState.indexed,
         content: Column(
@@ -191,10 +185,9 @@ class _StepperBodyState extends State<StepperBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlatButton(
-                  child: CustomText('Add Entry'),
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
+                CustomButton(
+                  'Add Entry',
+                  () {
                     setState(() {
                       _medicalwidgets
                         ..add(
@@ -232,14 +225,14 @@ class _StepperBodyState extends State<StepperBody> {
                 ),
                 SizedBox(width: 10),
                 _medicalwidgets.length > 0
-                    ? FlatButton(
-                        child: CustomText('Remove Entry'),
-                        color: Theme.of(context).errorColor,
-                        onPressed: () {
+                    ? CustomButton(
+                        'Remove Entry',
+                        () {
                           setState(() {
                             _medicalwidgets..removeLast();
                           });
                         },
+                        backgroundcolor: Theme.of(context).errorColor,
                       )
                     : SizedBox(),
               ],
@@ -282,10 +275,9 @@ class _StepperBodyState extends State<StepperBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlatButton(
-                  child: CustomText('Add Entry'),
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
+                CustomButton(
+                  'Add Entry',
+                  () {
                     setState(() {
                       _labresultswidgets
                         ..add(
@@ -323,14 +315,14 @@ class _StepperBodyState extends State<StepperBody> {
                 ),
                 SizedBox(width: 10),
                 _labresultswidgets.length > 0
-                    ? FlatButton(
-                        child: CustomText('Remove Entry'),
-                        color: Theme.of(context).errorColor,
-                        onPressed: () {
+                    ? CustomButton(
+                        'Remove Entry',
+                        () {
                           setState(() {
                             _labresultswidgets.removeLast();
                           });
                         },
+                        backgroundcolor: Theme.of(context).errorColor,
                       )
                     : SizedBox(),
               ],
@@ -419,10 +411,9 @@ class _StepperBodyState extends State<StepperBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlatButton(
-                  child: CustomText('Add Entry'),
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
+                CustomButton(
+                  'Add Entry',
+                  () {
                     setState(() {
                       _prescriptionwidgets
                         ..add(
@@ -502,14 +493,14 @@ class _StepperBodyState extends State<StepperBody> {
                 ),
                 SizedBox(width: 10),
                 _prescriptionwidgets.length > 0
-                    ? FlatButton(
-                        child: CustomText('Remove Entry'),
-                        color: Theme.of(context).errorColor,
-                        onPressed: () {
+                    ? CustomButton(
+                        'Remove Entry',
+                        () {
                           setState(() {
                             _prescriptionwidgets.removeLast();
                           });
                         },
+                        backgroundcolor: Theme.of(context).errorColor,
                       )
                     : SizedBox(),
               ],
@@ -552,10 +543,9 @@ class _StepperBodyState extends State<StepperBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlatButton(
-                  child: CustomText('Add Entry'),
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
+                CustomButton(
+                  'Add Entry',
+                  () {
                     setState(() {
                       _diagnosiswidgets
                         ..add(
@@ -593,14 +583,14 @@ class _StepperBodyState extends State<StepperBody> {
                 ),
                 SizedBox(width: 10),
                 _diagnosiswidgets.length > 0
-                    ? FlatButton(
-                        child: CustomText('Remove Entry'),
-                        color: Theme.of(context).errorColor,
-                        onPressed: () {
+                    ? CustomButton(
+                        'Remove Entry',
+                        () {
                           setState(() {
                             _diagnosiswidgets.removeLast();
                           });
                         },
+                        backgroundcolor: Theme.of(context).errorColor,
                       )
                     : SizedBox(),
               ],
@@ -624,19 +614,18 @@ class _StepperBodyState extends State<StepperBody> {
                 children: <Widget>[
                   currStep == steps.length - 1
                       ? SizedBox()
-                      : FlatButton(
-                          color: Theme.of(context).primaryColor,
-                          child: CustomText('Continue'),
-                          onPressed: onStepContinue,
+                      : CustomButton(
+                          'Continue',
+                          onStepContinue,
                         ),
                   currStep == steps.length - 1
                       ? SizedBox()
                       : SizedBox(width: 20),
                   currStep > 0
-                      ? FlatButton(
-                          color: Theme.of(context).errorColor,
-                          child: CustomText('Go back one step'),
-                          onPressed: onStepCancel,
+                      ? CustomButton(
+                          'Go back one step',
+                          onStepCancel,
+                          backgroundcolor: Theme.of(context).errorColor,
                         )
                       : SizedBox(),
                 ],

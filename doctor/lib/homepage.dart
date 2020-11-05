@@ -56,7 +56,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetch() async {
-    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
     await Provider.of<RecordsProvider>(context, listen: false).getChain();
     await Provider.of<RecordsProvider>(context, listen: false)
         .resolveConflicts();
@@ -78,19 +77,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
-    String _publicKey =
-        Provider.of<RecordsProvider>(context, listen: false).publickey;
-
-    Future<void> refreshdetails() async {
-      setState(() {
-        _isloading = true;
-      });
-      fetch().then((value) => {
-            setState(() {
-              _isloading = false;
-            }),
-          });
-    }
 
     return _isloading
         ? Scaffold(
@@ -101,8 +87,7 @@ class _HomePageState extends State<HomePage> {
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
+              centerTitle: false,
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -118,21 +103,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              actions: [
-                IconButton(
-                  padding: EdgeInsets.all(10),
-                  icon: Icon(Icons.refresh),
-                  onPressed: refreshdetails,
-                  iconSize: 30,
-                  color: Theme.of(context).primaryColor,
-                )
-              ],
             ),
             body: Container(
               height: deviceheight,
               padding: EdgeInsets.all(20),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   TableCalendar(
                     headerStyle: HeaderStyle(centerHeaderTitle: true),
@@ -171,22 +146,9 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 40),
                   _buildEventList(_chosen),
                 ],
-              ),
-            ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed('add_visit', arguments: _publicKey)
-                    .then((value) => refreshdetails());
-              },
-              label: CustomText('Add Visit'),
-              icon: Icon(Icons.add),
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
               ),
             ),
           );
@@ -210,14 +172,12 @@ class _HomePageState extends State<HomePage> {
     final f = DateFormat('dd-MM-yyyy');
     String chosenday = f.format(day);
     final _newupdatedrecords = _updatedrecords
-        .where(
-          (element) =>
-              f.format(
-                DateTime.fromMillisecondsSinceEpoch(
-                    double.parse(element.timestamp).toInt() * 1000),
-              ) ==
-              chosenday,
-        )
+        .where((element) =>
+            f.format(
+              DateTime.fromMillisecondsSinceEpoch(
+                  double.parse(element.timestamp).toInt() * 1000),
+            ) ==
+            chosenday)
         .toList();
     return _newupdatedrecords.length > 0
         ? CustomButton(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'homepage.dart';
+import 'add_visit.dart';
 import 'profile.dart';
-import 'settings.dart';
 
 import 'widgets/custom_text.dart';
 
@@ -23,10 +23,10 @@ class _ScreenState extends State<Screen> {
         'page': HomePage(),
       },
       {
-        'page': ProfilePage(),
+        'page': AddVisit(),
       },
       {
-        'page': SettingsPage(),
+        'page': ProfilePage(),
       },
     ];
     super.initState();
@@ -52,12 +52,12 @@ class _ScreenState extends State<Screen> {
             icon: Icon(Icons.home),
           ),
           BottomNavigationBarItem(
-            title: CustomText('Profile'),
-            icon: Icon(Icons.person),
+            title: CustomText('Add visit'),
+            icon: Icon(Icons.people),
           ),
           BottomNavigationBarItem(
-            title: CustomText('Settings'),
-            icon: Icon(Icons.settings),
+            title: CustomText('Profile'),
+            icon: Icon(Icons.person),
           )
         ],
       ),
