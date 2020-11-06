@@ -1,8 +1,13 @@
+import 'package:doctor/providers/record_provider.dart';
 import 'package:doctor/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import 'landingpage.dart';
+
+import 'providers/userauth_provider.dart';
+
 import 'widgets/custom_text.dart';
 
 class Authentication extends StatefulWidget {
@@ -13,6 +18,74 @@ class Authentication extends StatefulWidget {
 }
 
 class _AuthenticationState extends State<Authentication> {
+  final _formkey = GlobalKey<FormState>();
+  final _emailnode = FocusNode();
+  final _passwordnode = FocusNode();
+
+  var _isLoading = false;
+
+  Map<String, String> _authData = {
+    'username': '',
+    'email': '',
+    'password': '',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _submit() async {
+    if (!_formkey.currentState.validate()) {
+      // Invalid!
+      return;
+    }
+    _formkey.currentState.save();
+    setState(() {
+      _isLoading = true;
+    });
+    if (widget.authAction == AuthAction.signup) {
+      // signin
+      try {
+        await Provider.of<UserAuthProvider>(context, listen: false).signup(
+          username: _authData['username'],
+          email: _authData['email'],
+          password: _authData['password'],
+          context: context,
+        );
+        setState(() {
+          _isLoading = false;
+        });
+
+        Navigator.of(context).pop();
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      //signup
+      try {
+        await Provider.of<UserAuthProvider>(context, listen: false).login(
+          email: _authData['email'],
+          password: _authData['password'],
+          context: context,
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      } catch (e) {
+        print(e);
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
@@ -61,63 +134,106 @@ class _AuthenticationState extends State<Authentication> {
                 ),
                 SizedBox(height: 10),
                 Form(
+                  key: _formkey,
                   child: ListView(
                     padding: EdgeInsets.all(25),
                     shrinkWrap: true,
                     children: [
                       widget.authAction == AuthAction.signup
-                          ? CustomText('UserName')
-                          : SizedBox(),
-                      widget.authAction == AuthAction.signup
-                          ? SizedBox(height: 10)
-                          : SizedBox(),
-                      widget.authAction == AuthAction.signup
                           ? TextFormField(
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                fillColor: Colors.black12,
-                                filled: true,
+                                icon: Icon(
+                                  Icons.person,
+                                  size: 25,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                labelText: 'Username',
                               ),
                               textInputAction: TextInputAction.next,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Username can\'t be empty!';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(context).requestFocus(_emailnode);
+                              },
+                              onSaved: (value) {
+                                _authData['username'] = value.trim();
+                              },
                             )
                           : SizedBox(),
-                      SizedBox(height: 10),
-                      CustomText('Email'),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       TextFormField(
+                        focusNode: _emailnode,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          fillColor: Colors.black12,
-                          filled: true,
+                          labelText: 'Email',
+                          icon: Icon(
+                            Icons.email,
+                            size: 25,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                         textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          if (value.isEmpty ||
+                              !value.contains('@') ||
+                              !value.endsWith('com')) {
+                            return 'Invalid email!';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(_passwordnode);
+                        },
+                        onSaved: (value) {
+                          _authData['email'] = value.trim();
+                        },
                       ),
-                      SizedBox(height: 10),
-                      CustomText('Password'),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       TextFormField(
+                        focusNode: _passwordnode,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          fillColor: Colors.black12,
-                          filled: true,
+                          labelText: 'Password',
+                          icon: Icon(
+                            Icons.remove_red_eye,
+                            size: 25,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
+                        obscureText: true,
                         textInputAction: TextInputAction.go,
+                        validator: (value) {
+                          if (value.isEmpty || value.length < 8) {
+                            return 'Password is too short!';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _authData['password'] = value.trim();
+                        },
                       ),
                       SizedBox(height: 30),
                       Center(
-                        child: Container(
-                          width: devicewidth * 0.4,
-                          child: widget.authAction == AuthAction.signup
-                              ? CustomButton(
-                                  'Signup',
-                                  () {},
-                                  backgroundcolor: Colors.red,
-                                )
-                              : CustomButton(
-                                  'Signin',
-                                  () {},
+                        child: _isLoading
+                            ? CircularProgressIndicator()
+                            : Container(
+                                width: devicewidth * 0.4,
+                                child: CustomButton(
+                                  widget.authAction == AuthAction.signup
+                                      ? 'Signup'
+                                      : 'Signin',
+                                  _submit,
+                                  backgroundcolor:
+                                      widget.authAction == AuthAction.signup
+                                          ? Colors.red
+                                          : null,
                                 ),
-                        ),
+                              ),
                       )
                     ],
                   ),

@@ -1,3 +1,4 @@
+import 'package:doctor/models/user.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import 'models/block.dart';
 import 'providers/record_provider.dart';
+
+import 'providers/userauth_provider.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
 
@@ -56,6 +59,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetch() async {
+    await Provider.of<UserAuthProvider>(context, listen: false).fetchuserdata();
     await Provider.of<RecordsProvider>(context, listen: false).getChain();
     await Provider.of<RecordsProvider>(context, listen: false)
         .resolveConflicts();
@@ -76,6 +80,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    EhrUser ehruser =
+        Provider.of<UserAuthProvider>(context, listen: false).user;
     final deviceheight = MediaQuery.of(context).size.height;
 
     return _isloading
@@ -88,21 +94,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.white,
             appBar: AppBar(
               centerTitle: false,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    'Welcome,',
-                    color: Colors.black54,
-                    fontsize: 20,
-                  ),
-                  CustomText(
-                    'Kenneth Erickson',
-                    fontsize: 20,
-                    fontweight: FontWeight.bold,
-                  ),
-                ],
-              ),
+              title: CustomText('Welcome ${ehruser.name}', fontsize: 20),
             ),
             body: Container(
               height: deviceheight,

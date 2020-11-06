@@ -28,7 +28,9 @@ dependencies:
   http: ^0.12.2
   provider: ^4.3.2+2
   qr_flutter: ^3.2.0
-  table_calendar: ^2.3.0
+  table_calendar: ^2.3.0  
+  firebase_auth: ^0.14.0+5
+  firebase_dynamic_links: ^0.5.1
 
 dev_dependencies:
   flutter_test:

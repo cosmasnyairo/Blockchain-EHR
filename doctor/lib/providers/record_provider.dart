@@ -170,7 +170,9 @@ class RecordsProvider with ChangeNotifier {
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
 //onlogin
