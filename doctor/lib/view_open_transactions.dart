@@ -19,7 +19,6 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
     List<Transaction> transaction = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: CustomText('Open Transactions'),
       ),

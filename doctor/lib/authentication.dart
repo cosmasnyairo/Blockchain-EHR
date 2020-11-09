@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'landingpage.dart';
 
-import 'providers/userauth_provider.dart';
+import 'providers/auth_provider.dart';
 
 import 'widgets/custom_text.dart';
 
@@ -19,6 +19,9 @@ class Authentication extends StatefulWidget {
 
 class _AuthenticationState extends State<Authentication> {
   final _formkey = GlobalKey<FormState>();
+
+  final _usernamenode = FocusNode();
+
   final _emailnode = FocusNode();
   final _passwordnode = FocusNode();
 
@@ -28,6 +31,7 @@ class _AuthenticationState extends State<Authentication> {
     'username': '',
     'email': '',
     'password': '',
+    'doctorid': ''
   };
 
   @override
@@ -47,10 +51,11 @@ class _AuthenticationState extends State<Authentication> {
     if (widget.authAction == AuthAction.signup) {
       // signin
       try {
-        await Provider.of<UserAuthProvider>(context, listen: false).signup(
-          username: _authData['username'],
+        await Provider.of<DoctorAuthProvider>(context, listen: false).signup(
+          name: _authData['username'],
           email: _authData['email'],
           password: _authData['password'],
+          doctorid: _authData['doctorid'],
           context: context,
         );
         setState(() {
@@ -64,7 +69,7 @@ class _AuthenticationState extends State<Authentication> {
     } else {
       //signup
       try {
-        await Provider.of<UserAuthProvider>(context, listen: false).login(
+        await Provider.of<DoctorAuthProvider>(context, listen: false).login(
           email: _authData['email'],
           password: _authData['password'],
           context: context,
@@ -140,32 +145,64 @@ class _AuthenticationState extends State<Authentication> {
                     shrinkWrap: true,
                     children: [
                       widget.authAction == AuthAction.signup
-                          ? TextFormField(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                icon: Icon(
-                                  Icons.person,
-                                  size: 25,
-                                  color: Theme.of(context).primaryColor,
+                          ? Column(
+                              children: [
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    icon: Icon(
+                                      Icons.assignment_ind,
+                                      size: 25,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    labelText: 'Doctor id',
+                                  ),
+                                  textInputAction: TextInputAction.next,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Doctor id can\'t be empty!';
+                                    }
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (_) {
+                                    FocusScope.of(context)
+                                        .requestFocus(_usernamenode);
+                                  },
+                                  onSaved: (value) {
+                                    _authData['doctorid'] = value.trim();
+                                  },
                                 ),
-                                labelText: 'Username',
-                              ),
-                              textInputAction: TextInputAction.next,
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Username can\'t be empty!';
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (_) {
-                                FocusScope.of(context).requestFocus(_emailnode);
-                              },
-                              onSaved: (value) {
-                                _authData['username'] = value.trim();
-                              },
+                                SizedBox(height: 20),
+                                TextFormField(
+                                  focusNode: _usernamenode,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    icon: Icon(
+                                      Icons.person,
+                                      size: 25,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    labelText: 'Username',
+                                  ),
+                                  textInputAction: TextInputAction.next,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Username can\'t be empty!';
+                                    }
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (_) {
+                                    FocusScope.of(context)
+                                        .requestFocus(_emailnode);
+                                  },
+                                  onSaved: (value) {
+                                    _authData['username'] = value.trim();
+                                  },
+                                ),
+                                SizedBox(height: 20),
+                              ],
                             )
                           : SizedBox(),
-                      SizedBox(height: 20),
                       TextFormField(
                         focusNode: _emailnode,
                         decoration: InputDecoration(

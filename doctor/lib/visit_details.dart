@@ -26,7 +26,6 @@ class _VisitDetailsState extends State<VisitDetails> {
       labResults = item.labresults;
     }
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: CustomText('Health Record'),
       ),

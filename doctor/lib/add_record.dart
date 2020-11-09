@@ -27,7 +27,6 @@ class _AddRecordState extends State<AddRecord> {
 
     final deviceheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Add Ehr Record'),
       ),

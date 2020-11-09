@@ -62,7 +62,6 @@ class _AddVisitState extends State<AddVisit> {
             ),
           )
         : Scaffold(
-            backgroundColor: Colors.white,
             appBar: AppBar(
               title: Text(
                 'Add Visit',

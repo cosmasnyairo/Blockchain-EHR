@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'add_record.dart';
 import 'providers/record_provider.dart';
-import 'providers/userauth_provider.dart';
+import 'providers/auth_provider.dart';
 import 'providers/node_provider.dart';
 import 'records_detail.dart';
 import 'screen.dart';
@@ -36,13 +36,14 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (ctx) => RecordsProvider()),
         ChangeNotifierProvider(create: (ctx) => NodeProvider()),
-        ChangeNotifierProvider(create: (ctx) => UserAuthProvider())
+        ChangeNotifierProvider(create: (ctx) => DoctorAuthProvider())
       ],
-      child: Consumer<UserAuthProvider>(
+      child: Consumer<DoctorAuthProvider>(
         builder: (ctx, auth, _) => MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'EhrDoctor',
           theme: ThemeData(
+            canvasColor: Colors.white,
             primaryColor: primarycolor,
             accentColor: Colors.redAccent,
             visualDensity: VisualDensity.adaptivePlatformDensity,
