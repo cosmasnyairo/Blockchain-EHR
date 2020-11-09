@@ -21,9 +21,8 @@ class _AddVisitState extends State<AddVisit> {
   var _isloading = false;
 
   Future<void> fetch() async {
+    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
     await Provider.of<NodeProvider>(context, listen: false).getNodes();
-    await Provider.of<RecordsProvider>(context, listen: false)
-        .resolveConflicts();
   }
 
   @override
@@ -44,9 +43,10 @@ class _AddVisitState extends State<AddVisit> {
 
   @override
   Widget build(BuildContext context) {
+    String _publicKey =
+        Provider.of<RecordsProvider>(context, listen: false).publickey;
     final _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
     final deviceheight = MediaQuery.of(context).size.height;
-    final _publicKey = ModalRoute.of(context).settings.arguments;
 
     return _isloading
         ? Scaffold(
@@ -57,10 +57,7 @@ class _AddVisitState extends State<AddVisit> {
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              title: CustomText('Add Visit'),
-              centerTitle: true,
-              elevation: 0,
-              backgroundColor: Colors.white,
+              title: Text('Add Visit'),
             ),
             body: Container(
               height: deviceheight,
@@ -80,151 +77,146 @@ class _AddVisitState extends State<AddVisit> {
                   SizedBox(height: 10),
                   Form(
                     key: _formKey,
-                    child: LimitedBox(
-                      maxHeight: deviceheight * 0.20,
-                      child: ListView(
-                        children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.person),
-                              border: OutlineInputBorder(),
-                              labelText: 'Enter doctor node',
-                            ),
-                            keyboardType: TextInputType.text,
-                            style: GoogleFonts.montserrat(),
-                            onSaved: (String val) {
-                              _addednode = val;
-                            },
-                            enabled: _nodes.length > 0 ? false : true,
-                            validator: (String value) {
-                              if (value.trim() == null ||
-                                  value.trim().isEmpty) {
-                                return 'Please enter a value';
-                              }
-                              return null;
-                            },
+                    child: ListView(
+                      physics: ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.person),
+                            border: OutlineInputBorder(),
+                            labelText: 'Enter doctor node',
                           ),
-                          SizedBox(height: 20),
-                          Center(
-                            child: _nodes.length > 0
-                                ? CustomButton(
-                                    'Ongoing visit',
-                                    null,
-                                    color: Theme.of(context).errorColor,
-                                  )
-                                : CustomButton(
-                                    'Add Visit',
-                                    () async {
-                                      if (_formKey.currentState.validate()) {
-                                        _formKey.currentState.save();
-                                        try {
-                                          setState(() {
-                                            _isloading = true;
-                                          });
-                                          await Provider.of<NodeProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .addNodes(_addednode.trim());
-                                        } catch (e) {
-                                          await showDialog(
-                                            context: context,
-                                            builder: (ctx) => AlertDialog(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              elevation: 2,
-                                              title: CustomText('Message!'),
-                                              content: CustomText(e.toString()),
-                                              actions: <Widget>[
-                                                Center(
-                                                  child: CustomButton(
-                                                    'Ok',
-                                                    () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                )
-                                              ],
+                          keyboardType: TextInputType.text,
+                          style: GoogleFonts.montserrat(),
+                          onSaved: (String val) {
+                            _addednode = val;
+                          },
+                          enabled: _nodes.length > 0 ? false : true,
+                          validator: (String value) {
+                            if (value.trim() == null || value.trim().isEmpty) {
+                              return 'Please enter a value';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        Center(
+                          child: _nodes.length > 0
+                              ? CustomButton(
+                                  'Ongoing visit',
+                                  null,
+                                  backgroundcolor: Theme.of(context).errorColor,
+                                )
+                              : CustomButton(
+                                  'Add Visit',
+                                  () async {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                      try {
+                                        setState(() {
+                                          _isloading = true;
+                                        });
+                                        await Provider.of<NodeProvider>(context,
+                                                listen: false)
+                                            .addNodes(_addednode.trim());
+                                      } catch (e) {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                          );
-                                          fetch().then((value) => {
-                                                setState(() {
-                                                  _isloading = false;
-                                                }),
-                                              });
-                                        }
-                                      } else {
-                                        return false;
+                                            elevation: 2,
+                                            title: CustomText('Message!'),
+                                            content: CustomText(e.toString()),
+                                            actions: <Widget>[
+                                              Center(
+                                                child: CustomButton(
+                                                  'Ok',
+                                                  () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        );
+                                        fetch().then((value) => {
+                                              setState(() {
+                                                _isloading = false;
+                                              }),
+                                            });
                                       }
-                                    },
-                                  ),
-                          ),
-                        ],
-                      ),
+                                    } else {
+                                      return false;
+                                    }
+                                  },
+                                ),
+                        ),
+                      ],
                     ),
                   ),
                   Divider(),
                   CustomText('Ongoing visits:'),
-                  LimitedBox(
-                    maxHeight: deviceheight * 0.5,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => Divider(),
-                      itemBuilder: (ctx, i) => ListTile(
-                        title: CustomText(_nodes[i].node.toString()),
-                        leading: Icon(Icons.person),
-                        subtitle: CustomText(_nodes[i].node.toString()),
-                        trailing: FloatingActionButton.extended(
-                          heroTag: null,
-                          label: CustomText('End Visit'),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          icon: Icon(
-                            Icons.delete,
-                          ),
-                          onPressed: () async {
-                            try {
-                              setState(() {
-                                _isloading = true;
-                              });
-                              await Provider.of<NodeProvider>(context,
-                                      listen: false)
-                                  .removeNode(_nodes[i].node);
-                            } catch (e) {
-                              await showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  elevation: 2,
-                                  title: CustomText('Message!'),
-                                  content: CustomText(e.toString()),
-                                  actions: <Widget>[
-                                    Center(
-                                      child: CustomButton(
-                                        'Ok',
-                                        () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                              fetch().then((value) => {
-                                    setState(() {
-                                      _isloading = false;
-                                    }),
-                                  });
-                            }
-                          },
+                  ListView.separated(
+                    separatorBuilder: (context, index) => Divider(),
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                    itemBuilder: (ctx, i) => ListTile(
+                      title: CustomText(_nodes[i].node.toString()),
+                      leading: Icon(Icons.person),
+                      subtitle: CustomText(_nodes[i].node.toString()),
+                      trailing: FloatingActionButton.extended(
+                        heroTag: null,
+                        label: CustomText('End Visit'),
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
+                        icon: Icon(
+                          Icons.delete,
+                        ),
+                        onPressed: () async {
+                          try {
+                            setState(() {
+                              _isloading = true;
+                            });
+                            await Provider.of<NodeProvider>(context,
+                                    listen: false)
+                                .removeNode(_nodes[i].node);
+                          } catch (e) {
+                            await showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                elevation: 2,
+                                title: CustomText('Message!'),
+                                content: CustomText(e.toString()),
+                                actions: <Widget>[
+                                  Center(
+                                    child: CustomButton(
+                                      'Ok',
+                                      () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                            fetch().then((value) => {
+                                  setState(() {
+                                    _isloading = false;
+                                  }),
+                                });
+                          }
+                        },
                       ),
-                      itemCount: _nodes.length,
                     ),
+                    itemCount: _nodes.length,
                   )
                 ],
               ),

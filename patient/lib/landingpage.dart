@@ -1,7 +1,8 @@
-import 'package:doctor/authentication.dart';
-import 'package:doctor/widgets/custom_button.dart';
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+
+import 'authentication.dart';
+import 'widgets/custom_button.dart';
+import 'widgets/custom_text.dart';
 
 enum AuthAction { signin, signup }
 

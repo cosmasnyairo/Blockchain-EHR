@@ -24,7 +24,10 @@ class CustomText extends StatelessWidget {
       textAlign: alignment,
       overflow: overflow,
       style: GoogleFonts.montserrat(
-          fontSize: fontsize, color: color, fontWeight: fontweight),
+        fontSize: fontsize,
+        color: color,
+        fontWeight: fontweight,
+      ),
     );
   }
 }

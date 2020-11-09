@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:patient/models/user.dart';
+import 'package:patient/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -28,8 +30,9 @@ class _HomePageState extends State<HomePage> {
   List _selectedEvents;
 
   Future<void> fetch() async {
-    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
-    _publicKey = Provider.of<RecordsProvider>(context, listen: false).publickey;
+    await Provider.of<UserAuthProvider>(context, listen: false).fetchuserdata();
+    _publicKey =
+        Provider.of<UserAuthProvider>(context, listen: false).user.publickey;
     await Provider.of<RecordsProvider>(context, listen: false)
         .getPatientChain(_publicKey);
     await Provider.of<RecordsProvider>(context, listen: false)
@@ -80,6 +83,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
+
+    EhrUser ehruser =
+        Provider.of<UserAuthProvider>(context, listen: false).user;
     Future<void> refreshdetails() async {
       setState(() {
         _isloading = true;
@@ -96,22 +102,7 @@ class _HomePageState extends State<HomePage> {
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    'Welcome,',
-                    color: Colors.black54,
-                    fontsize: 16,
-                  ),
-                  CustomText(
-                    'Kenneth Erickson',
-                    fontsize: 20,
-                  ),
-                ],
-              ),
+              title: CustomText('Welcome ${ehruser.name}', fontsize: 20),
               actions: [
                 IconButton(
                   padding: EdgeInsets.all(10),
@@ -168,19 +159,6 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 30),
                   _buildEventList(_chosen),
                 ],
-              ),
-            ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed('add_visit', arguments: _publicKey)
-                    .then((value) => refreshdetails());
-              },
-              label: CustomText('Add Visit'),
-              icon: Icon(Icons.add),
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
               ),
             ),
           );
