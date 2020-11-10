@@ -76,7 +76,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Theme.of(context).primaryColor,
                         size: 30,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed('edit_account', arguments: ehruser);
+                      },
                     ),
                   ),
                   Divider(

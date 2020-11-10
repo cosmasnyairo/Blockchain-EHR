@@ -72,7 +72,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Theme.of(context).primaryColor,
                         size: 30,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed('edit_account', arguments: ehrdoctor);
+                      },
                     ),
                   ),
                   Divider(
@@ -82,7 +85,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   ListTile(
                     title: Text('Help'),
-                    subtitle: Text('FAQ, Contact us, Privacy policy, Licenses'),
+                    subtitle: Text(
+                        'Help, FAQ, Contact us, Privacy policy & Licenses'),
                     trailing: IconButton(
                       icon: Icon(
                         Icons.navigate_next,

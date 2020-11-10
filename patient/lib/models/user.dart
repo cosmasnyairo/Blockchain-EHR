@@ -6,7 +6,7 @@ class EhrUser {
   final String gender;
   final String imageurl;
   final String location;
-  final String joindate;
+  final DateTime joindate;
 
   EhrUser({
     this.name,

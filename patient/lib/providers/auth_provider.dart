@@ -73,7 +73,7 @@ class UserAuthProvider extends ChangeNotifier {
       privatekey: userdata['privatekey'],
       publickey: userdata['publickey'],
       imageurl: userdata['imageurl'],
-      joindate: userdata['joindate'],
+      joindate: DateTime.parse(userdata['joindate']),
       gender: userdata['gender'],
       location:
           ('${userdata['location'][0].toUpperCase()}${userdata['location'].substring(1)}'),
@@ -95,7 +95,7 @@ class UserAuthProvider extends ChangeNotifier {
       email: email,
       publickey: provider.publickey,
       privatekey: provider.privatekey,
-      joindate: DateTime.now().toIso8601String(),
+      joindate: DateTime.now(),
       location: 'Kenya',
       gender: gender,
       imageurl: '',
@@ -107,7 +107,7 @@ class UserAuthProvider extends ChangeNotifier {
       'privatekey': _user.privatekey,
       'imageurl': _user.imageurl,
       'location': _user.location,
-      'joindate': _user.joindate,
+      'joindate': _user.joindate.toIso8601String(),
       'gender': _user.gender
     });
     notifyListeners();

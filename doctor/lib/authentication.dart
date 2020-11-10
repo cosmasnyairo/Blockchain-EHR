@@ -61,8 +61,7 @@ class _AuthenticationState extends State<Authentication> {
         setState(() {
           _isLoading = false;
         });
-
-        Navigator.of(context).pop();
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         print(e);
       }
@@ -77,7 +76,7 @@ class _AuthenticationState extends State<Authentication> {
         setState(() {
           _isLoading = false;
         });
-        Navigator.of(context).pop();
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         print(e);
       }
@@ -216,9 +215,9 @@ class _AuthenticationState extends State<Authentication> {
                         ),
                         textInputAction: TextInputAction.next,
                         validator: (value) {
-                          if (value.isEmpty ||
-                              !value.contains('@') ||
-                              !value.endsWith('com')) {
+                          if (value.trim().isEmpty ||
+                              !value.trim().contains('@') ||
+                              !value.trim().endsWith('com')) {
                             return 'Invalid email!';
                           }
                           return null;

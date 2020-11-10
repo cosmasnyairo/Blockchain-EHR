@@ -64,7 +64,7 @@ class _AuthenticationState extends State<Authentication> {
           _isLoading = false;
         });
 
-        Navigator.of(context).pop();
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         print(e);
       }
@@ -79,7 +79,7 @@ class _AuthenticationState extends State<Authentication> {
         setState(() {
           _isLoading = false;
         });
-        Navigator.of(context).pop();
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         print(e);
       }

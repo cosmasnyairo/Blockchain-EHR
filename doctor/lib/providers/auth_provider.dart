@@ -71,7 +71,7 @@ class DoctorAuthProvider extends ChangeNotifier {
       privatekey: doctordata['privatekey'],
       publickey: doctordata['publickey'],
       imageurl: doctordata['imageurl'],
-      joindate: doctordata['joindate'],
+      joindate: DateTime.parse(doctordata['joindate']),
       doctorid: doctordata['doctorid'],
       hospital: doctordata['hospital'],
       location:
@@ -95,7 +95,7 @@ class DoctorAuthProvider extends ChangeNotifier {
       email: email,
       publickey: provider.publickey,
       privatekey: provider.privatekey,
-      joindate: DateTime.now().toIso8601String(),
+      joindate: DateTime.now(),
       location: 'Kenya',
       doctorid: doctorid,
       hospital: '',
@@ -108,7 +108,7 @@ class DoctorAuthProvider extends ChangeNotifier {
       'privatekey': _doctor.privatekey,
       'imageurl': _doctor.imageurl,
       'location': _doctor.location,
-      'joindate': _doctor.joindate,
+      'joindate': _doctor.joindate.toIso8601String(),
       'doctorid': _doctor.doctorid,
       'hospital': _doctor.hospital,
     });

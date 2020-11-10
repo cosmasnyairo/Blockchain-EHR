@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'add_visit.dart';
+import 'edit_account.dart';
 import 'landingpage.dart';
 import 'providers/record_provider.dart';
 import 'providers/node_provider.dart';
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
             'records_detail': (ctx) => RecordsDetail(),
             'visit_detail': (ctx) => VisitDetails(),
             'add_visit': (ctx) => AddVisit(),
+            'edit_account': (ctx) => EditAccount()
           },
         ),
       ),

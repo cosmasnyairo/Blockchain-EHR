@@ -1,3 +1,4 @@
+import 'package:doctor/edit_account.dart';
 import 'package:doctor/landingpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
             'add_record': (ctx) => AddRecord(),
             'view_open_transaction': (ctx) => ViewOpenTransactions(),
             'add_visit': (ctx) => AddVisit(),
+            'edit_account': (ctx) => EditAccount()
 
             //to implement onboarding screen
             // 'landing_page': (ctx) => LandingPage()

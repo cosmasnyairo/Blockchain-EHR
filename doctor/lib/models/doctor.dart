@@ -7,7 +7,7 @@ class EhrDoctor {
   final String doctorid;
   final String imageurl;
   final String location;
-  final String joindate;
+  final DateTime joindate;
 
   EhrDoctor({
     this.name,
