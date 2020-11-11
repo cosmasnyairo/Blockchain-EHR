@@ -5,14 +5,27 @@ import 'package:provider/provider.dart';
 
 import 'record_provider.dart';
 
-import 'package:patient/models/user.dart';
-
 class UserAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  EhrUser _user;
 
-  EhrUser get user {
-    return _user;
+  String _doctorname;
+  String _hospital;
+  String _patientname;
+
+  String get userid {
+    return _auth.currentUser.uid;
+  }
+
+  String get doctorname {
+    return _doctorname;
+  }
+
+  String get patientname {
+    return _patientname;
+  }
+
+  String get hospital {
+    return _hospital;
   }
 
   bool isLoggedIn() {
@@ -23,7 +36,6 @@ class UserAuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    print('signout');
     await _auth.signOut();
     notifyListeners();
   }
@@ -34,7 +46,6 @@ class UserAuthProvider extends ChangeNotifier {
     BuildContext context,
   }) async {
     await _auth.signInWithEmailAndPassword(email: email, password: password);
-    fetchuserdata();
     notifyListeners();
   }
 
@@ -60,25 +71,21 @@ class UserAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchuserdata() async {
-    DocumentSnapshot userdatasnapshot = await FirebaseFirestore.instance
+  Future<void> editdetails({
+    String name,
+    String email,
+    String doctorid,
+    String hospital,
+    String location,
+  }) async {
+    await FirebaseFirestore.instance
         .collection('Users')
         .doc(_auth.currentUser.uid)
-        .get();
-    Map<String, dynamic> userdata = userdatasnapshot.data();
-    final loadeduser = EhrUser(
-      name:
-          ('${userdata['name'][0].toUpperCase()}${userdata['name'].substring(1)}'),
-      email: userdata['email'].toLowerCase(),
-      privatekey: userdata['privatekey'],
-      publickey: userdata['publickey'],
-      imageurl: userdata['imageurl'],
-      joindate: DateTime.parse(userdata['joindate']),
-      gender: userdata['gender'],
-      location:
-          ('${userdata['location'][0].toUpperCase()}${userdata['location'].substring(1)}'),
-    );
-    _user = loadeduser;
+        .update({
+      'name': name,
+      'email': email,
+      'location': location,
+    }).catchError((error) => throw error);
   }
 
   Future<void> createuserdata({
@@ -90,26 +97,34 @@ class UserAuthProvider extends ChangeNotifier {
   }) async {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     await provider.createKeys();
-    _user = EhrUser(
-      name: name,
-      email: email,
-      publickey: provider.publickey,
-      privatekey: provider.privatekey,
-      joindate: DateTime.now(),
-      location: 'Kenya',
-      gender: gender,
-      imageurl: '',
-    );
     await FirebaseFirestore.instance.collection('Users').doc(id).set({
-      'name': _user.name,
-      'email': _user.email,
-      'publickey': _user.publickey,
-      'privatekey': _user.privatekey,
-      'imageurl': _user.imageurl,
-      'location': _user.location,
-      'joindate': _user.joindate.toIso8601String(),
-      'gender': _user.gender
+      'name': name,
+      'email': email,
+      'publickey': provider.publickey,
+      'privatekey': provider.privatekey,
+      'location': '',
+      'joindate': DateTime.now().toIso8601String(),
+      'gender': gender
     });
+    notifyListeners();
+  }
+
+  Future<void> getTransactiondetails(
+      String doctorkey, String patientkey) async {
+    final userdocument = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('publickey', isEqualTo: patientkey)
+        .get();
+
+    final doctordocument = await FirebaseFirestore.instance
+        .collection('Doctors')
+        .where('publickey', isEqualTo: doctorkey)
+        .get();
+
+    _doctorname = doctordocument.docs[0].data()['name'];
+    _patientname = userdocument.docs[0].data()['name'];
+    _hospital = doctordocument.docs[0].data()['hospital'];
+
     notifyListeners();
   }
 }

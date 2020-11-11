@@ -144,6 +144,7 @@ class _AuthenticationState extends State<Authentication> {
                   key: _formkey,
                   child: ListView(
                     padding: EdgeInsets.all(25),
+                    physics: ClampingScrollPhysics(),
                     shrinkWrap: true,
                     children: [
                       widget.authAction == AuthAction.signup
@@ -230,30 +231,32 @@ class _AuthenticationState extends State<Authentication> {
                         },
                       ),
                       SizedBox(height: 20),
-                      DropdownButtonFormField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          icon: Icon(
-                            Icons.person_outline,
-                            size: 25,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        hint: Text("Enter Gender"),
-                        items: [
-                          DropdownMenuItem(
-                            child: Text("Male"),
-                            value: "Male",
-                          ),
-                          DropdownMenuItem(
-                            child: Text("Female"),
-                            value: "Female",
-                          ),
-                        ],
-                        onChanged: (value) {
-                          _authData['gender'] = value;
-                        },
-                      ),
+                      widget.authAction == AuthAction.signup
+                          ? DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                icon: Icon(
+                                  Icons.person_outline,
+                                  size: 25,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              hint: Text("Enter Gender"),
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text("Male"),
+                                  value: "Male",
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Female"),
+                                  value: "Female",
+                                ),
+                              ],
+                              onChanged: (value) {
+                                _authData['gender'] = value;
+                              },
+                            )
+                          : SizedBox(),
                       SizedBox(height: 30),
                       Center(
                         child: _isLoading
@@ -275,14 +278,7 @@ class _AuthenticationState extends State<Authentication> {
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: BottomAppBar(
-            child: Container(
-              height: deviceheight * 0.05,
-              child: Center(
-                child: widget.authAction == AuthAction.signup
+                widget.authAction == AuthAction.signup
                     ? FlatButton(
                         child: RichText(
                           textAlign: TextAlign.center,
@@ -333,10 +329,8 @@ class _AuthenticationState extends State<Authentication> {
                           ),
                         ),
                       ),
-              ),
+              ],
             ),
-            elevation: 0,
-            color: Colors.transparent,
           ),
         ),
       ),

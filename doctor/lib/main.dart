@@ -67,7 +67,6 @@ class MyApp extends StatelessWidget {
           //home: Screen(),
           routes: {
             'records_detail': (ctx) => RecordsDetail(),
-            'visit_detail': (ctx) => VisitDetails(),
             'add_record': (ctx) => AddRecord(),
             'view_open_transaction': (ctx) => ViewOpenTransactions(),
             'add_visit': (ctx) => AddVisit(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:patient/models/transaction.dart';
+import 'package:patient/visit_details.dart';
 import 'custom_button.dart';
 
 import 'custom_text.dart';
@@ -27,16 +28,22 @@ class RecordDetailCard extends StatelessWidget {
           trailing: CustomButton(
             'View',
             () {
-              Navigator.of(context).pushNamed(
-                'visit_detail',
-                arguments: transaction[i],
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => VisitDetails(
+                    transaction[i],
+                  ),
+                ),
               );
             },
           ),
           onTap: () {
-            Navigator.of(context).pushNamed(
-              'visit_detail',
-              arguments: transaction[i],
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => VisitDetails(
+                  transaction[i],
+                ),
+              ),
             );
           },
         ),

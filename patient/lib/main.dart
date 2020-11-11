@@ -63,7 +63,6 @@ class MyApp extends StatelessWidget {
           home: auth.isLoggedIn() ? Screen() : LandingPage(),
           routes: {
             'records_detail': (ctx) => RecordsDetail(),
-            'visit_detail': (ctx) => VisitDetails(),
             'add_visit': (ctx) => AddVisit(),
             'edit_account': (ctx) => EditAccount()
           },

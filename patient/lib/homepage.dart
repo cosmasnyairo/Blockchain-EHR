@@ -30,9 +30,8 @@ class _HomePageState extends State<HomePage> {
   List _selectedEvents;
 
   Future<void> fetch() async {
-    await Provider.of<UserAuthProvider>(context, listen: false).fetchuserdata();
-    _publicKey =
-        Provider.of<UserAuthProvider>(context, listen: false).user.publickey;
+    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
+    _publicKey = Provider.of<RecordsProvider>(context, listen: false).publickey;
     await Provider.of<RecordsProvider>(context, listen: false)
         .getPatientChain(_publicKey);
     await Provider.of<RecordsProvider>(context, listen: false)
@@ -84,8 +83,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
 
-    EhrUser ehruser =
-        Provider.of<UserAuthProvider>(context, listen: false).user;
     Future<void> refreshdetails() async {
       setState(() {
         _isloading = true;
@@ -97,27 +94,29 @@ class _HomePageState extends State<HomePage> {
           });
     }
 
-    return _isloading
-        ? Scaffold(body: Center(child: CircularProgressIndicator()))
-        : Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              title: CustomText('Welcome ${ehruser.name}', fontsize: 20),
-              actions: [
-                IconButton(
-                  padding: EdgeInsets.all(10),
-                  icon: Icon(Icons.refresh),
-                  onPressed: refreshdetails,
-                  iconSize: 30,
-                  color: Theme.of(context).primaryColor,
-                )
-              ],
-            ),
-            body: Container(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: CustomText('Ehr Kenya', fontsize: 20),
+        actions: [
+          IconButton(
+            padding: EdgeInsets.all(10),
+            icon: Icon(Icons.refresh),
+            onPressed: refreshdetails,
+            iconSize: 30,
+            color: Theme.of(context).primaryColor,
+          )
+        ],
+      ),
+      body: _isloading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
               height: deviceheight,
               padding: EdgeInsets.all(10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: ListView(
+                shrinkWrap: true,
                 children: [
                   TableCalendar(
                     headerStyle: HeaderStyle(centerHeaderTitle: true),
@@ -161,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-          );
+    );
   }
 
   Widget _buildEventsMarker(DateTime date, List events) {
@@ -192,13 +191,18 @@ class _HomePageState extends State<HomePage> {
         )
         .toList();
     return _newupdatedrecords.length > 0
-        ? CustomButton(
-            'View Visit',
-            () {
-              Navigator.of(context)
-                  .pushNamed('records_detail', arguments: _newupdatedrecords);
-            },
+        ? Center(
+            child: CustomButton(
+              'View Visit',
+              () {
+                Navigator.of(context)
+                    .pushNamed('records_detail', arguments: _newupdatedrecords);
+              },
+            ),
           )
-        : CustomText('You have no visits for this date');
+        : CustomText(
+            'You have no visits for this date',
+            alignment: TextAlign.center,
+          );
   }
 }

@@ -59,8 +59,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetch() async {
-    await Provider.of<DoctorAuthProvider>(context, listen: false)
-        .fetchdoctordata();
     await Provider.of<RecordsProvider>(context, listen: false).getChain();
     await Provider.of<RecordsProvider>(context, listen: false)
         .resolveConflicts();
@@ -81,8 +79,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    EhrDoctor ehrdoctor =
-        Provider.of<DoctorAuthProvider>(context, listen: false).doctor;
     final deviceheight = MediaQuery.of(context).size.height;
 
     return _isloading
@@ -92,13 +88,12 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         : Scaffold(
-            appBar: AppBar(
-              title: CustomText('Welcome ${ehrdoctor.name}', fontsize: 20),
-            ),
+            appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
             body: Container(
               height: deviceheight,
-              padding: EdgeInsets.all(20),
-              child: Column(
+              padding: EdgeInsets.all(10),
+              child: ListView(
+                shrinkWrap: true,
                 children: [
                   TableCalendar(
                     headerStyle: HeaderStyle(centerHeaderTitle: true),
@@ -171,13 +166,18 @@ class _HomePageState extends State<HomePage> {
             chosenday)
         .toList();
     return _newupdatedrecords.length > 0
-        ? CustomButton(
-            'View Visit',
-            () {
-              Navigator.of(context)
-                  .pushNamed('records_detail', arguments: _newupdatedrecords);
-            },
+        ? Center(
+            child: CustomButton(
+              'View Visit',
+              () {
+                Navigator.of(context)
+                    .pushNamed('records_detail', arguments: _newupdatedrecords);
+              },
+            ),
           )
-        : CustomText('You have no visits for this date');
+        : CustomText(
+            'You have no visits for this date',
+            alignment: TextAlign.center,
+          );
   }
 }
