@@ -1,4 +1,3 @@
-import 'package:doctor/models/doctor.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'models/block.dart';
 import 'providers/record_provider.dart';
 
-import 'providers/auth_provider.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
 
@@ -18,21 +16,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _isloading = false;
-  var _isInit = true;
   List<Block> _updatedrecords;
-
-  CalendarController _calendarController;
-  var i = 0;
-  var _chosen = DateTime.now();
-
-  final _selectedDay = DateTime.now();
   Map<DateTime, List> _events = {};
   List _selectedEvents;
+  CalendarController _calendarController;
+
+  var _isloading = false;
+  var i = 0;
+  var _chosen = DateTime.now();
+  final _selectedDay = DateTime.now();
 
   @override
   void initState() {
+    setState(() {
+      _isloading = true;
+    });
+    fetch().then((value) => {
+          setState(() {
+            _isloading = false;
+          }),
+        });
     _calendarController = CalendarController();
+
     super.initState();
   }
 
@@ -42,29 +47,12 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isloading = true;
-      });
-      fetch().then((value) {
-        setState(() {
-          _isloading = false;
-        });
-      });
-    }
-    super.didChangeDependencies();
-    _isInit = false;
-  }
-
   Future<void> fetch() async {
-    await Provider.of<RecordsProvider>(context, listen: false).getChain();
-    await Provider.of<RecordsProvider>(context, listen: false)
-        .resolveConflicts();
-    _updatedrecords =
-        Provider.of<RecordsProvider>(context, listen: false).records;
+    final provider = Provider.of<RecordsProvider>(context, listen: false);
+    await provider.resolveConflicts();
+    await provider.getChain();
 
+    _updatedrecords = provider.records;
     while (i < _updatedrecords.length) {
       _events.putIfAbsent(
         DateTime.fromMillisecondsSinceEpoch(
@@ -81,15 +69,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
 
-    return _isloading
-        ? Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Scaffold(
-            appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
-            body: Container(
+    return Scaffold(
+      appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
+      body: _isloading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
               height: deviceheight,
               padding: EdgeInsets.all(10),
               child: ListView(
@@ -137,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-          );
+    );
   }
 
   Widget _buildEventsMarker(DateTime date, List events) {
@@ -158,20 +142,24 @@ class _HomePageState extends State<HomePage> {
     final f = DateFormat('dd-MM-yyyy');
     String chosenday = f.format(day);
     final _newupdatedrecords = _updatedrecords
-        .where((element) =>
-            f.format(
-              DateTime.fromMillisecondsSinceEpoch(
-                  double.parse(element.timestamp).toInt() * 1000),
-            ) ==
-            chosenday)
+        .where(
+          (element) =>
+              f.format(
+                DateTime.fromMillisecondsSinceEpoch(
+                    double.parse(element.timestamp).toInt() * 1000),
+              ) ==
+              chosenday,
+        )
         .toList();
     return _newupdatedrecords.length > 0
         ? Center(
             child: CustomButton(
               'View Visit',
               () {
-                Navigator.of(context)
-                    .pushNamed('records_detail', arguments: _newupdatedrecords);
+                Navigator.of(context).pushNamed(
+                  'records_detail',
+                  arguments: _newupdatedrecords,
+                );
               },
             ),
           )

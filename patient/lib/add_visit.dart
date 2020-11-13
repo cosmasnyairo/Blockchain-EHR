@@ -5,6 +5,7 @@ import 'package:patient/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import 'models/node.dart';
 import 'providers/record_provider.dart';
 import 'widgets/custom_text.dart';
 
@@ -13,124 +14,215 @@ class AddVisit extends StatefulWidget {
   _AddVisitState createState() => _AddVisitState();
 }
 
-class _AddVisitState extends State<AddVisit> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _addednode;
+class _AddVisitState extends State<AddVisit>
+    with SingleTickerProviderStateMixin {
+  TabController _controller;
+  int _selectedIndex = 0;
 
-  var _isInit = true;
+  List<Node> _nodes;
+  String _addednode;
+  String _publicKey;
+
   var _isloading = false;
 
-  Future<void> fetch() async {
-    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
-    await Provider.of<NodeProvider>(context, listen: false).getNodes();
+  List<Widget> widgetlist = [
+    Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Icon(Icons.timer),
+        Text('Add Visit'),
+        SizedBox(height: 5),
+      ],
+    ),
+    Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Icon(Icons.filter_center_focus),
+        Text('Qr Code'),
+        SizedBox(height: 5),
+      ],
+    ),
+  ];
+  @override
+  void initState() {
+    _controller = TabController(length: widgetlist.length, vsync: this);
+    _controller.addListener(() {
+      setState(() {
+        _selectedIndex = _controller.index;
+      });
+    });
+    super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isloading = true;
-      });
-      fetch().then((value) => {
-            setState(() {
-              _isloading = false;
-            }),
-          });
-    }
+    setState(() {
+      _isloading = true;
+    });
+    fetch().then((value) => {
+          setState(() {
+            _isloading = false;
+          }),
+        });
     super.didChangeDependencies();
-    _isInit = false;
+  }
+
+  Future<void> fetch() async {
+    final recordprovider = Provider.of<RecordsProvider>(context, listen: false);
+    final nodeprovider = Provider.of<NodeProvider>(context, listen: false);
+
+    await recordprovider.loadKeys();
+    await nodeprovider.getNodes();
+
+    _publicKey = recordprovider.publickey;
+    _nodes = nodeprovider.nodes;
   }
 
   @override
   Widget build(BuildContext context) {
-    String _publicKey =
-        Provider.of<RecordsProvider>(context, listen: false).publickey;
-    final _nodes = Provider.of<NodeProvider>(context, listen: false).nodes;
-    final deviceheight = MediaQuery.of(context).size.height;
-
-    return _isloading
-        ? Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              title: Text('Add Visit'),
-            ),
-            body: Container(
-              height: deviceheight,
-              padding: EdgeInsets.all(20),
-              child: ListView(
-                children: [
-                  Center(
-                    child: Container(
-                      decoration: BoxDecoration(border: Border.all(width: 1.0)),
-                      child: QrImage(
-                        data: _publicKey,
-                        size: deviceheight * 0.4,
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  SizedBox(height: 10),
-                  Form(
-                    key: _formKey,
-                    child: ListView(
-                      physics: ClampingScrollPhysics(),
-                      shrinkWrap: true,
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.person),
-                            border: OutlineInputBorder(),
-                            labelText: 'Enter doctor node',
-                          ),
-                          keyboardType: TextInputType.text,
-                          style: GoogleFonts.montserrat(),
-                          onSaved: (String val) {
-                            _addednode = val;
-                          },
-                          enabled: _nodes.length > 0 ? false : true,
-                          validator: (String value) {
-                            if (value.trim() == null || value.trim().isEmpty) {
-                              return 'Please enter a value';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        Center(
-                          child: _nodes.length > 0
-                              ? CustomButton(
-                                  'Ongoing visit',
-                                  null,
-                                  backgroundcolor: Theme.of(context).errorColor,
-                                )
-                              : CustomButton(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ehr Visit'),
+        elevation: 7,
+        bottom: TabBar(
+          indicatorWeight: 4,
+          onTap: (index) {},
+          controller: _controller,
+          tabs: widgetlist,
+        ),
+      ),
+      body: _isloading
+          ? Center(child: CircularProgressIndicator())
+          : TabBarView(
+              controller: _controller,
+              children: [
+                ListView(
+                  padding: EdgeInsets.all(20),
+                  shrinkWrap: true,
+                  children: [
+                    _nodes.length == 0
+                        ? Column(
+                            children: [
+                              Text(
+                                'Choose patient node to add visit',
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 20),
+                              DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  icon: Icon(
+                                    Icons.person_outline,
+                                    size: 25,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                hint: Text("Choose node "),
+                                items: [
+                                  DropdownMenuItem(
+                                    child: Text("5000"),
+                                    value: "5000",
+                                  ),
+                                  DropdownMenuItem(
+                                    child: Text("5003"),
+                                    value: "5003",
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  _addednode = value.toString().trim();
+                                },
+                              ),
+                              SizedBox(height: 20),
+                              Center(
+                                child: CustomButton(
                                   'Add Visit',
                                   () async {
-                                    if (_formKey.currentState.validate()) {
-                                      _formKey.currentState.save();
+                                    try {
+                                      print(_addednode);
+                                      if (_addednode == null) {
+                                        throw 'Choose patient node';
+                                      } else {
+                                        setState(() {
+                                          _isloading = true;
+                                        });
+                                        await Provider.of<NodeProvider>(context,
+                                                listen: false)
+                                            .addNodes(_addednode);
+                                      }
+                                    } catch (e) {
+                                      await showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          elevation: 2,
+                                          title: Text('Message!'),
+                                          content: Text(e.toString()),
+                                          actions: <Widget>[
+                                            Center(
+                                              child: CustomButton(
+                                                'Ok',
+                                                () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                      fetch().then(
+                                        (value) => {
+                                          setState(() {
+                                            _isloading = false;
+                                          }),
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              Text(
+                                'Ongoing visit:',
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 10),
+                              ListView.separated(
+                                separatorBuilder: (context, index) => Divider(),
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemBuilder: (ctx, i) => ListTile(
+                                  title: Text(_nodes[i].node.toString()),
+                                  leading: Icon(Icons.person),
+                                  subtitle: Text(_nodes[i].node.toString()),
+                                  trailing: RaisedButton.icon(
+                                    label: Text('End Visit'),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () async {
                                       try {
                                         setState(() {
                                           _isloading = true;
                                         });
                                         await Provider.of<NodeProvider>(context,
                                                 listen: false)
-                                            .addNodes(_addednode.trim());
+                                            .removeNode(_nodes[i].node);
                                       } catch (e) {
                                         await showDialog(
                                           context: context,
                                           builder: (ctx) => AlertDialog(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
                                             elevation: 2,
-                                            title: CustomText('Message!'),
-                                            content: CustomText(e.toString()),
+                                            title: Text('Message!'),
+                                            content: Text(e.toString()),
                                             actions: <Widget>[
                                               Center(
                                                 child: CustomButton(
@@ -143,84 +235,46 @@ class _AddVisitState extends State<AddVisit> {
                                             ],
                                           ),
                                         );
-                                        fetch().then((value) => {
-                                              setState(() {
+                                        fetch().then(
+                                          (value) => {
+                                            setState(
+                                              () {
                                                 _isloading = false;
-                                              }),
-                                            });
+                                              },
+                                            ),
+                                          },
+                                        );
                                       }
-                                    } else {
-                                      return false;
-                                    }
-                                  },
+                                    },
+                                  ),
                                 ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(),
-                  CustomText('Ongoing visits:'),
-                  ListView.separated(
-                    separatorBuilder: (context, index) => Divider(),
-                    shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
-                    itemBuilder: (ctx, i) => ListTile(
-                      title: CustomText(_nodes[i].node.toString()),
-                      leading: Icon(Icons.person),
-                      subtitle: CustomText(_nodes[i].node.toString()),
-                      trailing: FloatingActionButton.extended(
-                        heroTag: null,
-                        label: CustomText('End Visit'),
-                        backgroundColor: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        icon: Icon(
-                          Icons.delete,
-                        ),
-                        onPressed: () async {
-                          try {
-                            setState(() {
-                              _isloading = true;
-                            });
-                            await Provider.of<NodeProvider>(context,
-                                    listen: false)
-                                .removeNode(_nodes[i].node);
-                          } catch (e) {
-                            await showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                elevation: 2,
-                                title: CustomText('Message!'),
-                                content: CustomText(e.toString()),
-                                actions: <Widget>[
-                                  Center(
-                                    child: CustomButton(
-                                      'Ok',
-                                      () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  )
-                                ],
+                                itemCount: _nodes.length,
                               ),
-                            );
-                            fetch().then((value) => {
-                                  setState(() {
-                                    _isloading = false;
-                                  }),
-                                });
-                          }
-                        },
+                            ],
+                          ),
+                  ],
+                ),
+                ListView(
+                  padding: EdgeInsets.all(20),
+                  children: [
+                    Text(
+                      'Present Qr code to doctor during visit',
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1.5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: QrImage(
+                        data: _publicKey,
                       ),
                     ),
-                    itemCount: _nodes.length,
-                  )
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          );
+    );
   }
 }

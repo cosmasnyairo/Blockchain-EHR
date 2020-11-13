@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:patient/models/user.dart';
-import 'package:patient/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -16,28 +14,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _isloading = false;
-  var _isInit = true;
   List<Block> _updatedrecords;
-  String _publicKey;
-
-  CalendarController _calendarController;
-  var i = 0;
-  var _chosen = DateTime.now();
-
-  final _selectedDay = DateTime.now();
   Map<DateTime, List> _events = {};
   List _selectedEvents;
+  CalendarController _calendarController;
+
+  var _isloading = false;
+  var i = 0;
+  var _chosen = DateTime.now();
+  final _selectedDay = DateTime.now();
+
+  @override
+  void initState() {
+    setState(() {
+      _isloading = true;
+    });
+    fetch().then((value) => {
+          setState(() {
+            _isloading = false;
+          }),
+        });
+    _calendarController = CalendarController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _calendarController.dispose();
+    super.dispose();
+  }
 
   Future<void> fetch() async {
-    await Provider.of<RecordsProvider>(context, listen: false).loadKeys();
-    _publicKey = Provider.of<RecordsProvider>(context, listen: false).publickey;
-    await Provider.of<RecordsProvider>(context, listen: false)
-        .getPatientChain(_publicKey);
-    await Provider.of<RecordsProvider>(context, listen: false)
-        .resolveConflicts();
-    _updatedrecords =
-        Provider.of<RecordsProvider>(context, listen: false).records;
+    final provider = Provider.of<RecordsProvider>(context, listen: false);
+    await provider.loadKeys();
+    final publicKey = provider.publickey;
+    await provider.getPatientChain(publicKey);
+    await provider.resolveConflicts();
+
+    _updatedrecords = provider.records;
 
     while (i < _updatedrecords.length) {
       _events.putIfAbsent(
@@ -52,66 +66,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void initState() {
-    _calendarController = CalendarController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _calendarController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isloading = true;
-      });
-      fetch().then((value) {
-        setState(() {
-          _isloading = false;
-        });
-      });
-    }
-    super.didChangeDependencies();
-    _isInit = false;
-  }
-
-  @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
 
-    Future<void> refreshdetails() async {
-      setState(() {
-        _isloading = true;
-      });
-      fetch().then((value) => {
-            setState(() {
-              _isloading = false;
-            }),
-          });
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: CustomText('Ehr Kenya', fontsize: 20),
-        actions: [
-          IconButton(
-            padding: EdgeInsets.all(10),
-            icon: Icon(Icons.refresh),
-            onPressed: refreshdetails,
-            iconSize: 30,
-            color: Theme.of(context).primaryColor,
-          )
-        ],
-      ),
+      appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
       body: _isloading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? Center(child: CircularProgressIndicator())
           : Container(
               height: deviceheight,
               padding: EdgeInsets.all(10),
@@ -195,8 +157,10 @@ class _HomePageState extends State<HomePage> {
             child: CustomButton(
               'View Visit',
               () {
-                Navigator.of(context)
-                    .pushNamed('records_detail', arguments: _newupdatedrecords);
+                Navigator.of(context).pushNamed(
+                  'records_detail',
+                  arguments: _newupdatedrecords,
+                );
               },
             ),
           )
