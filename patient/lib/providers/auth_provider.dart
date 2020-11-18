@@ -40,12 +40,35 @@ class UserAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login({
-    String email,
-    String password,
-    BuildContext context,
-  }) async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<void> login({String email, String password}) async {
+    String errorMessage;
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (error) {
+      switch (error.code) {
+        case "invalid-email":
+          errorMessage = "You entered an invalid email.";
+          break;
+        case "wrong-password":
+          errorMessage = "You entered a wrong password.";
+          break;
+        case "user-not-found":
+          errorMessage = "User doesn't exist.";
+          break;
+        case "user-disabled":
+          errorMessage = "User accountdisabled.";
+          break;
+        case "operation-not-allowed":
+          errorMessage = "Too many requests please try again later.";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
+      }
+      throw errorMessage;
+    }
     notifyListeners();
   }
 
@@ -54,20 +77,49 @@ class UserAuthProvider extends ChangeNotifier {
     String email,
     String gender,
     String password,
-    BuildContext context,
+    String publickey,
+    String privatekey,
   }) async {
-    UserCredential userCredential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    createuserdata(
-      id: userCredential.user.uid,
-      name: name,
-      email: email,
-      gender: gender,
-      context: context,
-    );
+    String errorMessage;
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userCredential.user.uid)
+          .set({
+        'name': name,
+        'email': email,
+        'publickey': publickey,
+        'privatekey': privatekey,
+        'location': '',
+        'joindate': DateTime.now().toIso8601String(),
+        'gender': gender
+      });
+    } catch (error) {
+      switch (error.code) {
+        case "invalid-email":
+          errorMessage = "You entered an invalid email.";
+          break;
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          errorMessage = "Email is already in use.";
+          break;
+        case "user-disabled":
+          errorMessage = "User accountdisabled.";
+          break;
+        case "operation-not-allowed":
+          errorMessage = "Too many requests please try again later.";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
+      }
+      throw errorMessage;
+    }
+
     notifyListeners();
   }
 
@@ -86,27 +138,6 @@ class UserAuthProvider extends ChangeNotifier {
       'email': email,
       'location': location,
     }).catchError((error) => throw error);
-  }
-
-  Future<void> createuserdata({
-    String name,
-    String email,
-    String gender,
-    String id,
-    context,
-  }) async {
-    final provider = Provider.of<RecordsProvider>(context, listen: false);
-    await provider.createKeys();
-    await FirebaseFirestore.instance.collection('Users').doc(id).set({
-      'name': name,
-      'email': email,
-      'publickey': provider.publickey,
-      'privatekey': provider.privatekey,
-      'location': '',
-      'joindate': DateTime.now().toIso8601String(),
-      'gender': gender
-    });
-    notifyListeners();
   }
 
   Future<void> getTransactiondetails(

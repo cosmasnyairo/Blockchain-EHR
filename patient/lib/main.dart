@@ -11,7 +11,6 @@ import 'landingpage.dart';
 import 'providers/record_provider.dart';
 import 'providers/node_provider.dart';
 import 'records_detail.dart';
-import 'visit_details.dart';
 import 'screen.dart';
 
 void main() async {
@@ -24,6 +23,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // precacheImage(AssetImage('assets/male_patient.png'), context);
+    // precacheImage(AssetImage('assets/female_patient.png'), context);
+    // precacheImage(AssetImage('assets/auth_background.png'), context);
+    // precacheImage(AssetImage('assets/landing_background.png'), context);
+
     final primarycolor = Color(0xff3FD5AE);
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(

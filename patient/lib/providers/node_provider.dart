@@ -29,7 +29,7 @@ class NodeProvider extends ChangeNotifier {
       });
       _nodes = loadednodes;
     } catch (e) {
-      print(e);
+      throw (e);
     }
   }
 
@@ -39,16 +39,14 @@ class NodeProvider extends ChangeNotifier {
       Map<String, String> addednode = {
         "node": node,
       };
-      final response = await http.post(
+      await http.post(
         url,
         body: json.encode(addednode),
         headers: {
           "Content-Type": "application/json",
         },
       );
-      final res = json.decode(response.body);
-      getNodes();
-      throw res["message"];
+      throw 'True';
     } catch (e) {
       throw (e);
     }
@@ -57,17 +55,16 @@ class NodeProvider extends ChangeNotifier {
   Future<void> removeNode(String node) async {
     try {
       final url = '$_apiurl/remove_node/$node';
-      final response = await http.delete(
+      await http.delete(
         url,
         headers: {
           "Content-Type": "application/json",
         },
       );
-      final res = json.decode(response.body);
-      getNodes();
-      throw res["message"];
+
+      throw 'True';
     } catch (e) {
-      throw e;
+      throw (e);
     }
   }
 }

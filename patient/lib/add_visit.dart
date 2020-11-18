@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:patient/providers/node_provider.dart';
+import 'package:patient/widgets/alert_dialog.dart';
 import 'package:patient/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -138,7 +139,6 @@ class _AddVisitState extends State<AddVisit>
                                   'Add Visit',
                                   () async {
                                     try {
-                                      print(_addednode);
                                       if (_addednode == null) {
                                         throw 'Choose patient node';
                                       } else {
@@ -152,23 +152,11 @@ class _AddVisitState extends State<AddVisit>
                                     } catch (e) {
                                       await showDialog(
                                         context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          elevation: 2,
-                                          title: Text('Message!'),
-                                          content: Text(e.toString()),
-                                          actions: <Widget>[
-                                            Center(
-                                              child: CustomButton(
-                                                'Ok',
-                                                () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            )
-                                          ],
+                                        builder: (ctx) => CustomAlertDialog(
+                                          message: e == 'True'
+                                              ? 'Succesfully added visit'
+                                              : e.toString(),
+                                          success: e == 'True' ? true : false,
                                         ),
                                       );
                                       fetch().then(
@@ -216,23 +204,11 @@ class _AddVisitState extends State<AddVisit>
                                       } catch (e) {
                                         await showDialog(
                                           context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            elevation: 2,
-                                            title: Text('Message!'),
-                                            content: Text(e.toString()),
-                                            actions: <Widget>[
-                                              Center(
-                                                child: CustomButton(
-                                                  'Ok',
-                                                  () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                              )
-                                            ],
+                                          builder: (ctx) => CustomAlertDialog(
+                                            message: e == 'True'
+                                                ? 'Visit removed'
+                                                : e.toString(),
+                                            success: e == 'True' ? true : false,
                                           ),
                                         );
                                         fetch().then(

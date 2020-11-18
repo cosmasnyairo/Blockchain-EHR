@@ -78,7 +78,7 @@ class RecordsProvider with ChangeNotifier {
       _records = loadedblocks;
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw (e);
     }
   }
 
@@ -90,7 +90,9 @@ class RecordsProvider with ChangeNotifier {
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
-    } catch (e) {}
+    } catch (e) {
+      throw (e);
+    }
   }
 
   Future<void> resolveConflicts() async {
@@ -98,7 +100,9 @@ class RecordsProvider with ChangeNotifier {
       final url = '$_apiurl/resolve_conflicts';
       final response = await http.post(url);
       json.decode(response.body);
-    } catch (e) {}
+    } catch (e) {
+      throw (e);
+    }
   }
 
 //onlogin
@@ -109,6 +113,8 @@ class RecordsProvider with ChangeNotifier {
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
-    } catch (e) {}
+    } catch (e) {
+      throw (e);
+    }
   }
 }

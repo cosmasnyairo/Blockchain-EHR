@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:patient/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'widgets/alert_dialog.dart';
 import 'widgets/custom_button.dart';
 
 class EditAccount extends StatefulWidget {
@@ -35,12 +36,19 @@ class _EditAccountState extends State<EditAccount> {
         hospital: _doctorData['hospital'],
         location: _doctorData['location'],
       );
+      throw 'True';
+    } catch (e) {
+      await showDialog(
+        context: context,
+        builder: (ctx) => CustomAlertDialog(
+          message: e == 'True' ? 'Succesfully edited details' : e.toString(),
+          success: e == 'True' ? true : false,
+        ),
+      );
       setState(() {
         _isLoading = false;
       });
       Navigator.of(context).pop();
-    } catch (e) {
-      print(e);
     }
 
     setState(() {
