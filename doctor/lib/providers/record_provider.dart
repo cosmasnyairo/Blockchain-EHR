@@ -72,7 +72,7 @@ class RecordsProvider with ChangeNotifier {
       _records = loadedblocks;
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw (e);
     }
   }
 
@@ -171,7 +171,7 @@ class RecordsProvider with ChangeNotifier {
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
     } catch (e) {
-      print(e);
+      throw (e);
     }
   }
 
@@ -183,6 +183,8 @@ class RecordsProvider with ChangeNotifier {
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
-    } catch (e) {}
+    } catch (e) {
+      throw (e);
+    }
   }
 }

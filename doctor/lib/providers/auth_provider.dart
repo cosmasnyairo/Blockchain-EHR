@@ -39,12 +39,33 @@ class DoctorAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login({
-    String email,
-    String password,
-    BuildContext context,
-  }) async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<void> login({String email, String password}) async {
+    String errorMessage;
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+    } catch (error) {
+      switch (error.code) {
+        case "invalid-email":
+          errorMessage = "You entered an invalid email.";
+          break;
+        case "wrong-password":
+          errorMessage = "You entered a wrong password.";
+          break;
+        case "user-not-found":
+          errorMessage = "User doesn't exist.";
+          break;
+        case "user-disabled":
+          errorMessage = "User accountdisabled.";
+          break;
+        case "operation-not-allowed":
+          errorMessage = "Too many requests please try again later.";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
+      }
+      throw errorMessage;
+    }
+
     notifyListeners();
   }
 
@@ -53,42 +74,46 @@ class DoctorAuthProvider extends ChangeNotifier {
     String email,
     String doctorid,
     String password,
-    BuildContext context,
+    String publickey,
+    String privatekey,
   }) async {
-    UserCredential doctorCredential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    createdoctordata(
-      id: doctorCredential.user.uid,
-      name: name,
-      email: email,
-      doctorid: doctorid,
-      context: context,
-    );
-    notifyListeners();
-  }
+    String errorMessage;
+    try {
+      UserCredential doctorCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await FirebaseFirestore.instance
+          .collection('Doctors')
+          .doc(doctorCredential.user.uid)
+          .set({
+        'name': name,
+        'email': email,
+        'publickey': publickey,
+        'privatekey': privatekey,
+        'location': '',
+        'joindate': DateTime.now().toIso8601String(),
+        'doctorid': doctorid,
+        'hospital': '',
+      });
+    } catch (error) {
+      switch (error.code) {
+        case "invalid-email":
+          errorMessage = "You entered an invalid email.";
+          break;
+        case "account-exists-with-different-credential":
+        case "email-already-in-use":
+          errorMessage = "Email is already in use.";
+          break;
+        case "user-disabled":
+          errorMessage = "User accountdisabled.";
+          break;
+        case "operation-not-allowed":
+          errorMessage = "Too many requests please try again later.";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
+      }
+    }
 
-  Future<void> createdoctordata({
-    String name,
-    String email,
-    String doctorid,
-    String id,
-    context,
-  }) async {
-    final provider = Provider.of<RecordsProvider>(context, listen: false);
-    await provider.createKeys();
-    await FirebaseFirestore.instance.collection('Doctors').doc(id).set({
-      'name': name,
-      'email': email,
-      'publickey': provider.publickey,
-      'privatekey': provider.privatekey,
-      'location': '',
-      'joindate': DateTime.now().toIso8601String(),
-      'doctorid': doctorid,
-      'hospital': '',
-    });
     notifyListeners();
   }
 

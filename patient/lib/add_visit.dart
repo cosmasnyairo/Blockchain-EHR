@@ -140,7 +140,7 @@ class _AddVisitState extends State<AddVisit>
                                   () async {
                                     try {
                                       if (_addednode == null) {
-                                        throw 'Choose patient node';
+                                        throw 'Choose doctor node';
                                       } else {
                                         setState(() {
                                           _isloading = true;

@@ -22,6 +22,8 @@ class _HomePageState extends State<HomePage> {
   CalendarController _calendarController;
 
   var _isloading = false;
+
+  var _erroroccurred = false;
   var i = 0;
   var _chosen = DateTime.now();
   final _selectedDay = DateTime.now();
@@ -49,20 +51,27 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetch() async {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
-    await provider.resolveConflicts();
-    await provider.getChain();
+    try {
+      await provider.resolveConflicts();
+      await provider.getChain();
 
-    _updatedrecords = provider.records;
-    while (i < _updatedrecords.length) {
-      _events.putIfAbsent(
-        DateTime.fromMillisecondsSinceEpoch(
-            double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
-        () => _updatedrecords[i].transaction,
-      );
-      i++;
+      _updatedrecords = provider.records;
+      while (i < _updatedrecords.length) {
+        _events.putIfAbsent(
+          DateTime.fromMillisecondsSinceEpoch(
+              double.parse(_updatedrecords[i].timestamp).toInt() * 1000),
+          () => _updatedrecords[i].transaction,
+        );
+        i++;
+      }
+      _selectedEvents = _events[_selectedDay] ?? [];
+      _calendarController = CalendarController();
+    } catch (e) {
+      setState(() {
+        _erroroccurred = true;
+        _isloading = false;
+      });
     }
-    _selectedEvents = _events[_selectedDay] ?? [];
-    _calendarController = CalendarController();
   }
 
   @override
@@ -71,56 +80,97 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
-      body: _isloading
-          ? Center(child: CircularProgressIndicator())
-          : Container(
-              height: deviceheight,
-              padding: EdgeInsets.all(10),
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  TableCalendar(
-                    headerStyle: HeaderStyle(centerHeaderTitle: true),
-                    events: _events,
-                    availableCalendarFormats: {CalendarFormat.month: 'Month'},
-                    calendarController: _calendarController,
-                    startingDayOfWeek: StartingDayOfWeek.sunday,
-                    availableGestures: AvailableGestures.horizontalSwipe,
-                    initialCalendarFormat: CalendarFormat.month,
-                    calendarStyle: CalendarStyle(
-                      selectedColor:
-                          Theme.of(context).primaryColor.withOpacity(0.7),
-                      todayColor: Theme.of(context).primaryColor,
-                      markersColor: Theme.of(context).primaryColor,
-                      outsideDaysVisible: false,
-                    ),
-                    onDaySelected: (day, events, holidays) {
-                      _chosen = day;
-                      setState(() {
-                        _selectedEvents = events;
-                      });
-                    },
-                    builders: CalendarBuilders(
-                      markersBuilder: (context, date, events, holidays) {
-                        final children = <Widget>[];
-                        if (events.isNotEmpty) {
-                          children.add(
-                            Positioned(
-                              right: 1,
-                              bottom: 1,
-                              child: _buildEventsMarker(date, events),
-                            ),
-                          );
-                        }
-                        return children;
-                      },
-                    ),
+      body: _erroroccurred
+          ? ListView(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(20),
+                  height: deviceheight * 0.6,
+                  child: Image.asset(
+                    'assets/404.png',
+                    fit: BoxFit.contain,
                   ),
-                  SizedBox(height: 40),
-                  _buildEventList(_chosen),
-                ],
-              ),
-            ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'An Error Occured!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.red),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'The Server may be offline, please retry after some time',
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                Center(
+                    child: CustomButton('Retry', () {
+                  setState(() {
+                    _erroroccurred = false;
+                  });
+                  setState(() {
+                    _isloading = true;
+                  });
+                  fetch().then((value) => {
+                        setState(() {
+                          _isloading = false;
+                        }),
+                      });
+                }))
+              ],
+            )
+          : _isloading
+              ? Center(child: CircularProgressIndicator())
+              : Container(
+                  height: deviceheight,
+                  padding: EdgeInsets.all(10),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      TableCalendar(
+                        headerStyle: HeaderStyle(centerHeaderTitle: true),
+                        events: _events,
+                        availableCalendarFormats: {
+                          CalendarFormat.month: 'Month'
+                        },
+                        calendarController: _calendarController,
+                        startingDayOfWeek: StartingDayOfWeek.sunday,
+                        availableGestures: AvailableGestures.horizontalSwipe,
+                        initialCalendarFormat: CalendarFormat.month,
+                        calendarStyle: CalendarStyle(
+                          selectedColor:
+                              Theme.of(context).primaryColor.withOpacity(0.7),
+                          todayColor: Theme.of(context).primaryColor,
+                          markersColor: Theme.of(context).primaryColor,
+                          outsideDaysVisible: false,
+                        ),
+                        onDaySelected: (day, events, holidays) {
+                          _chosen = day;
+                          setState(() {
+                            _selectedEvents = events;
+                          });
+                        },
+                        builders: CalendarBuilders(
+                          markersBuilder: (context, date, events, holidays) {
+                            final children = <Widget>[];
+                            if (events.isNotEmpty) {
+                              children.add(
+                                Positioned(
+                                  right: 1,
+                                  bottom: 1,
+                                  child: _buildEventsMarker(date, events),
+                                ),
+                              );
+                            }
+                            return children;
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      _buildEventList(_chosen),
+                    ],
+                  ),
+                ),
     );
   }
 

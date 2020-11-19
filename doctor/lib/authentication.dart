@@ -8,6 +8,7 @@ import 'landingpage.dart';
 
 import 'providers/auth_provider.dart';
 
+import 'widgets/alert_dialog.dart';
 import 'widgets/custom_text.dart';
 
 class Authentication extends StatefulWidget {
@@ -19,9 +20,7 @@ class Authentication extends StatefulWidget {
 
 class _AuthenticationState extends State<Authentication> {
   final _formkey = GlobalKey<FormState>();
-
   final _usernamenode = FocusNode();
-
   final _emailnode = FocusNode();
   final _passwordnode = FocusNode();
 
@@ -48,46 +47,62 @@ class _AuthenticationState extends State<Authentication> {
     setState(() {
       _isLoading = true;
     });
-    if (widget.authAction == AuthAction.signup) {
-      // signin
-      try {
-        await Provider.of<DoctorAuthProvider>(context, listen: false).signup(
-          name: _authData['username'],
-          email: _authData['email'],
-          password: _authData['password'],
-          doctorid: _authData['doctorid'],
-          context: context,
-        );
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      } catch (e) {
-        print(e);
-      }
-    } else {
-      //signup
-      try {
-        await Provider.of<DoctorAuthProvider>(context, listen: false).login(
-          email: _authData['email'],
-          password: _authData['password'],
-          context: context,
-        );
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      } catch (e) {
-        print(e);
-      }
+    widget.authAction == AuthAction.signup ? signupuser() : loginuser();
+  }
 
+  Future<void> loginuser() async {
+    try {
+      await Provider.of<DoctorAuthProvider>(context, listen: false).login(
+        email: _authData['email'],
+        password: _authData['password'],
+      );
       setState(() {
         _isLoading = false;
       });
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      await showDialog(
+        context: context,
+        builder: (ctx) => CustomAlertDialog(
+          message: e.toString(),
+          success: false,
+        ),
+      );
     }
-    setState(() {
-      _isLoading = false;
-    });
+  }
+
+  Future<void> signupuser() async {
+    try {
+      final provider = Provider.of<RecordsProvider>(context, listen: false);
+      await provider.createKeys();
+
+      await Provider.of<DoctorAuthProvider>(context, listen: false).signup(
+        name: _authData['username'],
+        email: _authData['email'],
+        password: _authData['password'],
+        doctorid: _authData['doctorid'],
+        publickey: provider.publickey,
+        privatekey: provider.privatekey,
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      await showDialog(
+        context: context,
+        builder: (ctx) => CustomAlertDialog(
+          message: e.toString(),
+          success: false,
+        ),
+      );
+    }
   }
 
   @override
@@ -103,239 +118,198 @@ class _AuthenticationState extends State<Authentication> {
       child: WillPopScope(
         onWillPop: _onBackPressed,
         child: Scaffold(
-          body: Container(
-            height: deviceheight,
-            child: ListView(
-              children: [
-                Stack(
-                  alignment: AlignmentDirectional.topStart,
+          body: ListView(
+            children: [
+              Container(
+                height: deviceheight * 0.3,
+                width: double.infinity,
+                child: Image.asset(
+                  'assets/background.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: deviceheight * 0.05),
+              CustomText(
+                'Ehr Kenya',
+                color: Colors.black,
+                fontsize: 30,
+                alignment: TextAlign.center,
+              ),
+              SizedBox(height: 10),
+              Form(
+                key: _formkey,
+                child: ListView(
+                  padding: EdgeInsets.all(25),
+                  shrinkWrap: true,
                   children: [
-                    Container(
-                      height: deviceheight * 0.3,
-                      width: double.infinity,
-                      child: Image.asset(
-                        'assets/auth_background.png',
-                        fit: BoxFit.contain,
-                        alignment: Alignment.centerRight,
+                    widget.authAction == AuthAction.signup
+                        ? Column(
+                            children: [
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  icon: Icon(
+                                    Icons.assignment_ind,
+                                    size: 25,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  labelText: 'Doctor id',
+                                ),
+                                textInputAction: TextInputAction.next,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Doctor id can\'t be empty!';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (_) {
+                                  FocusScope.of(context)
+                                      .requestFocus(_usernamenode);
+                                },
+                                onSaved: (value) {
+                                  _authData['doctorid'] = value.trim();
+                                },
+                              ),
+                              SizedBox(height: 20),
+                              TextFormField(
+                                focusNode: _usernamenode,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  icon: Icon(
+                                    Icons.person,
+                                    size: 25,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  labelText: 'Username',
+                                ),
+                                textInputAction: TextInputAction.next,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Username can\'t be empty!';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (_) {
+                                  FocusScope.of(context)
+                                      .requestFocus(_emailnode);
+                                },
+                                onSaved: (value) {
+                                  _authData['username'] = value.trim();
+                                },
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          )
+                        : SizedBox(),
+                    TextFormField(
+                      focusNode: _emailnode,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Email',
+                        icon: Icon(
+                          Icons.email,
+                          size: 25,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
+                      textInputAction: TextInputAction.next,
+                      validator: (value) {
+                        if (value.trim().isEmpty ||
+                            !value.trim().contains('@') ||
+                            !value.trim().endsWith('com')) {
+                          return 'Invalid email!';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_passwordnode);
+                      },
+                      onSaved: (value) {
+                        _authData['email'] = value.trim();
+                      },
                     ),
-                    FlatButton.icon(
-                      icon: Icon(Icons.arrow_back_ios),
-                      onPressed: _onBackPressed,
-                      label: CustomText(
-                        'Back',
-                        fontsize: 16,
+                    SizedBox(height: 20),
+                    TextFormField(
+                      focusNode: _passwordnode,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Password',
+                        icon: Icon(
+                          Icons.remove_red_eye,
+                          size: 25,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
+                      obscureText: true,
+                      textInputAction: TextInputAction.go,
+                      validator: (value) {
+                        if (value.isEmpty || value.length < 8) {
+                          return 'Password is too short!';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _authData['password'] = value.trim();
+                      },
                     ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: _isLoading
+                          ? CircularProgressIndicator()
+                          : Container(
+                              width: devicewidth * 0.4,
+                              child: CustomButton(
+                                widget.authAction == AuthAction.signup
+                                    ? 'Signup'
+                                    : 'Signin',
+                                _submit,
+                                backgroundcolor:
+                                    widget.authAction == AuthAction.signup
+                                        ? Colors.red
+                                        : null,
+                              ),
+                            ),
+                    )
                   ],
                 ),
-                Center(
-                  child: CustomText(
-                    'Ehr Kenya',
-                    color: Colors.black,
-                    fontsize: 30,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Form(
-                  key: _formkey,
-                  child: ListView(
-                    padding: EdgeInsets.all(25),
-                    shrinkWrap: true,
+              ),
+              FlatButton(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
                     children: [
-                      widget.authAction == AuthAction.signup
-                          ? Column(
-                              children: [
-                                TextFormField(
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    icon: Icon(
-                                      Icons.assignment_ind,
-                                      size: 25,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    labelText: 'Doctor id',
-                                  ),
-                                  textInputAction: TextInputAction.next,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Doctor id can\'t be empty!';
-                                    }
-                                    return null;
-                                  },
-                                  onFieldSubmitted: (_) {
-                                    FocusScope.of(context)
-                                        .requestFocus(_usernamenode);
-                                  },
-                                  onSaved: (value) {
-                                    _authData['doctorid'] = value.trim();
-                                  },
-                                ),
-                                SizedBox(height: 20),
-                                TextFormField(
-                                  focusNode: _usernamenode,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    icon: Icon(
-                                      Icons.person,
-                                      size: 25,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    labelText: 'Username',
-                                  ),
-                                  textInputAction: TextInputAction.next,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Username can\'t be empty!';
-                                    }
-                                    return null;
-                                  },
-                                  onFieldSubmitted: (_) {
-                                    FocusScope.of(context)
-                                        .requestFocus(_emailnode);
-                                  },
-                                  onSaved: (value) {
-                                    _authData['username'] = value.trim();
-                                  },
-                                ),
-                                SizedBox(height: 20),
-                              ],
-                            )
-                          : SizedBox(),
-                      TextFormField(
-                        focusNode: _emailnode,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Email',
-                          icon: Icon(
-                            Icons.email,
-                            size: 25,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        textInputAction: TextInputAction.next,
-                        validator: (value) {
-                          if (value.trim().isEmpty ||
-                              !value.trim().contains('@') ||
-                              !value.trim().endsWith('com')) {
-                            return 'Invalid email!';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (_) {
-                          FocusScope.of(context).requestFocus(_passwordnode);
-                        },
-                        onSaved: (value) {
-                          _authData['email'] = value.trim();
-                        },
+                      TextSpan(
+                        text: widget.authAction == AuthAction.signup
+                            ? 'Already have an account? '
+                            : 'Don\'t have an account? ',
+                        style: GoogleFonts.montserrat()
+                            .copyWith(color: Colors.black),
                       ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        focusNode: _passwordnode,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                          icon: Icon(
-                            Icons.remove_red_eye,
-                            size: 25,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        obscureText: true,
-                        textInputAction: TextInputAction.go,
-                        validator: (value) {
-                          if (value.isEmpty || value.length < 8) {
-                            return 'Password is too short!';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _authData['password'] = value.trim();
-                        },
-                      ),
-                      SizedBox(height: 30),
-                      Center(
-                        child: _isLoading
-                            ? CircularProgressIndicator()
-                            : Container(
-                                width: devicewidth * 0.4,
-                                child: CustomButton(
-                                  widget.authAction == AuthAction.signup
-                                      ? 'Signup'
-                                      : 'Signin',
-                                  _submit,
-                                  backgroundcolor:
-                                      widget.authAction == AuthAction.signup
-                                          ? Colors.red
-                                          : null,
-                                ),
-                              ),
+                      TextSpan(
+                        text: widget.authAction == AuthAction.signup
+                            ? 'Sign in'
+                            : 'Sign up',
+                        style: GoogleFonts.montserrat()
+                            .copyWith(color: Theme.of(context).primaryColor),
                       )
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: BottomAppBar(
-            child: Container(
-              height: deviceheight * 0.05,
-              child: Center(
-                child: widget.authAction == AuthAction.signup
-                    ? FlatButton(
-                        child: RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Already have an account? ',
-                                style: GoogleFonts.montserrat()
-                                    .copyWith(color: Colors.black),
-                              ),
-                              TextSpan(
-                                text: 'Sign in',
-                                style: GoogleFonts.montserrat().copyWith(
-                                    color: Theme.of(context).primaryColor),
-                              )
-                            ],
-                          ),
-                        ),
-                        onPressed: () => Navigator.push(
+                onPressed: widget.authAction == AuthAction.signup
+                    ? () => Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (ctx) => Authentication(AuthAction.signin),
                           ),
-                        ),
-                      )
-                    : FlatButton(
-                        child: RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Don\'t have an account? ',
-                                style: GoogleFonts.montserrat()
-                                    .copyWith(color: Colors.black),
-                              ),
-                              TextSpan(
-                                text: ' Sign up',
-                                style: GoogleFonts.montserrat().copyWith(
-                                    color: Theme.of(context).primaryColor),
-                              )
-                            ],
-                          ),
-                        ),
-                        onPressed: () => Navigator.push(
+                        )
+                    : () => Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (ctx) => Authentication(AuthAction.signup),
                           ),
                         ),
-                      ),
               ),
-            ),
-            elevation: 0,
-            color: Colors.transparent,
+            ],
           ),
         ),
       ),
