@@ -95,15 +95,13 @@ class RecordsProvider with ChangeNotifier {
     };
     try {
       final url = '${secrets.apiurl}/add_transaction';
-      final response = await http.post(
+      await http.post(
         url,
         body: json.encode(transaction),
         headers: {
           "Content-Type": "application/json",
         },
       );
-      final res = json.decode(response.body);
-      throw res["message"];
     } catch (e) {
       throw e;
     }
@@ -112,9 +110,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> mine() async {
     try {
       final url = '$_apiurl/mine';
-      final response = await http.post(url);
-      final res = json.decode(response.body);
-      throw res["message"];
+      await http.post(url);
     } catch (e) {
       throw e;
     }

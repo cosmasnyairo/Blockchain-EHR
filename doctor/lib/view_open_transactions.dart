@@ -1,10 +1,11 @@
 import 'models/transaction.dart';
 import 'providers/record_provider.dart';
+import 'visit_details.dart';
+import 'widgets/alert_dialog.dart';
 import 'widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'widgets/custom_button.dart';
+import 'package:intl/intl.dart';
 
 class ViewOpenTransactions extends StatefulWidget {
   @override
@@ -12,35 +13,62 @@ class ViewOpenTransactions extends StatefulWidget {
 }
 
 class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
+  var _isloading = false;
+
+  Future<void> minerecords() async {
+    try {
+      setState(() {
+        _isloading = !_isloading;
+      });
+      await Provider.of<RecordsProvider>(context, listen: false).mine().then(
+            (value) => {
+              setState(() {
+                _isloading = false;
+              })
+            },
+          );
+      Navigator.of(context).pop('Mined Records to blockchain');
+    } catch (e) {
+      setState(() {
+        _isloading = false;
+      });
+      await showDialog(
+        context: context,
+        builder: (ctx) => CustomAlertDialog(
+          message: e.toString(),
+          success: false,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool _isloading = false;
-
     List<Transaction> transaction = ModalRoute.of(context).settings.arguments;
-
+    final f = DateFormat.yMd().add_jm();
     return Scaffold(
       appBar: AppBar(
         title: CustomText('Open Transactions'),
       ),
       body: _isloading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? Center(child: CircularProgressIndicator())
           : transaction.length <= 0
               ? Center(child: CustomText('You have no open transactions'))
-              : ListView.builder(
+              : ListView.separated(
                   padding: const EdgeInsets.all(20),
+                  separatorBuilder: (context, index) => SizedBox(height: 20),
                   itemBuilder: (ctx, i) => SizedBox(
                     height: 100,
                     child: Card(
                       elevation: 7,
                       child: ListTile(
                         title: CustomText(
-                          'Transaction  (${(i + 1).toString()})',
-                          fontweight: FontWeight.bold,
+                          'Transaction  ${(i + 1).toString()}',
                           fontsize: 16,
                         ),
-                        subtitle: CustomText('View this transaction'),
+                        subtitle: CustomText('Date: ${f.format(
+                          transaction[i].timestamp,
+                        )}'),
                         contentPadding: EdgeInsets.all(10),
                         trailing: IconButton(
                           icon: Icon(
@@ -49,16 +77,22 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                             size: 40,
                           ),
                           onPressed: () {
-                            Navigator.of(context).pushNamed(
-                              'visit_detail',
-                              arguments: transaction[i],
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => VisitDetails(
+                                  transaction[i],
+                                ),
+                              ),
                             );
                           },
                         ),
                         onTap: () {
-                          Navigator.of(context).pushNamed(
-                            'visit_detail',
-                            arguments: transaction[i],
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => VisitDetails(
+                                transaction[i],
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -75,47 +109,7 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: Theme.of(context).primaryColor,
-              onPressed: () async {
-                setState(() {
-                  _isloading = true;
-                });
-                try {
-                  await Provider.of<RecordsProvider>(context, listen: false)
-                      .mine();
-                  await Provider.of<RecordsProvider>(context, listen: false)
-                      .resolveConflicts();
-                  setState(() {
-                    _isloading = false;
-                  });
-                } catch (e) {
-                  await showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 2,
-                      title: CustomText('Error'),
-                      content: CustomText(e.toString()),
-                      actions: <Widget>[
-                        Center(
-                          child: CustomButton(
-                            'Ok',
-                            () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ).then((value) {
-                    setState(() {
-                      _isloading = false;
-                      Navigator.of(context).pop();
-                    });
-                  });
-                }
-              },
+              onPressed: minerecords,
             ),
     );
   }

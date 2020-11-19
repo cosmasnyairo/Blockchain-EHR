@@ -14,7 +14,6 @@ import 'records_detail.dart';
 import 'screen.dart';
 import 'add_visit.dart';
 import 'view_open_transactions.dart';
-import 'visit_details.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

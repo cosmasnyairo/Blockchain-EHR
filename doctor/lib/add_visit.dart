@@ -79,6 +79,7 @@ class _AddVisitState extends State<AddVisit>
     try {
       await recordprovider.loadKeys();
       await recordprovider.getOpenTransactions();
+      await recordprovider.resolveConflicts();
       await nodeprovider.getNodes();
 
       _opentransactions = recordprovider.opentransactions;
@@ -90,6 +91,16 @@ class _AddVisitState extends State<AddVisit>
         _isloading = false;
       });
     }
+  }
+
+  void showSnackBarMessage(String message) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        duration: Duration(seconds: 2),
+        content: Text(message),
+      ),
+    );
   }
 
   @override
@@ -348,10 +359,19 @@ class _AddVisitState extends State<AddVisit>
                               ),
                               icon: Icon(Icons.insert_drive_file),
                               onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  'view_open_transaction',
-                                  arguments: _opentransactions,
-                                );
+                                Navigator.of(context)
+                                    .pushNamed(
+                                      'view_open_transaction',
+                                      arguments: _opentransactions,
+                                    )
+                                    .then(
+                                      (value) => {
+                                        value == null
+                                            ? null
+                                            : showSnackBarMessage(
+                                                value.toString())
+                                      },
+                                    );
                               },
                               color: _opentransactions.length > 0
                                   ? Theme.of(context).errorColor
