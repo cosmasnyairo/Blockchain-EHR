@@ -8,6 +8,8 @@ import Crypto.Random
 
 import binascii
 
+from data import savekeys, loadkeys
+
 
 class Wallet:
     def __init__(self, node_id):
@@ -23,12 +25,12 @@ class Wallet:
     def save_keys(self):
         if self.private_key != None and self.public_key != None:
             try:
-                with open('data/wallet-{}.json'.format(self.node_id), mode='w') as f:
-                    data = {}
-                    data["public_key"] = self.public_key
-                    data["private_key"] = self.private_key
-                    json.dump(data, f)
-
+                # with open('data/wallet-{}.json'.format(self.node_id), mode='w') as f:
+                #     data = {}
+                #     data["public_key"] = self.public_key
+                # data["private_key"] = self.private_key
+                # json.dump(data, f)
+                savekeys(self.node_id, self.public_key, self.private_key)
                 return True
             except (IOError, IndexError):
                 print('Saving wallet failed')
@@ -36,12 +38,12 @@ class Wallet:
 
     def load_keys(self):
         try:
-            with open('data/wallet-{}.json'.format(self.node_id), mode='r') as f:
-                keys = json.load(f)
-                public_key = keys["public_key"]
-                private_key = keys["private_key"]
-                self.public_key = public_key
-                self.private_key = private_key
+            # with open('data/wallet-{}.json'.format(self.node_id), mode='r') as f:
+            keys = loadkeys(self.node_id)
+            public_key = keys["public_key"]
+            private_key = keys["private_key"]
+            self.public_key = public_key
+            self.private_key = private_key
             return True
         except (IOError, IndexError):
             print('Loading wallet failed')
