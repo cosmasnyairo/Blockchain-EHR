@@ -1,5 +1,6 @@
 import 'package:doctor/providers/record_provider.dart';
 import 'package:doctor/widgets/custom_button.dart';
+import 'package:doctor/widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -145,16 +146,9 @@ class _AuthenticationState extends State<Authentication> {
                     widget.authAction == AuthAction.signup
                         ? Column(
                             children: [
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  icon: Icon(
-                                    Icons.assignment_ind,
-                                    size: 25,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  labelText: 'Doctor id',
-                                ),
+                              CustomFormField(
+                                icondata: Icons.assignment_ind,
+                                labeltext: 'Doctor id',
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -162,26 +156,19 @@ class _AuthenticationState extends State<Authentication> {
                                   }
                                   return null;
                                 },
-                                onFieldSubmitted: (_) {
+                                onfieldsubmitted: (_) {
                                   FocusScope.of(context)
                                       .requestFocus(_usernamenode);
                                 },
-                                onSaved: (value) {
+                                onsaved: (value) {
                                   _authData['doctorid'] = value.trim();
                                 },
                               ),
                               SizedBox(height: 20),
-                              TextFormField(
+                              CustomFormField(
                                 focusNode: _usernamenode,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  icon: Icon(
-                                    Icons.person,
-                                    size: 25,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  labelText: 'Username',
-                                ),
+                                icondata: Icons.person,
+                                labeltext: 'Username',
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -189,11 +176,11 @@ class _AuthenticationState extends State<Authentication> {
                                   }
                                   return null;
                                 },
-                                onFieldSubmitted: (_) {
+                                onfieldsubmitted: (_) {
                                   FocusScope.of(context)
                                       .requestFocus(_emailnode);
                                 },
-                                onSaved: (value) {
+                                onsaved: (value) {
                                   _authData['username'] = value.trim();
                                 },
                               ),
@@ -201,17 +188,10 @@ class _AuthenticationState extends State<Authentication> {
                             ],
                           )
                         : SizedBox(),
-                    TextFormField(
+                    CustomFormField(
                       focusNode: _emailnode,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                        icon: Icon(
-                          Icons.email,
-                          size: 25,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labeltext: 'Email',
+                      icondata: Icons.email,
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value.trim().isEmpty ||
@@ -221,26 +201,19 @@ class _AuthenticationState extends State<Authentication> {
                         }
                         return null;
                       },
-                      onFieldSubmitted: (_) {
+                      onfieldsubmitted: (_) {
                         FocusScope.of(context).requestFocus(_passwordnode);
                       },
-                      onSaved: (value) {
+                      onsaved: (value) {
                         _authData['email'] = value.trim();
                       },
                     ),
                     SizedBox(height: 20),
-                    TextFormField(
+                    CustomFormField(
                       focusNode: _passwordnode,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                        icon: Icon(
-                          Icons.remove_red_eye,
-                          size: 25,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      obscureText: true,
+                      labeltext: 'Password',
+                      icondata: Icons.remove_red_eye,
+                      obscuretext: true,
                       textInputAction: TextInputAction.go,
                       validator: (value) {
                         if (value.isEmpty || value.length < 8) {
@@ -248,7 +221,7 @@ class _AuthenticationState extends State<Authentication> {
                         }
                         return null;
                       },
-                      onSaved: (value) {
+                      onsaved: (value) {
                         _authData['password'] = value.trim();
                       },
                     ),

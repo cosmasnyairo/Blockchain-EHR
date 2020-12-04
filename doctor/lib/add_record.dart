@@ -1,3 +1,5 @@
+import 'package:doctor/widgets/custom_form_field.dart';
+
 import 'models/details.dart';
 import 'providers/record_provider.dart';
 import 'widgets/alert_dialog.dart';
@@ -151,7 +153,7 @@ class _StepperBodyState extends State<StepperBody> {
     List<Step> steps = [
       customStepper(
         title: 'Medical Notes',
-        formfields: customformfields(
+        formfields: customformfieldslist(
           dynamiclist: data._medicalnotes,
           message: 'Enter Medical Notes',
           iconData: Icons.assignment,
@@ -161,7 +163,7 @@ class _StepperBodyState extends State<StepperBody> {
       customStepper(
         title: 'Lab Results',
         widgetlist: _labresultswidgets,
-        formfields: customformfields(
+        formfields: customformfieldslist(
           dynamiclist: data._labresults,
           message: 'Enter Lab Results',
           iconData: Icons.format_list_bulleted,
@@ -175,7 +177,7 @@ class _StepperBodyState extends State<StepperBody> {
       customStepper(
         title: 'Diagnosis',
         widgetlist: _diagnosiswidgets,
-        formfields: customformfields(
+        formfields: customformfieldslist(
           dynamiclist: data._diagnosis,
           message: 'Enter Diagnosis',
           iconData: Icons.format_align_center,
@@ -234,8 +236,6 @@ class _StepperBodyState extends State<StepperBody> {
         physics: ClampingScrollPhysics(),
         children: [
           formfields,
-          SizedBox(height: 10),
-          widgetlist.length > 0 ? Divider() : SizedBox(height: 10),
           for (var item in widgetlist) (item),
           SizedBox(height: 10),
           Row(
@@ -269,7 +269,7 @@ class _StepperBodyState extends State<StepperBody> {
     );
   }
 
-  ListView customformfields({
+  ListView customformfieldslist({
     List dynamiclist,
     String message,
     IconData iconData,
@@ -278,10 +278,10 @@ class _StepperBodyState extends State<StepperBody> {
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       children: [
-        TextFormField(
-          keyboardType: TextInputType.text,
+        CustomFormField(
+          keyboardtype: TextInputType.text,
           textInputAction: TextInputAction.go,
-          onSaved: (String value) {
+          onsaved: (String value) {
             dynamiclist.add(value);
           },
           validator: (value) {
@@ -290,17 +290,10 @@ class _StepperBodyState extends State<StepperBody> {
             }
             return null;
           },
-          maxLines: null,
-          minLines: 2,
-          decoration: InputDecoration(
-            labelText: message,
-            icon: Icon(
-              iconData,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          icondata: iconData,
+          labeltext: message,
         ),
-        SizedBox(height: 10)
+        SizedBox(height: 20),
       ],
     );
   }
@@ -310,10 +303,10 @@ class _StepperBodyState extends State<StepperBody> {
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       children: [
-        TextFormField(
-          keyboardType: TextInputType.text,
+        CustomFormField(
+          keyboardtype: TextInputType.text,
           textInputAction: TextInputAction.go,
-          onSaved: (String value) {
+          onsaved: (String value) {
             data.drugname.add(value);
           },
           validator: (value) {
@@ -322,20 +315,14 @@ class _StepperBodyState extends State<StepperBody> {
             }
             return null;
           },
-          maxLines: null,
-          minLines: 2,
-          decoration: new InputDecoration(
-            labelText: 'Enter Drug name',
-            icon: Icon(
-              Icons.gradient,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          labeltext: 'Enter Drug name',
+          icondata: Icons.gradient,
         ),
-        TextFormField(
-          keyboardType: TextInputType.number,
+        SizedBox(height: 20),
+        CustomFormField(
+          keyboardtype: TextInputType.number,
           textInputAction: TextInputAction.go,
-          onSaved: (String value) {
+          onsaved: (String value) {
             data.interval.add(value);
           },
           validator: (value) {
@@ -344,20 +331,14 @@ class _StepperBodyState extends State<StepperBody> {
             }
             return null;
           },
-          maxLines: null,
-          minLines: 2,
-          decoration: new InputDecoration(
-            labelText: 'Enter Interval',
-            icon: Icon(
-              Icons.check_circle_outline,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          labeltext: 'Enter Interval',
+          icondata: Icons.check_circle_outline,
         ),
-        TextFormField(
-          keyboardType: TextInputType.number,
+        SizedBox(height: 20),
+        CustomFormField(
+          keyboardtype: TextInputType.number,
           textInputAction: TextInputAction.go,
-          onSaved: (String value) {
+          onsaved: (String value) {
             data.dose.add(value);
           },
           validator: (value) {
@@ -366,17 +347,10 @@ class _StepperBodyState extends State<StepperBody> {
             }
             return null;
           },
-          maxLines: null,
-          minLines: 2,
-          decoration: new InputDecoration(
-            labelText: 'Enter Dosage',
-            icon: Icon(
-              Icons.calendar_today,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
+          labeltext: 'Enter Dosage',
+          icondata: Icons.calendar_today,
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 20)
       ],
     );
   }

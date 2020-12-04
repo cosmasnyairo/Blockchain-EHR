@@ -16,13 +16,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Block> _updatedrecords;
+  List<Block> _updatedrecords = [];
   Map<DateTime, List> _events = {};
   List _selectedEvents;
   CalendarController _calendarController;
 
   var _isloading = false;
-
   var _erroroccurred = false;
   var i = 0;
   var _chosen = DateTime.now();

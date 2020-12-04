@@ -1,5 +1,7 @@
 import 'package:doctor/edit_account.dart';
 import 'package:doctor/landingpage.dart';
+import 'settings.dart';
+import 'viewkeys.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,8 +71,10 @@ class MyApp extends StatelessWidget {
             'add_record': (ctx) => AddRecord(),
             'view_open_transaction': (ctx) => ViewOpenTransactions(),
             'add_visit': (ctx) => AddVisit(),
-            'edit_account': (ctx) => EditAccount()
+            'edit_account': (ctx) => EditAccount(),
+            'settings_page': (ctx) => SettingsPage(),
 
+            'view_keys': (ctx) => ViewKeysPage(),
             //to implement onboarding screen
             // 'landing_page': (ctx) => LandingPage()
           },
