@@ -119,6 +119,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> resolveConflicts() async {
     try {
       final url = '$_apiurl/resolve_conflicts';
+      print(url);
       await http.post(url);
     } catch (e) {}
   }

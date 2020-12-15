@@ -36,14 +36,9 @@ class LandingPage extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 CustomText(
-                  'Store your medical records securely',
+                  'Secure health records storage & sharing',
                   color: Theme.of(context).primaryColor,
                   fontsize: 18,
-                ),
-                CustomText(
-                  'Health record storage made easier',
-                  color: Colors.red,
-                  fontsize: 16,
                 ),
                 Divider(thickness: 1.5, color: Colors.black),
                 SizedBox(height: deviceheight * 0.075),

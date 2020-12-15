@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'models/block.dart';
+import 'models/transaction.dart';
 import 'providers/record_provider.dart';
 
+import 'visit_details.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
 
@@ -189,7 +191,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildEventList(DateTime day) {
     final f = DateFormat('dd-MM-yyyy');
+
+    final transactionformat = DateFormat.yMd().add_jm();
     String chosenday = f.format(day);
+
+    final List<Transaction> fetchedtransaction = [];
+
     final _newupdatedrecords = _updatedrecords
         .where(
           (element) =>
@@ -200,17 +207,64 @@ class _HomePageState extends State<HomePage> {
               chosenday,
         )
         .toList();
-    return _newupdatedrecords.length > 0
-        ? Center(
-            child: CustomButton(
-              'View Visit',
-              () {
-                Navigator.of(context).pushNamed(
-                  'records_detail',
-                  arguments: _newupdatedrecords,
-                );
-              },
-            ),
+
+    _newupdatedrecords.forEach((element) {
+      element.transaction.forEach((element) {
+        fetchedtransaction.add(element);
+      });
+    });
+    return fetchedtransaction.length > 0
+        ? ListView(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            children: [
+              Text(
+                'You had ${fetchedtransaction.length} visits on this day.',
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              ListView.separated(
+                padding: EdgeInsets.all(10),
+                physics: ClampingScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (context, index) => SizedBox(height: 20),
+                itemBuilder: (context, index) => Card(
+                  elevation: 7,
+                  child: ListTile(
+                    leading: Icon(Icons.history),
+                    title: Text(
+                      'Date: ${transactionformat.format(fetchedtransaction[index].timestamp)}',
+                    ),
+                    subtitle: Text('Visit $index'),
+                    isThreeLine: true,
+                    trailing: IconButton(
+                      iconSize: 30,
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(Icons.navigate_next),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => VisitDetails(
+                              fetchedtransaction[index],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => VisitDetails(
+                            fetchedtransaction[index],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                itemCount: fetchedtransaction.length,
+              ),
+            ],
           )
         : CustomText(
             'You have no visits for this date',

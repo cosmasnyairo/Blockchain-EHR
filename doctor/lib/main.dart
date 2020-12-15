@@ -12,7 +12,6 @@ import 'add_record.dart';
 import 'providers/record_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/node_provider.dart';
-import 'records_detail.dart';
 import 'screen.dart';
 import 'add_visit.dart';
 import 'view_open_transactions.dart';
@@ -67,7 +66,6 @@ class MyApp extends StatelessWidget {
           home: auth.isLoggedIn() ? Screen() : LandingPage(),
           //home: Screen(),
           routes: {
-            'records_detail': (ctx) => RecordsDetail(),
             'add_record': (ctx) => AddRecord(),
             'view_open_transaction': (ctx) => ViewOpenTransactions(),
             'add_visit': (ctx) => AddVisit(),
