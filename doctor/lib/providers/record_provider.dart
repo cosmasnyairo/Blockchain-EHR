@@ -90,7 +90,6 @@ class RecordsProvider with ChangeNotifier {
         "prescription": details[0].prescription.toList(),
       },
       "receiver": receiver,
-      "sender": sender,
       "timestamp": timestamp.toIso8601String(),
     };
     try {
@@ -119,7 +118,6 @@ class RecordsProvider with ChangeNotifier {
   Future<void> resolveConflicts() async {
     try {
       final url = '$_apiurl/resolve_conflicts';
-      print(url);
       await http.post(url);
     } catch (e) {}
   }

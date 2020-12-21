@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:patient/widgets/alert_dialog.dart';
+import 'package:patient/widgets/custom_form_field.dart';
 import 'package:provider/provider.dart';
 
 import 'landingpage.dart';
@@ -14,7 +15,7 @@ import 'widgets/custom_text.dart';
 enum usergender { male, female }
 
 class Authentication extends StatefulWidget {
-  AuthAction authAction;
+  final AuthAction authAction;
   Authentication(this.authAction);
   @override
   _AuthenticationState createState() => _AuthenticationState();
@@ -123,21 +124,19 @@ class _AuthenticationState extends State<Authentication> {
           body: ListView(
             children: [
               Container(
-                height: deviceheight * 0.3,
+                height: deviceheight * 0.4,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: deviceheight * 0.05),
               CustomText(
                 'Ehr Kenya',
                 color: Colors.black,
                 fontsize: 30,
                 alignment: TextAlign.center,
               ),
-              SizedBox(height: 10),
               Form(
                 key: _formkey,
                 child: ListView(
@@ -146,18 +145,13 @@ class _AuthenticationState extends State<Authentication> {
                   shrinkWrap: true,
                   children: [
                     widget.authAction == AuthAction.signup
-                        ? Column(
+                        ? ListView(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
                             children: [
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  icon: Icon(
-                                    Icons.person,
-                                    size: 25,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  labelText: 'Username',
-                                ),
+                              CustomFormField(
+                                labeltext: 'Username',
+                                icondata: Icons.person,
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -165,11 +159,11 @@ class _AuthenticationState extends State<Authentication> {
                                   }
                                   return null;
                                 },
-                                onFieldSubmitted: (_) {
+                                onfieldsubmitted: (_) {
                                   FocusScope.of(context)
                                       .requestFocus(_emailnode);
                                 },
-                                onSaved: (value) {
+                                onsaved: (value) {
                                   _authData['username'] = value.trim();
                                 },
                               ),
@@ -177,17 +171,10 @@ class _AuthenticationState extends State<Authentication> {
                             ],
                           )
                         : SizedBox(),
-                    TextFormField(
+                    CustomFormField(
                       focusNode: _emailnode,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                        icon: Icon(
-                          Icons.email,
-                          size: 25,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labeltext: 'Email',
+                      icondata: Icons.email,
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value.trim().isEmpty ||
@@ -197,26 +184,19 @@ class _AuthenticationState extends State<Authentication> {
                         }
                         return null;
                       },
-                      onFieldSubmitted: (_) {
+                      onfieldsubmitted: (_) {
                         FocusScope.of(context).requestFocus(_passwordnode);
                       },
-                      onSaved: (value) {
+                      onsaved: (value) {
                         _authData['email'] = value.trim();
                       },
                     ),
                     SizedBox(height: 20),
-                    TextFormField(
+                    CustomFormField(
                       focusNode: _passwordnode,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                        icon: Icon(
-                          Icons.remove_red_eye,
-                          size: 25,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      obscureText: true,
+                      labeltext: 'Password',
+                      icondata: Icons.remove_red_eye,
+                      obscuretext: true,
                       textInputAction: TextInputAction.go,
                       validator: (value) {
                         if (value.isEmpty || value.length < 8) {
@@ -224,10 +204,10 @@ class _AuthenticationState extends State<Authentication> {
                         }
                         return null;
                       },
-                      onSaved: (value) {
+                      onsaved: (value) {
                         _authData['password'] = value.trim();
                       },
-                      onFieldSubmitted: (_) {
+                      onfieldsubmitted: (_) {
                         FocusScope.of(context).requestFocus(_genderfocusnode);
                       },
                     ),
@@ -280,58 +260,42 @@ class _AuthenticationState extends State<Authentication> {
                   ],
                 ),
               ),
-              widget.authAction == AuthAction.signup
-                  ? FlatButton(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Already have an account? ',
-                              style: GoogleFonts.montserrat()
-                                  .copyWith(color: Colors.black),
-                            ),
-                            TextSpan(
-                              text: 'Sign in',
-                              style: GoogleFonts.montserrat().copyWith(
-                                  color: Theme.of(context).primaryColor),
-                            )
-                          ],
-                        ),
+              FlatButton(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: widget.authAction == AuthAction.signup
+                            ? 'Already have an account? '
+                            : 'Don\'t have an account? ',
+                        style: GoogleFonts.montserrat()
+                            .copyWith(color: Colors.black),
                       ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => Authentication(AuthAction.signin),
+                      TextSpan(
+                        text: widget.authAction == AuthAction.signup
+                            ? 'Sign in'
+                            : 'Sign up',
+                        style: GoogleFonts.montserrat()
+                            .copyWith(color: Theme.of(context).primaryColor),
+                      )
+                    ],
+                  ),
+                ),
+                onPressed: widget.authAction == AuthAction.signup
+                    ? () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (ctx) => Authentication(AuthAction.signin),
+                          ),
+                        )
+                    : () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (ctx) => Authentication(AuthAction.signup),
+                          ),
                         ),
-                      ),
-                    )
-                  : FlatButton(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Don\'t have an account? ',
-                              style: GoogleFonts.montserrat()
-                                  .copyWith(color: Colors.black),
-                            ),
-                            TextSpan(
-                              text: ' Sign up',
-                              style: GoogleFonts.montserrat().copyWith(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => Authentication(AuthAction.signup),
-                        ),
-                      ),
-                    ),
+              ),
             ],
           ),
         ),

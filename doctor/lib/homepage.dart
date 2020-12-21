@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Container(
                   padding: EdgeInsets.all(20),
-                  height: deviceheight * 0.6,
+                  height: deviceheight * 0.5,
                   child: Image.asset(
                     'assets/404.png',
                     fit: BoxFit.contain,
@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 20),
                       _buildEventList(_chosen),
                     ],
                   ),
@@ -191,8 +191,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildEventList(DateTime day) {
     final f = DateFormat('dd-MM-yyyy');
+    final transactionformat = DateFormat().add_jms();
 
-    final transactionformat = DateFormat.yMd().add_jm();
+    String tapped = DateFormat().add_yMMMMEEEEd().format(day);
     String chosenday = f.format(day);
 
     final List<Transaction> fetchedtransaction = [];
@@ -214,29 +215,39 @@ class _HomePageState extends State<HomePage> {
       });
     });
     return fetchedtransaction.length > 0
-        ? ListView(
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            children: [
-              Text(
-                'You had ${fetchedtransaction.length} visits on this day.',
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              ListView.separated(
-                padding: EdgeInsets.all(10),
-                physics: ClampingScrollPhysics(),
-                shrinkWrap: true,
-                separatorBuilder: (context, index) => SizedBox(height: 20),
-                itemBuilder: (context, index) => Card(
-                  elevation: 7,
-                  child: ListTile(
+        ? Card(
+            elevation: 7,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.all(10),
+              physics: ClampingScrollPhysics(),
+              children: [
+                SizedBox(height: 10),
+                CustomText(
+                  '$tapped',
+                  alignment: TextAlign.center,
+                  fontweight: FontWeight.bold,
+                ),
+                CustomText(
+                  'You had ${fetchedtransaction.length} visits on this day.',
+                  alignment: TextAlign.center,
+                ),
+                Divider(color: Colors.black, indent: 20, endIndent: 20),
+                ListView.separated(
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  separatorBuilder: (context, index) => Divider(
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  itemBuilder: (context, index) => ListTile(
+                    contentPadding: EdgeInsets.all(10),
                     leading: Icon(Icons.history),
-                    title: Text(
-                      'Date: ${transactionformat.format(fetchedtransaction[index].timestamp)}',
+                    title: CustomText(
+                      'View visit at ${transactionformat.format(fetchedtransaction[index].timestamp)}',
                     ),
-                    subtitle: Text('Visit $index'),
-                    isThreeLine: true,
                     trailing: IconButton(
                       iconSize: 30,
                       color: Theme.of(context).primaryColor,
@@ -261,14 +272,27 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
+                  itemCount: fetchedtransaction.length,
                 ),
-                itemCount: fetchedtransaction.length,
+              ],
+            ),
+          )
+        : ListView(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            children: [
+              CustomText(
+                'You have no visits for this date',
+                alignment: TextAlign.center,
+                fontweight: FontWeight.bold,
+              ),
+              SizedBox(height: 20),
+              Icon(
+                Icons.event_busy_rounded,
+                color: Theme.of(context).accentColor,
+                size: 100,
               ),
             ],
-          )
-        : CustomText(
-            'You have no visits for this date',
-            alignment: TextAlign.center,
           );
   }
 }

@@ -10,8 +10,9 @@ import 'edit_account.dart';
 import 'landingpage.dart';
 import 'providers/record_provider.dart';
 import 'providers/node_provider.dart';
-import 'records_detail.dart';
 import 'screen.dart';
+import 'settings.dart';
+import 'viewkeys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,9 +67,10 @@ class MyApp extends StatelessWidget {
           ),
           home: auth.isLoggedIn() ? Screen() : LandingPage(),
           routes: {
-            'records_detail': (ctx) => RecordsDetail(),
             'add_visit': (ctx) => AddVisit(),
-            'edit_account': (ctx) => EditAccount()
+            'edit_account': (ctx) => EditAccount(),
+            'settings_page': (ctx) => SettingsPage(),
+            'view_keys': (ctx) => ViewKeysPage(),
           },
         ),
       ),

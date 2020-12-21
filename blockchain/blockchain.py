@@ -53,6 +53,7 @@ class Blockchain:
         try:
             # with open('data/blockchain-{}.json'.format(self.node_id), mode='r') as f:
             file_content = loaddata(self.node_id)
+            
             # we escape the \n using range
             blockchain = file_content["blockchain"]
             open_transactions = file_content["opentransactions"]
@@ -82,7 +83,6 @@ class Blockchain:
 
             updated_transactions = []
             for tx in open_transactions:
-
                 updated_transaction = Transaction(
                     tx['sender'],
                     tx['receiver'],
@@ -205,8 +205,10 @@ class Blockchain:
 
     def mine_block(self):
         if self.public_key == None:
+            print('a')
             return None
         if len(self.__open_transactions) <= 0:
+            print('b')
             return 0
         last_block = self.__chain[-1]
         hashed_block = hash_block(last_block)
@@ -231,14 +233,15 @@ class Blockchain:
         )
         for tx in block.transactions:
             if not Wallet.verify_transaction(tx):
-                return None
-
+                return None 
+        print (block)
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
         for node in self.__peer_nodes:
             url = 'http://{}:{}/broadcast_block'.format(
                 secrets.ip_address, node)
+            print(url)
             converted_block = block.__dict__.copy()
             converted_block['transactions'] = [
                 tx.__dict__ for tx in converted_block['transactions']]

@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'models/block.dart';
+import 'models/transaction.dart';
 import 'providers/record_provider.dart';
+import 'visit_details.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/custom_text.dart';
 
@@ -81,16 +83,13 @@ class _HomePageState extends State<HomePage> {
     final deviceheight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: CustomText('Ehr Kenya', fontsize: 20),
-      ),
+      appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
       body: _erroroccurred
           ? ListView(
               children: [
                 Container(
                   padding: EdgeInsets.all(20),
-                  height: deviceheight * 0.6,
+                  height: deviceheight * 0.5,
                   child: Image.asset(
                     'assets/404.png',
                     fit: BoxFit.contain,
@@ -132,11 +131,6 @@ class _HomePageState extends State<HomePage> {
                   child: ListView(
                     shrinkWrap: true,
                     children: [
-                      Text(
-                        'Markers on the calender indicate visits for that day',
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 10),
                       TableCalendar(
                         headerStyle: HeaderStyle(centerHeaderTitle: true),
                         events: _events,
@@ -176,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
                       _buildEventList(_chosen),
                     ],
                   ),
@@ -200,7 +194,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildEventList(DateTime day) {
     final f = DateFormat('dd-MM-yyyy');
+    final transactionformat = DateFormat().add_jms();
+
+    String tapped = DateFormat().add_yMMMMEEEEd().format(day);
     String chosenday = f.format(day);
+
+    final List<Transaction> fetchedtransaction = [];
+
     final _newupdatedrecords = _updatedrecords
         .where(
           (element) =>
@@ -211,21 +211,92 @@ class _HomePageState extends State<HomePage> {
               chosenday,
         )
         .toList();
-    return _newupdatedrecords.length > 0
-        ? Center(
-            child: CustomButton(
-              'View Visit',
-              () {
-                Navigator.of(context).pushNamed(
-                  'records_detail',
-                  arguments: _newupdatedrecords,
-                );
-              },
+
+    _newupdatedrecords.forEach((element) {
+      element.transaction.forEach((element) {
+        fetchedtransaction.add(element);
+      });
+    });
+
+    return fetchedtransaction.length > 0
+        ? Card(
+            elevation: 7,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.all(10),
+              physics: ClampingScrollPhysics(),
+              children: [
+                SizedBox(height: 10),
+                CustomText(
+                  '$tapped',
+                  alignment: TextAlign.center,
+                  fontweight: FontWeight.bold,
+                ),
+                CustomText(
+                  'You had ${fetchedtransaction.length} visits on this day.',
+                  alignment: TextAlign.center,
+                ),
+                Divider(color: Colors.black, indent: 20, endIndent: 20),
+                ListView.separated(
+                  physics: ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  separatorBuilder: (context, index) => Divider(
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  itemBuilder: (context, index) => ListTile(
+                    contentPadding: EdgeInsets.all(10),
+                    leading: Icon(Icons.history),
+                    title: Text(
+                      'View visit at ${transactionformat.format(fetchedtransaction[index].timestamp)}',
+                    ),
+                    trailing: IconButton(
+                      iconSize: 30,
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(Icons.navigate_next),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => VisitDetails(
+                              fetchedtransaction[index],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => VisitDetails(
+                            fetchedtransaction[index],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  itemCount: fetchedtransaction.length,
+                ),
+              ],
             ),
           )
-        : CustomText(
-            'You have no visits for this date',
-            alignment: TextAlign.center,
+        : ListView(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            children: [
+              CustomText(
+                'You have no visits for this date',
+                alignment: TextAlign.center,
+                fontweight: FontWeight.bold,
+              ),
+              SizedBox(height: 20),
+              Icon(
+                Icons.event_busy_rounded,
+                color: Theme.of(context).accentColor,
+                size: 100,
+              ),
+            ],
           );
   }
 }

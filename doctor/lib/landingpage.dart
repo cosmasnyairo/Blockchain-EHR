@@ -16,14 +16,13 @@ class LandingPage extends StatelessWidget {
         body: ListView(
           children: [
             Container(
-              height: deviceheight * 0.3,
+              height: deviceheight * 0.4,
               width: double.infinity,
               child: Image.asset(
                 'assets/background.png',
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: deviceheight * 0.2),
             ListView(
               padding: EdgeInsets.all(20),
               shrinkWrap: true,

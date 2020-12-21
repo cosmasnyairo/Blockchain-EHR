@@ -122,29 +122,30 @@ class _AuthenticationState extends State<Authentication> {
           body: ListView(
             children: [
               Container(
-                height: deviceheight * 0.3,
+                height: deviceheight * 0.4,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: deviceheight * 0.05),
               CustomText(
                 'Ehr Kenya',
                 color: Colors.black,
                 fontsize: 30,
                 alignment: TextAlign.center,
               ),
-              SizedBox(height: 10),
               Form(
                 key: _formkey,
                 child: ListView(
+                  physics: ClampingScrollPhysics(),
                   padding: EdgeInsets.all(25),
                   shrinkWrap: true,
                   children: [
                     widget.authAction == AuthAction.signup
-                        ? Column(
+                        ? ListView(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
                             children: [
                               CustomFormField(
                                 icondata: Icons.assignment_ind,

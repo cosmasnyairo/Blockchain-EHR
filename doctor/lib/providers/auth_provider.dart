@@ -112,6 +112,7 @@ class DoctorAuthProvider extends ChangeNotifier {
         default:
           errorMessage = "An undefined Error happened.";
       }
+      throw errorMessage;
     }
 
     notifyListeners();

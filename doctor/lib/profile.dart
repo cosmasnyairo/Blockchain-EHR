@@ -29,9 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final deviceheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-      ),
+      appBar: AppBar(title: Text('Profile')),
       body: StreamBuilder<DocumentSnapshot>(
         stream: doctors.snapshots(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -66,10 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   iconData: Icons.navigate_next,
                   onpressed: () {
                     Navigator.of(context)
-                        .pushNamed(
-                          'edit_account',
-                          arguments: snapshot.data,
-                        )
+                        .pushNamed('edit_account', arguments: snapshot.data)
                         .then(
                           (value) => {
                             if (value != null) {showSnackBarMessage(value)}

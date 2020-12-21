@@ -98,11 +98,8 @@ class RecordsProvider with ChangeNotifier {
   Future<void> resolveConflicts() async {
     try {
       final url = '$_apiurl/resolve_conflicts';
-      final response = await http.post(url);
-      json.decode(response.body);
-    } catch (e) {
-      throw (e);
-    }
+      await http.post(url);
+    } catch (e) {}
   }
 
 //onlogin
