@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:patient/models/doctor.dart';
 import 'package:provider/provider.dart';
 
 import 'record_provider.dart';
@@ -8,24 +9,14 @@ import 'record_provider.dart';
 class UserAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String _doctorname;
-  String _hospital;
-  String _patientname;
-
   String get userid {
     return _auth.currentUser.uid;
   }
 
-  String get doctorname {
-    return _doctorname;
-  }
+  EhrDoctor _ehrDoctor;
 
-  String get patientname {
-    return _patientname;
-  }
-
-  String get hospital {
-    return _hospital;
+  EhrDoctor get ehrDoctor {
+    return _ehrDoctor;
   }
 
   bool isLoggedIn() {
@@ -140,22 +131,22 @@ class UserAuthProvider extends ChangeNotifier {
     }).catchError((error) => throw error);
   }
 
-  Future<void> getTransactiondetails(
-      String doctorkey, String patientkey) async {
-    final userdocument = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('publickey', isEqualTo: patientkey)
-        .get();
+  // Future<void> getTransactiondetails(
+  //     String doctorkey, String patientkey) async {
+  //   final userdocument = await FirebaseFirestore.instance
+  //       .collection('Users')
+  //       .where('publickey', isEqualTo: patientkey)
+  //       .get();
 
-    final doctordocument = await FirebaseFirestore.instance
-        .collection('Doctors')
-        .where('publickey', isEqualTo: doctorkey)
-        .get();
+  //   final doctordocument = await FirebaseFirestore.instance
+  //       .collection('Doctors')
+  //       .where('publickey', isEqualTo: doctorkey)
+  //       .get();
 
-    _doctorname = doctordocument.docs[0].data()['name'];
-    _patientname = userdocument.docs[0].data()['name'];
-    _hospital = doctordocument.docs[0].data()['hospital'];
+  //   _doctorname = doctordocument.docs[0].data()['name'];
+  //   _patientname = userdocument.docs[0].data()['name'];
+  //   _hospital = doctordocument.docs[0].data()['hospital'];
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 }

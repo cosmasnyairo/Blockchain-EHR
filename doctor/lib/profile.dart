@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctor/models/doctor.dart';
 import 'package:doctor/providers/auth_provider.dart';
 import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DoctorAuthProvider>(context, listen: false);
     DocumentReference doctors = FirebaseFirestore.instance
         .collection('Doctors')
         .doc(Provider.of<DoctorAuthProvider>(context).userid);
@@ -39,6 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
+
+          provider.fetchdoctordetails(snapshot.data);
           return Container(
             height: deviceheight,
             child: ListView(
@@ -101,8 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     setState(() {
                       _isloading = true;
                     });
-                    Provider.of<DoctorAuthProvider>(context, listen: false)
-                        .logout();
+                    provider.logout();
                     setState(() {
                       _isloading = false;
                     });

@@ -205,7 +205,6 @@ class _AddVisitState extends State<AddVisit>
                                       'Add Visit',
                                       () async {
                                         try {
-                                          print(_addednode);
                                           if (_addednode == null) {
                                             throw 'Choose patient node';
                                           } else {
@@ -383,25 +382,27 @@ class _AddVisitState extends State<AddVisit>
                     )
                   ],
                 ),
-      floatingActionButton: _controller.index == 1
-          ? FloatingActionButton.extended(
-              label: Text('Scan Qr Code'),
-              icon: Icon(Icons.center_focus_weak),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              onPressed: () async {
-                try {
-                  String codeSanner =
-                      await BarcodeScanner.scan(); //barcode scnner
-                  setState(() {
-                    _receiver = codeSanner;
-                  });
-                } catch (e) {}
-              },
-              backgroundColor: Theme.of(context).primaryColor,
-            )
-          : SizedBox(),
+      floatingActionButton: _erroroccurred
+          ? null
+          : _controller.index == 1
+              ? FloatingActionButton.extended(
+                  label: Text('Scan Qr Code'),
+                  icon: Icon(Icons.center_focus_weak),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  onPressed: () async {
+                    try {
+                      String codeSanner =
+                          await BarcodeScanner.scan(); //barcode scnner
+                      setState(() {
+                        _receiver = codeSanner;
+                      });
+                    } catch (e) {}
+                  },
+                  backgroundColor: Theme.of(context).primaryColor,
+                )
+              : SizedBox(),
     );
   }
 }

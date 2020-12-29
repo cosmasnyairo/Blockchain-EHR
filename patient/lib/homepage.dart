@@ -56,6 +56,7 @@ class _HomePageState extends State<HomePage> {
       await provider.loadKeys();
       final publicKey = provider.publickey;
       await provider.getPatientChain(publicKey);
+      await provider.mine();
       await provider.resolveConflicts();
 
       _updatedrecords = provider.records;

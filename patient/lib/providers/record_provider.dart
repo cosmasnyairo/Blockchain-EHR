@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:patient/models/doctor.dart';
 
 import '../models/block.dart';
 import '../models/details.dart';
@@ -65,6 +66,13 @@ class RecordsProvider with ChangeNotifier {
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
                               diagnosis: f['diagnosis'],
+                              doctordetails: EhrDoctor(
+                                doctorid: f['doctordetails']['doctorid'],
+                                email: f['doctordetails']['email'],
+                                hospital: f['doctordetails']['hospital'],
+                                location: f['doctordetails']['location'],
+                                name: f['doctordetails']['name'],
+                              ),
                             ),
                           )
                           .toList(),
@@ -112,6 +120,15 @@ class RecordsProvider with ChangeNotifier {
       _privatekey = keys["private_key"];
     } catch (e) {
       throw (e);
+    }
+  }
+
+  Future<void> mine() async {
+    try {
+      final url = '$_apiurl/mine';
+      await http.post(url);
+    } catch (e) {
+      throw e;
     }
   }
 }

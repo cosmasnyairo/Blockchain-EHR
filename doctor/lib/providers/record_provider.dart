@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:doctor/models/doctor.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -59,6 +60,13 @@ class RecordsProvider with ChangeNotifier {
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
                               diagnosis: f['diagnosis'],
+                              doctordetails: EhrDoctor(
+                                doctorid: f['doctordetails']['doctorid'],
+                                email: f['doctordetails']['email'],
+                                hospital: f['doctordetails']['hospital'],
+                                location: f['doctordetails']['location'],
+                                name: f['doctordetails']['name'],
+                              ),
                             ),
                           )
                           .toList(),
@@ -77,17 +85,18 @@ class RecordsProvider with ChangeNotifier {
   }
 
   Future<void> addTransaction(
-    List<Details> details,
+    Details details,
     String sender,
     String receiver,
   ) async {
     final timestamp = DateTime.now();
     Map<String, dynamic> transaction = {
       "details": {
-        "diagnosis": details[0].diagnosis.toList(),
-        "lab_results": details[0].labresults.toList(),
-        "medical_notes": details[0].medicalnotes.toList(),
-        "prescription": details[0].prescription.toList(),
+        "diagnosis": details.diagnosis.toList(),
+        "lab_results": details.labresults.toList(),
+        "medical_notes": details.medicalnotes.toList(),
+        "prescription": details.prescription.toList(),
+        "doctordetails": details.doctordetails.toJson(),
       },
       "receiver": receiver,
       "timestamp": timestamp.toIso8601String(),
@@ -143,6 +152,13 @@ class RecordsProvider with ChangeNotifier {
                       labresults: f['lab_results'],
                       prescription: f['prescription'],
                       diagnosis: f['diagnosis'],
+                      doctordetails: EhrDoctor(
+                        doctorid: f['doctordetails']['doctorid'],
+                        email: f['doctordetails']['email'],
+                        hospital: f['doctordetails']['hospital'],
+                        location: f['doctordetails']['location'],
+                        name: f['doctordetails']['name'],
+                      ),
                     ),
                   )
                   .toList(),

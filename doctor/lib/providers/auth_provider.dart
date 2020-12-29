@@ -1,30 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctor/models/doctor.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-import 'record_provider.dart';
 
 class DoctorAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String _doctorname;
-  String _hospital;
-  String _patientname;
+  EhrDoctor _ehrDoctor;
+
+  EhrDoctor get ehrDoctor {
+    return _ehrDoctor;
+  }
 
   String get userid {
     return _auth.currentUser.uid;
-  }
-
-  String get doctorname {
-    return _doctorname;
-  }
-
-  String get patientname {
-    return _patientname;
-  }
-
-  String get hospital {
-    return _hospital;
   }
 
   bool isLoggedIn() {
@@ -118,6 +107,16 @@ class DoctorAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void fetchdoctordetails(DocumentSnapshot snapshot) {
+    _ehrDoctor = EhrDoctor(
+      name: snapshot['name'],
+      doctorid: snapshot['doctorid'],
+      email: snapshot['email'],
+      hospital: snapshot['hospital'],
+      location: snapshot['location'],
+    );
+  }
+
   Future<void> editdetails({
     String name,
     String email,
@@ -135,24 +134,32 @@ class DoctorAuthProvider extends ChangeNotifier {
       'hospital': hospital,
       'location': location,
     }).catchError((error) => throw error);
-  }
-
-  Future<void> getTransactiondetails(
-      String doctorkey, String patientkey) async {
-    final userdocument = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('publickey', isEqualTo: patientkey)
-        .get();
-
-    final doctordocument = await FirebaseFirestore.instance
-        .collection('Doctors')
-        .where('publickey', isEqualTo: doctorkey)
-        .get();
-
-    _doctorname = doctordocument.docs[0].data()['name'];
-    _patientname = userdocument.docs[0].data()['name'];
-    _hospital = doctordocument.docs[0].data()['hospital'];
-
+    _ehrDoctor = EhrDoctor(
+      name: name,
+      doctorid: doctorid,
+      email: email,
+      hospital: hospital,
+      location: location,
+    );
     notifyListeners();
   }
+
+  // Future<void> getTransactiondetails(
+  //     String doctorkey, String patientkey) async {
+  //   final userdocument = await FirebaseFirestore.instance
+  //       .collection('Users')
+  //       .where('publickey', isEqualTo: patientkey)
+  //       .get();
+
+  //   final doctordocument = await FirebaseFirestore.instance
+  //       .collection('Doctors')
+  //       .where('publickey', isEqualTo: doctorkey)
+  //       .get();
+
+  //   _doctorname = doctordocument.docs[0].data()['name'];
+  //   _patientname = userdocument.docs[0].data()['name'];
+  //   _hospital = doctordocument.docs[0].data()['hospital'];
+
+  //   notifyListeners();
+  // }
 }

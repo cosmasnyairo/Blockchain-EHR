@@ -1,3 +1,4 @@
+import 'package:doctor/models/doctor.dart';
 import 'package:doctor/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,26 +18,27 @@ class VisitDetails extends StatefulWidget {
 class _VisitDetailsState extends State<VisitDetails> {
   var isloading = false;
 
-  @override
-  void didChangeDependencies() async {
-    setState(() {
-      isloading = true;
-    });
-    await Provider.of<DoctorAuthProvider>(context, listen: false)
-        .getTransactiondetails(
-      widget.transaction.sender,
-      widget.transaction.receiver,
-    );
-    setState(() {
-      isloading = false;
-    });
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() async {
+  //   setState(() {
+  //     isloading = true;
+  //   });
+  //   await Provider.of<DoctorAuthProvider>(context, listen: false)
+  //       .getTransactiondetails(
+  //     widget.transaction.sender,
+  //     widget.transaction.receiver,
+  //   );
+  //   setState(() {
+  //     isloading = false;
+  //   });
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
-    final provider = Provider.of<DoctorAuthProvider>(context, listen: false);
+    final EhrDoctor doctordetails =
+        Provider.of<DoctorAuthProvider>(context, listen: false).ehrDoctor;
     List medicalNotes = [];
     List labResults = [];
     List prescription = [];
@@ -59,32 +61,17 @@ class _VisitDetailsState extends State<VisitDetails> {
               padding: const EdgeInsets.all(20),
               child: ListView(
                 children: [
-                  Column(
-                    children: [
-                      Card(
-                        elevation: 7,
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(10),
-                          title: Text('Doctor: ${provider.doctorname}'),
-                          subtitle: Text('${provider.hospital}'),
-                          leading: Icon(
-                            Icons.person,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
+                  Card(
+                    elevation: 7,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      title: Text('Doctor: ${doctordetails.name}'),
+                      subtitle: Text('${doctordetails.hospital}'),
+                      leading: Icon(
+                        Icons.person,
+                        color: Theme.of(context).primaryColor,
                       ),
-                      Card(
-                        elevation: 7,
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(10),
-                          title: Text('Patient: ${provider.patientname}'),
-                          leading: Icon(
-                            Icons.person_outline,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   SizedBox(height: 10),
                   Divider(),

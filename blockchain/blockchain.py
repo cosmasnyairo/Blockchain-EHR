@@ -1,4 +1,5 @@
 # To do: 1. Reward miners
+import json
 import requests
 
 # these two can be used to reduce the memory size of the blockchain and files storing it
@@ -51,74 +52,77 @@ class Blockchain:
     def load_data(self):
         # load data from the txt file
         try:
-            # with open('data/blockchain-{}.json'.format(self.node_id), mode='r') as f:
-            file_content = loaddata(self.node_id)
-            
-            # we escape the \n using range
-            blockchain = file_content["blockchain"]
-            open_transactions = file_content["opentransactions"]
-            peer_nodes = file_content["peer_nodes"]
+            with open('data/blockchain-{}.json'.format(self.node_id), mode='r') as f:
+                file_content = json.load(f)
+                # file_content = loaddata(self.node_id)
+                # we escape the \n using range
+                blockchain = file_content["blockchain"]
+                open_transactions = file_content["opentransactions"]
+                peer_nodes = file_content["peer_nodes"]
 
-            # ordered dicts aid in using odering to calculate the guess in valid proof
-            updated_blockchain = []
+                # ordered dicts aid in using odering to calculate the guess in valid proof
+                updated_blockchain = []
 
-            for block in blockchain:
-                converted_transaction = [Transaction(
-                    tx['sender'],
-                    tx['receiver'],
-                    tx['signature'],
-                    tx['details'],
-                    tx['timestamp']
-                ) for tx in block['transactions']]
+                for block in blockchain:
+                    converted_transaction = [Transaction(
+                        tx['sender'],
+                        tx['receiver'],
+                        tx['signature'],
+                        tx['details'],
+                        tx['timestamp']
+                    ) for tx in block['transactions']]
 
-                updated_block = Block(
-                    block['index'],
-                    block['previous_hash'],
-                    converted_transaction,
-                    block['proof'],
-                    block['timestamp'],
-                )
-                updated_blockchain.append(updated_block)
-            self.__chain = updated_blockchain
+                    updated_block = Block(
+                        block['index'],
+                        block['previous_hash'],
+                        converted_transaction,
+                        block['proof'],
+                        block['timestamp'],
+                    )
+                    updated_blockchain.append(updated_block)
+                self.__chain = updated_blockchain
 
-            updated_transactions = []
-            for tx in open_transactions:
-                updated_transaction = Transaction(
-                    tx['sender'],
-                    tx['receiver'],
-                    tx['signature'],
-                    tx['details'],
-                    tx['timestamp']
-                )
-                updated_transactions.append(updated_transaction)
-            self.__open_transactions = updated_transactions
+                updated_transactions = []
+                for tx in open_transactions:
+                    updated_transaction = Transaction(
+                        tx['sender'],
+                        tx['receiver'],
+                        tx['signature'],
+                        tx['details'],
+                        tx['timestamp']
+                    )
+                    updated_transactions.append(updated_transaction)
+                self.__open_transactions = updated_transactions
 
-            self.__peer_nodes = set(peer_nodes)
+                self.__peer_nodes = set(peer_nodes)
 
         except (IOError, IndexError):
             pass
 
     def save_data(self):
         try:
-            # with open('data/blockchain-{}.json'.format(self.node_id), mode='w') as f:
-            # data = {}
-            # data["blockchain"] = []
-            # data["opentransactions"] = []
-            # data["peer_nodes"] = []
-            saveable_chain = [block.__dict__ for block in [
-                # convert transactions to transaction object that can be json dumped
-                Block(
-                    bl.index,
-                    bl.previous_hash,
-                    [tx.__dict__ for tx in bl.transactions],
-                    bl.proof,
-                    bl.timestamp
-                )for bl in self.__chain]]
-            # f.write(json.dumps(saveable_chain))
-            saveable_tx = [tx.__dict__ for tx in self.__open_transactions]
-            # f.write(json.dumps(saveable_tx))
-            savedata(self.node_id, saveable_chain,
-                     saveable_tx, list(self.__peer_nodes))
+            with open('data/blockchain-{}.json'.format(self.node_id), mode='w') as f:
+                data = {}
+                data["blockchain"] = []
+                data["opentransactions"] = []
+                data["peer_nodes"] = []
+                saveable_chain = [block.__dict__ for block in [
+                    # convert transactions to transaction object that can be json dumped
+                    Block(
+                        bl.index,
+                        bl.previous_hash,
+                        [tx.__dict__ for tx in bl.transactions],
+                        bl.proof,
+                        bl.timestamp
+                    )for bl in self.__chain]]
+                saveable_tx = [tx.__dict__ for tx in self.__open_transactions]
+                data["blockchain"] = saveable_chain
+                data["opentransactions"] = saveable_tx
+                data["peer_nodes"] = list(self.__peer_nodes)
+                json.dump(data, f)
+
+                # savedata(self.node_id, saveable_chain,
+                #          saveable_tx, list(self.__peer_nodes))
         except IOError:
             print('Saving Failed'+IOError.message)
 
@@ -233,8 +237,8 @@ class Blockchain:
         )
         for tx in block.transactions:
             if not Wallet.verify_transaction(tx):
-                return None 
-        print (block)
+                return None
+        print(block)
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()

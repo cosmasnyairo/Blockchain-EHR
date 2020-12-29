@@ -3,3 +3,4 @@ __pycache__/
 patient/android/app/google-services.json
 doctor/android/app/google-services.json
 blockchain/secrets.py
+blockchain/data/

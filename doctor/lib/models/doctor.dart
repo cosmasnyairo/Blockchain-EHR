@@ -7,7 +7,6 @@ class EhrDoctor {
   final String doctorid;
   final String imageurl;
   final String location;
-  final DateTime joindate;
 
   EhrDoctor({
     this.name,
@@ -16,8 +15,15 @@ class EhrDoctor {
     this.hospital,
     this.imageurl,
     this.location,
-    this.joindate,
     this.privatekey,
     this.publickey,
   });
+
+  Map toJson() => {
+        'name': name,
+        'email': email,
+        'doctorid': doctorid,
+        'hospital': hospital,
+        'location': location
+      };
 }
