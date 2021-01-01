@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/widgets/custom_form_field.dart';
-
-import 'models/details.dart';
-import 'models/doctor.dart';
-import 'providers/auth_provider.dart';
-import 'providers/record_provider.dart';
-import 'widgets/alert_dialog.dart';
-import 'widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../models/details.dart';
+import '../models/doctor.dart';
+import '../providers/auth_provider.dart';
+import '../providers/record_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_form_field.dart';
 
 class AddRecord extends StatefulWidget {
   @override

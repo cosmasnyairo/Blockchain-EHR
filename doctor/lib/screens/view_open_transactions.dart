@@ -1,11 +1,12 @@
-import 'models/transaction.dart';
-import 'providers/record_provider.dart';
-import 'visit_details.dart';
-import 'widgets/alert_dialog.dart';
-import 'widgets/custom_text.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../models/transaction.dart';
+import '../providers/record_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_text.dart';
+import 'visit_details.dart';
 
 class ViewOpenTransactions extends StatefulWidget {
   @override

@@ -30,9 +30,11 @@ dependencies:
   firebase_dynamic_links: ^0.6.1
   google_fonts: ^1.1.0
   http: ^0.12.2
+  lottie: ^0.7.0+1
   provider: ^4.3.2+2
   table_calendar: ^2.3.0
-
+  concentric_transition: ^0.1.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

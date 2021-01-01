@@ -1,16 +1,15 @@
-import 'package:table_calendar/table_calendar.dart';
-
+import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
-import 'models/block.dart';
-import 'models/transaction.dart';
-import 'providers/record_provider.dart';
-
+import '../models/block.dart';
+import '../models/transaction.dart';
+import '../providers/record_provider.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_text.dart';
 import 'visit_details.dart';
-import 'widgets/custom_button.dart';
-import 'widgets/custom_text.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -226,15 +225,12 @@ class _HomePageState extends State<HomePage> {
               children: [
                 SizedBox(height: 10),
                 CustomText(
-                  '$tapped',
+                  '$tapped \n ${fetchedtransaction.length} visits',
+                  fontsize: 16,
                   alignment: TextAlign.center,
                   fontweight: FontWeight.bold,
                 ),
-                CustomText(
-                  'You had ${fetchedtransaction.length} visits on this day.',
-                  alignment: TextAlign.center,
-                ),
-                Divider(color: Colors.black, indent: 20, endIndent: 20),
+                SizedBox(height: 10),
                 ListView.separated(
                   physics: ClampingScrollPhysics(),
                   shrinkWrap: true,
@@ -242,27 +238,13 @@ class _HomePageState extends State<HomePage> {
                     indent: 20,
                     endIndent: 20,
                   ),
-                  itemBuilder: (context, index) => ListTile(
-                    contentPadding: EdgeInsets.all(10),
-                    leading: Icon(Icons.history),
-                    title: CustomText(
-                      'View visit at ${transactionformat.format(fetchedtransaction[index].timestamp)}',
-                    ),
-                    trailing: IconButton(
-                      iconSize: 30,
-                      color: Theme.of(context).primaryColor,
-                      icon: Icon(Icons.navigate_next),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => VisitDetails(
-                              fetchedtransaction[index],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    onTap: () {
+                  itemBuilder: (context, index) => CustomTile(
+                    leadingiconData: Icons.description_outlined,
+                    title: 'Health record',
+                    subtitle:
+                        'Visit at ${transactionformat.format(fetchedtransaction[index].timestamp)}',
+                    iconData: Icons.navigate_next,
+                    onpressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => VisitDetails(

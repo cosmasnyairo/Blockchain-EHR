@@ -1,20 +1,20 @@
-import 'package:doctor/edit_account.dart';
-import 'package:doctor/landingpage.dart';
-import 'settings.dart';
-import 'viewkeys.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'add_record.dart';
-import 'providers/record_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/node_provider.dart';
-import 'screen.dart';
-import 'add_visit.dart';
-import 'view_open_transactions.dart';
+import 'providers/record_provider.dart';
+import 'screens/add_record.dart';
+import 'screens/add_visit.dart';
+import 'screens/edit_account.dart';
+import 'screens/landingpage.dart';
+import 'screens/screen.dart';
+import 'screens/settings.dart';
+import 'screens/view_open_transactions.dart';
+import 'screens/viewkeys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,14 +64,13 @@ class MyApp extends StatelessWidget {
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
           home: auth.isLoggedIn() ? Screen() : LandingPage(),
-          //home: Screen(),
+          // home: OnboardingScreen(),
           routes: {
             'add_record': (ctx) => AddRecord(),
             'view_open_transaction': (ctx) => ViewOpenTransactions(),
             'add_visit': (ctx) => AddVisit(),
             'edit_account': (ctx) => EditAccount(),
             'settings_page': (ctx) => SettingsPage(),
-
             'view_keys': (ctx) => ViewKeysPage(),
             //to implement onboarding screen
             // 'landing_page': (ctx) => LandingPage()

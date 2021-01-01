@@ -1,5 +1,6 @@
-import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/custom_tile.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -41,7 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Divider(color: Colors.black, endIndent: 20, indent: 10),
           CustomTile(title: 'Privacy policy', iconData: Icons.privacy_tip),
           Divider(color: Colors.black, endIndent: 20, indent: 10),
-          CustomTile(title: 'App info', iconData: Icons.info)
+          CustomTile(title: 'App info', iconData: Icons.info),
         ],
       ),
     );

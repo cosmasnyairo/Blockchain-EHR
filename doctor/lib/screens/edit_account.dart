@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/providers/auth_provider.dart';
-import 'package:doctor/widgets/custom_form_field.dart';
-import 'package:doctor/widgets/custom_tile.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/auth_provider.dart';
+import '../widgets/custom_form_field.dart';
+import '../widgets/custom_tile.dart';
 
 class EditAccount extends StatefulWidget {
   @override

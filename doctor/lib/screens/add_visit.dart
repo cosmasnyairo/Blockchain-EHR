@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
-import 'models/node.dart';
-import 'models/transaction.dart';
-import 'providers/node_provider.dart';
-import 'providers/record_provider.dart';
-import 'widgets/custom_button.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'widgets/alert_dialog.dart';
+
+import '../models/node.dart';
+import '../models/transaction.dart';
+import '../providers/node_provider.dart';
+import '../providers/record_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_button.dart';
 
 class AddVisit extends StatefulWidget {
   @override
