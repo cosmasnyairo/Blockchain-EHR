@@ -133,12 +133,31 @@ class _HomePageState extends State<HomePage> {
                   child: ListView(
                     shrinkWrap: true,
                     children: [
+                      CustomText(
+                        'Change calender view by tapping the view button below',
+                        fontsize: 12,
+                        color: Colors.grey,
+                        alignment: TextAlign.center,
+                      ),
                       TableCalendar(
-                        headerStyle: HeaderStyle(centerHeaderTitle: true),
+                        headerStyle: HeaderStyle(
+                          formatButtonShowsNext: false,
+                          centerHeaderTitle: false,
+                          formatButtonTextStyle: TextStyle(color: Colors.white),
+                          formatButtonDecoration: BoxDecoration(
+                            border: Border.all(),
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          formatButtonPadding: EdgeInsets.all(7),
+                        ),
                         events: _events,
                         availableCalendarFormats: {
-                          CalendarFormat.month: 'Month'
+                          CalendarFormat.month: 'Month view',
+                          CalendarFormat.week: 'Week view',
+                          CalendarFormat.twoWeeks: 'Two Week view'
                         },
+                        formatAnimation: FormatAnimation.scale,
                         calendarController: _calendarController,
                         startingDayOfWeek: StartingDayOfWeek.sunday,
                         availableGestures: AvailableGestures.horizontalSwipe,
