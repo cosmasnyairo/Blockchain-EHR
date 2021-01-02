@@ -1,12 +1,12 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:patient/models/doctor.dart';
 
 import '../models/block.dart';
 import '../models/details.dart';
+import '../models/doctor.dart';
 import '../models/transaction.dart';
-
 import '../secrets.dart' as secrets;
 
 class RecordsProvider with ChangeNotifier {

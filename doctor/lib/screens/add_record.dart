@@ -68,17 +68,21 @@ class _StepperBodyState extends State<StepperBody> {
   final _formkey = GlobalKey<FormState>();
 
   var _isloading = false;
+
   List _medicalnotes = [];
   List _labresults = [];
   List _diagnosis = [];
+
   List _prescription = [];
   List drugname = [];
   List dose = [];
   List interval = [];
+
   List<Widget> _medicalwidgets = [];
   List<Widget> _labresultswidgets = [];
   List<Widget> _prescriptionwidgets = [];
   List<Widget> _diagnosiswidgets = [];
+
   Details _enteredDetails;
 
   Future<void> _saveForm() async {
@@ -146,13 +150,7 @@ class _StepperBodyState extends State<StepperBody> {
 
   void joinprescription() {
     for (var i = 0; i < drugname.length; i++) {
-      var enteredprescription = drugname[i] +
-          ' ' +
-          dose[i].toString() +
-          ' dose ' +
-          interval[i].toString() +
-          ' times a day';
-      _prescription.add(enteredprescription);
+      _prescription.add([drugname[i], dose[i], interval[i]]);
     }
   }
 

@@ -8,7 +8,7 @@ class CustomText extends StatelessWidget {
   final TextAlign alignment;
   final FontWeight fontweight;
   final TextOverflow overflow;
-
+  final FontStyle fontStyle;
   CustomText(
     this.text, {
     this.color,
@@ -16,6 +16,7 @@ class CustomText extends StatelessWidget {
     this.alignment,
     this.fontweight,
     this.overflow,
+    this.fontStyle,
   });
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,10 @@ class CustomText extends StatelessWidget {
       textAlign: alignment,
       overflow: overflow,
       style: GoogleFonts.montserrat(
-          fontSize: fontsize, color: color, fontWeight: fontweight),
+          fontStyle: fontStyle,
+          fontSize: fontsize,
+          color: color,
+          fontWeight: fontweight),
     );
   }
 }

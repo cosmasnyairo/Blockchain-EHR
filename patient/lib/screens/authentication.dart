@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:patient/widgets/alert_dialog.dart';
-import 'package:patient/widgets/custom_form_field.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth_provider.dart';
+import '../providers/record_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_form_field.dart';
+import '../widgets/custom_text.dart';
 import 'landingpage.dart';
-
-import 'providers/auth_provider.dart';
-
-import 'providers/record_provider.dart';
-import 'widgets/custom_button.dart';
-import 'widgets/custom_text.dart';
 
 enum usergender { male, female }
 

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:patient/providers/node_provider.dart';
-import 'package:patient/widgets/alert_dialog.dart';
-import 'package:patient/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'models/node.dart';
-import 'providers/record_provider.dart';
-import 'widgets/custom_text.dart';
+import '../models/node.dart';
+import '../providers/node_provider.dart';
+import '../providers/record_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_button.dart';
 
 class AddVisit extends StatefulWidget {
   @override

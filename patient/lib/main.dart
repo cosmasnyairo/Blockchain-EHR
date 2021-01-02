@@ -1,18 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:patient/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-import 'add_visit.dart';
-import 'edit_account.dart';
-import 'landingpage.dart';
-import 'providers/record_provider.dart';
+import 'providers/auth_provider.dart';
 import 'providers/node_provider.dart';
-import 'screen.dart';
-import 'settings.dart';
-import 'viewkeys.dart';
+import 'providers/record_provider.dart';
+import 'screens/add_visit.dart';
+import 'screens/edit_account.dart';
+import 'screens/landingpage.dart';
+import 'screens/screen.dart';
+import 'screens/settings.dart';
+import 'screens/viewkeys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

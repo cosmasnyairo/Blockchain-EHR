@@ -62,6 +62,7 @@ class _VisitDetailsState extends State<VisitDetails>
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
+
     List medicalNotes = [];
     List labResults = [];
     List prescription = [];
@@ -75,11 +76,8 @@ class _VisitDetailsState extends State<VisitDetails>
       prescription = item.prescription;
       labResults = item.labresults;
     }
-
     return Scaffold(
-      appBar: AppBar(
-        title: CustomText('Health Record'),
-      ),
+      appBar: AppBar(title: Text('Health Record')),
       body: Container(
         height: deviceheight,
         width: double.infinity,

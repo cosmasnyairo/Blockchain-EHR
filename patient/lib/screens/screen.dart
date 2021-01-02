@@ -4,7 +4,7 @@ import 'add_visit.dart';
 import 'homepage.dart';
 import 'profile.dart';
 
-import 'widgets/custom_text.dart';
+import '../widgets/custom_text.dart';
 
 class Screen extends StatefulWidget {
   @override

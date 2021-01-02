@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/custom_tile.dart';
+import '../widgets/custom_tile.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
