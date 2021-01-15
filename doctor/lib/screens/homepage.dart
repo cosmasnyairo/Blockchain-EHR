@@ -155,11 +155,11 @@ class _HomePageState extends State<HomePage> {
                         calendarController: _calendarController,
                         startingDayOfWeek: StartingDayOfWeek.sunday,
                         availableGestures: AvailableGestures.horizontalSwipe,
-                        initialCalendarFormat: CalendarFormat.month,
+                        initialCalendarFormat: CalendarFormat.twoWeeks,
                         calendarStyle: CalendarStyle(
                           selectedColor:
                               Theme.of(context).primaryColor.withOpacity(0.7),
-                          todayColor: Theme.of(context).primaryColor,
+                          todayColor: Colors.grey,
                           markersColor: Theme.of(context).primaryColor,
                           outsideDaysVisible: false,
                         ),
@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 30),
                       _buildEventList(_chosen),
                     ],
                   ),
