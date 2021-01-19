@@ -1,6 +1,4 @@
 .vscode
 __pycache__/
-secrets.py
-serviceaccount.json
 virtualenv/
 data/

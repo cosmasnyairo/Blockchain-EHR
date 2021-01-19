@@ -5,9 +5,6 @@ from flask_cors import CORS
 from wallet import Wallet
 from blockchain import Blockchain
 
-import secrets
-
-
 app = Flask(__name__)
 
 # enables opening up app to other nodes
@@ -128,7 +125,7 @@ def add_transaction():
     signature = wallet.sign_transaction(wallet.public_key, receiver, details)
 
     success = blockchain.add_transaction(
-        receiver, wallet.public_key, signature, details,timestamp)
+        receiver, wallet.public_key, signature, details, timestamp)
     if success:
         response = {
             'message': 'Succesfully added transaction!',
@@ -281,11 +278,13 @@ def get_nodes():
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
+
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', type=int, default=5000)
+    parser.add_argument('--host', type=str)
     args = parser.parse_args()
-    port = args.port
+    port, host = args.port, args.host
     wallet = Wallet(port)
     blockchain = Blockchain(wallet.public_key, port)
     # use local ip address
-    app.run(host=secrets.ip_address, port=port)
+    app.run(host=host, port=port)

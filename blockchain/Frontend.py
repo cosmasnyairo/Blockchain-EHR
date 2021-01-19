@@ -2,17 +2,20 @@ import socket
 import subprocess
 import tkinter as tk
 from tkinter.constants import *
+from tkinter import messagebox
 import tkinter.font as tkFont
 
 
 class App:
     def __init__(self, root):
+        self.proceses = []
         self.get_ip()
+
         root.wm_title('EHR | Blockchain Peers Panel')
         root.resizable(False, False)
 
         # setting window size
-        width, height = 450, 240
+        width, height = 450, 300
         difwidth, difheight = (
             (root.winfo_screenwidth()-width)/2), ((root.winfo_screenheight()-height)/2)
         alignstr = '%dx%d+%d+%d'.format() % (width, height, difwidth, difheight)
@@ -23,7 +26,7 @@ class App:
                            "Click button below to start node", label=True, width=30)
         peer_btn.pack(side=tk.TOP, padx=10, pady=10)
 
-        peers = [5000, 5001]
+        peers = [5000, 5001, 5002]
         for peer in peers:
             frame = tk.Frame(root)
             frame.pack()
@@ -36,6 +39,7 @@ class App:
             peer_btn = tk.Button(frame)
             self.format_widget(peer_btn, "#000000",
                                "Start Node", command=lambda peer=peer: self.onclick(peer))
+
             peer_btn.pack(side=tk.LEFT, padx=10, pady=15)
 
         bottomframe = tk.Frame(root)
@@ -46,8 +50,9 @@ class App:
         btn_ipadr.pack(side=tk.BOTTOM, padx=5, pady=5)
 
     def onclick(self, peer):
-        subprocess.Popen(
-            "python node.py -p {}".format(peer), shell=True)
+        pid = subprocess.Popen(
+            "python node.py -p {} --host {}".format(peer, self.ip_address), shell=True).pid
+        self.proceses.append(pid)
         # print('output is ', subprocess.check_output([command]))
 
     def format_widget(self, Widget, color, text, command=None, label=False, width=None):
@@ -69,8 +74,15 @@ class App:
         self.ip_address = s.getsockname()[0]
         s.close()
 
+    def on_closing(self):
+        if tk.messagebox.askokcancel("Quit", "Do you want to quit?"):
+            for pid in self.proceses:
+                subprocess.Popen("TASKKILL /F /PID {} /T".format(pid))
+            root.destroy()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_closing)
     root.mainloop()
