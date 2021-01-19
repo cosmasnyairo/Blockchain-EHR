@@ -12,7 +12,7 @@ from transaction import Transaction
 from utility.verification import Verification
 from utility.hash_util import hash_block
 from wallet import Wallet
-from data import savedata, loaddata
+# from data import savedata, loaddata
 
 import secrets
 

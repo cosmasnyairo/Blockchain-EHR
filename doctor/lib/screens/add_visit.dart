@@ -250,7 +250,7 @@ class _AddVisitState extends State<AddVisit> {
                                 ),
                               )
                             ],
-                    )
+                    ),
                   ],
                 ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

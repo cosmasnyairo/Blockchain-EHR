@@ -137,11 +137,9 @@ class _HomePageState extends State<HomePage> {
                         headerStyle: HeaderStyle(
                           formatButtonShowsNext: false,
                           centerHeaderTitle: false,
-                          formatButtonTextStyle: TextStyle(color: Colors.white),
                           formatButtonDecoration: BoxDecoration(
                             border: Border.all(),
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           formatButtonPadding: EdgeInsets.all(7),
                         ),
@@ -186,7 +184,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(height: 30),
-                      _buildEventList(_chosen),
+                      Expanded(
+                        child: _buildEventList(_chosen),
+                      )
                     ],
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +9,7 @@ import '../providers/auth_provider.dart';
 import '../providers/record_provider.dart';
 import '../widgets/alert_dialog.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_text.dart';
 import '../widgets/custom_form_field.dart';
 
 class AddRecord extends StatefulWidget {
@@ -40,6 +42,8 @@ class _AddRecordState extends State<AddRecord> {
 
     List<dynamic> args = ModalRoute.of(context).settings.arguments;
     final deviceheight = MediaQuery.of(context).size.height;
+    final devicewidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(title: Text('Add Ehr Record')),
       body: _isloading
@@ -47,7 +51,8 @@ class _AddRecordState extends State<AddRecord> {
           : Container(
               height: deviceheight,
               width: double.infinity,
-              child: StepperBody(args[0], args[1], doctordetails),
+              child: StepperBody(
+                  args[0], args[1], doctordetails, devicewidth, deviceheight),
             ),
     );
   }
@@ -57,7 +62,10 @@ class StepperBody extends StatefulWidget {
   final _doctorkey;
   final _receiver;
   final doctordetails;
-  StepperBody(this._doctorkey, this._receiver, this.doctordetails);
+  final devicewidth;
+  final deviceheight;
+  StepperBody(this._doctorkey, this._receiver, this.doctordetails,
+      this.devicewidth, this.deviceheight);
   @override
   _StepperBodyState createState() => _StepperBodyState();
 }
@@ -263,31 +271,41 @@ class _StepperBodyState extends State<StepperBody> {
           for (var item in widgetlist) (item),
           SizedBox(height: 10),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomButton(
-                'Add new entry',
-                () {
-                  setState(() {
-                    widgetlist..add(formfields);
-                  });
-                },
-              ),
-              SizedBox(width: 10),
               widgetlist.length > 0
-                  ? CustomButton(
-                      'Remove Entry',
-                      () {
-                        setState(() {
-                          widgetlist..removeLast();
-                        });
-                      },
-                      backgroundcolor: Theme.of(context).errorColor,
+                  ? Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).errorColor,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.delete, semanticLabel: 'Remove Entry'),
+                        onPressed: () {
+                          setState(() {
+                            widgetlist..removeLast();
+                          });
+                        },
+                      ),
                     )
                   : SizedBox(),
+              SizedBox(width: 10),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Theme.of(context).primaryColor,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.add, semanticLabel: 'Add Entry'),
+                  onPressed: () {
+                    setState(() {
+                      widgetlist..add(formfields);
+                    });
+                  },
+                ),
+              ),
             ],
           ),
-          SizedBox(height: 10),
         ],
       ),
     );
@@ -303,8 +321,8 @@ class _StepperBodyState extends State<StepperBody> {
       physics: ClampingScrollPhysics(),
       children: [
         CustomFormField(
-          keyboardtype: TextInputType.text,
-          textInputAction: TextInputAction.go,
+          keyboardtype: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
           onsaved: (String value) {
             dynamiclist.add(value);
           },
@@ -314,7 +332,7 @@ class _StepperBodyState extends State<StepperBody> {
             }
             return null;
           },
-          icondata: iconData,
+          maxlines: 5,
           labeltext: message,
         ),
         SizedBox(height: 20),
@@ -339,40 +357,50 @@ class _StepperBodyState extends State<StepperBody> {
             }
             return null;
           },
-          labeltext: 'Enter Drug name',
-          icondata: Icons.gradient,
+          labeltext: 'Drug name',
         ),
         SizedBox(height: 20),
-        CustomFormField(
-          keyboardtype: TextInputType.number,
-          textInputAction: TextInputAction.go,
-          onsaved: (String value) {
-            interval.add(value);
-          },
-          validator: (value) {
-            if (value.isEmpty || value == '') {
-              return 'Enter Interval';
-            }
-            return null;
-          },
-          labeltext: 'Enter Interval',
-          icondata: Icons.check_circle_outline,
-        ),
-        SizedBox(height: 20),
-        CustomFormField(
-          keyboardtype: TextInputType.number,
-          textInputAction: TextInputAction.go,
-          onsaved: (String value) {
-            dose.add(value);
-          },
-          validator: (value) {
-            if (value.isEmpty || value == '') {
-              return 'Enter Dosage';
-            }
-            return null;
-          },
-          labeltext: 'Enter Dosage',
-          icondata: Icons.calendar_today,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: widget.devicewidth * 0.25,
+              child: CustomFormField(
+                keyboardtype: TextInputType.number,
+                textInputAction: TextInputAction.go,
+                onsaved: (String value) {
+                  dose.add(value);
+                },
+                validator: (value) {
+                  if (value.isEmpty || value == '') {
+                    return 'Dosage';
+                  }
+                  return null;
+                },
+                labeltext: 'Dosage',
+              ),
+            ),
+            SizedBox(width: 10),
+            CustomText('X'),
+            SizedBox(width: 10),
+            Container(
+              width: widget.devicewidth * 0.25,
+              child: CustomFormField(
+                keyboardtype: TextInputType.number,
+                textInputAction: TextInputAction.go,
+                onsaved: (String value) {
+                  interval.add(value);
+                },
+                validator: (value) {
+                  if (value.isEmpty || value == '') {
+                    return 'Enter Interval';
+                  }
+                  return null;
+                },
+                labeltext: 'Interval',
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 20)
       ],

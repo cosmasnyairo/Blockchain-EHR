@@ -8,7 +8,7 @@ import Crypto.Random
 
 import binascii
 
-from data import savekeys, loadkeys
+# from data import savekeys, loadkeys
 
 
 class Wallet:
