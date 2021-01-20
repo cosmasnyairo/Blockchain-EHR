@@ -2,19 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../models/doctor.dart';
-
 class UserAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   String get userid {
     return _auth.currentUser.uid;
-  }
-
-  EhrDoctor _ehrDoctor;
-
-  EhrDoctor get ehrDoctor {
-    return _ehrDoctor;
   }
 
   bool isLoggedIn() {

@@ -22,24 +22,6 @@ bool _isloading = false;
 class _AddRecordState extends State<AddRecord> {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<DoctorAuthProvider>(context, listen: false);
-    final EhrDoctor doctordetails = provider.ehrDoctor;
-    if (doctordetails == null) {
-      setState(() {
-        _isloading = true;
-      });
-      DocumentReference doctors = FirebaseFirestore.instance
-          .collection('Doctors')
-          .doc(Provider.of<DoctorAuthProvider>(context).userid);
-      doctors.get().then((f) {
-        provider.fetchdoctordetails(f);
-      });
-      setState(() {
-        _isloading = false;
-      });
-      print(doctordetails);
-    }
-
     List<dynamic> args = ModalRoute.of(context).settings.arguments;
     final deviceheight = MediaQuery.of(context).size.height;
     final devicewidth = MediaQuery.of(context).size.width;
@@ -51,8 +33,7 @@ class _AddRecordState extends State<AddRecord> {
           : Container(
               height: deviceheight,
               width: double.infinity,
-              child: StepperBody(
-                  args[0], args[1], doctordetails, devicewidth, deviceheight),
+              child: StepperBody(args[0], args[1], devicewidth, deviceheight),
             ),
     );
   }
@@ -61,11 +42,10 @@ class _AddRecordState extends State<AddRecord> {
 class StepperBody extends StatefulWidget {
   final _doctorkey;
   final _receiver;
-  final doctordetails;
   final devicewidth;
   final deviceheight;
-  StepperBody(this._doctorkey, this._receiver, this.doctordetails,
-      this.devicewidth, this.deviceheight);
+  StepperBody(
+      this._doctorkey, this._receiver, this.devicewidth, this.deviceheight);
   @override
   _StepperBodyState createState() => _StepperBodyState();
 }
@@ -108,7 +88,6 @@ class _StepperBodyState extends State<StepperBody> {
       labresults: _labresults,
       prescription: _prescription,
       diagnosis: _diagnosis,
-      doctordetails: widget.doctordetails,
     );
     try {
       setState(() {

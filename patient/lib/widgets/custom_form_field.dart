@@ -10,6 +10,7 @@ class CustomFormField extends StatelessWidget {
   final FocusNode focusNode;
   final Function onfieldsubmitted;
   final TextInputType keyboardtype;
+  final TextEditingController controller;
 
   final bool obscuretext;
   const CustomFormField({
@@ -23,10 +24,12 @@ class CustomFormField extends StatelessWidget {
     this.focusNode,
     this.obscuretext = false,
     this.keyboardtype,
+    this.controller,
   });
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       focusNode: focusNode,
       keyboardType: keyboardtype,
       initialValue: initialvalue,

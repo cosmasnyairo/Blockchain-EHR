@@ -16,7 +16,7 @@ def create_keys():
     wallet.create_keys()
     if wallet.save_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key, port)
+        blockchain = Blockchain(wallet.public_key, port, host)
         response = {
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
@@ -31,7 +31,7 @@ def create_keys():
 def load_keys():
     if wallet.load_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key, port)
+        blockchain = Blockchain(wallet.public_key, port, host)
         response = {
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
@@ -283,8 +283,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', type=int, default=5000)
     parser.add_argument('--host', type=str)
     args = parser.parse_args()
+    global host
     port, host = args.port, args.host
     wallet = Wallet(port)
-    blockchain = Blockchain(wallet.public_key, port)
-    # use local ip address
+    blockchain = Blockchain(wallet.public_key, port, host)
     app.run(host=host, port=port)

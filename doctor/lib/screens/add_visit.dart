@@ -1,5 +1,6 @@
 import 'package:barcode_scan/barcode_scan.dart';
-import 'package:doctor/widgets/custom_text.dart';
+import '../widgets/custom_form_field.dart';
+import '../widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,12 +17,11 @@ class AddVisit extends StatefulWidget {
 }
 
 class _AddVisitState extends State<AddVisit> {
+  final texteditingcontroller = TextEditingController();
   List<Transaction> _opentransactions;
   String _publicKey;
   List<Node> _nodes;
   String _receiver;
-  String _addednode;
-
   var _isloading = false;
   var _erroroccurred = false;
 
@@ -38,6 +38,12 @@ class _AddVisitState extends State<AddVisit> {
       },
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    texteditingcontroller.dispose();
+    super.dispose();
   }
 
   Future<void> fetch() async {
@@ -75,7 +81,9 @@ class _AddVisitState extends State<AddVisit> {
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: _erroroccurred ? null : AppBar(title: Text('Ehr Visit')),
+      appBar: _erroroccurred || _isloading
+          ? null
+          : AppBar(title: Text('Ehr Visit')),
       body: _erroroccurred
           ? ListView(
               children: [
@@ -131,42 +139,21 @@ class _AddVisitState extends State<AddVisit> {
                           : _receiver == null
                               ? 'You currently have an ongoing visit\n\nScan patient\'s Qr Code to add records'
                               : 'You currently have an ongoing visit.',
-                      color: _nodes.length == 0
-                          ? Colors.grey
-                          : Theme.of(context).primaryColor,
+                      color: _nodes.length == 0 ? Colors.grey : Colors.black,
                       alignment: TextAlign.center,
-                      fontStyle: FontStyle.italic,
                     ),
-                    SizedBox(height: 10),
                     ListView(
                       shrinkWrap: true,
                       padding: EdgeInsets.all(20),
                       physics: ClampingScrollPhysics(),
                       children: _nodes.length == 0
                           ? [
-                              DropdownButtonFormField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  icon: Icon(
-                                    Icons.person_outline,
-                                    size: 25,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                                hint: Text("Choose node "),
-                                items: [
-                                  DropdownMenuItem(
-                                    child: Text("5001"),
-                                    value: "5001",
-                                  ),
-                                  DropdownMenuItem(
-                                    child: Text("5002"),
-                                    value: "5002",
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  _addednode = value.toString().trim();
-                                },
+                              CustomFormField(
+                                controller: texteditingcontroller,
+                                keyboardtype: TextInputType.number,
+                                textInputAction: TextInputAction.go,
+                                icondata: Icons.person_outline,
+                                labeltext: "Enter Patient's node ",
                               ),
                               SizedBox(height: 20),
                               Center(
@@ -174,15 +161,17 @@ class _AddVisitState extends State<AddVisit> {
                                   'Add Visit',
                                   () async {
                                     try {
-                                      if (_addednode == null) {
-                                        throw 'Choose patient node';
+                                      if (texteditingcontroller.text == null ||
+                                          texteditingcontroller.text == "") {
+                                        throw 'Node can\'t be empty';
                                       } else {
                                         setState(() {
                                           _isloading = true;
                                         });
                                         await Provider.of<NodeProvider>(context,
                                                 listen: false)
-                                            .addNodes(_addednode);
+                                            .addNodes(
+                                                texteditingcontroller.text);
                                       }
                                     } catch (e) {
                                       await showDialog(
@@ -197,6 +186,7 @@ class _AddVisitState extends State<AddVisit> {
                                       fetch().then(
                                         (value) => {
                                           setState(() {
+                                            texteditingcontroller.clear();
                                             _isloading = false;
                                           }),
                                         },

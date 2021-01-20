@@ -153,7 +153,9 @@ class _HomePageState extends State<HomePage> {
                         calendarController: _calendarController,
                         startingDayOfWeek: StartingDayOfWeek.sunday,
                         availableGestures: AvailableGestures.horizontalSwipe,
-                        initialCalendarFormat: CalendarFormat.twoWeeks,
+                        initialCalendarFormat: deviceheight < 768
+                            ? CalendarFormat.twoWeeks
+                            : CalendarFormat.month,
                         calendarStyle: CalendarStyle(
                           selectedColor:
                               Theme.of(context).primaryColor.withOpacity(0.7),
@@ -184,9 +186,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(height: 30),
-                      Expanded(
-                        child: _buildEventList(_chosen),
-                      )
+                      _buildEventList(_chosen)
                     ],
                   ),
                 ),
@@ -234,6 +234,7 @@ class _HomePageState extends State<HomePage> {
     });
     return fetchedtransaction.length > 0
         ? Card(
+            margin: EdgeInsets.all(20),
             elevation: 7,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

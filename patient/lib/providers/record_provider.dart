@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import '../models/block.dart';
 import '../models/details.dart';
-import '../models/doctor.dart';
 import '../models/transaction.dart';
 import '../secrets.dart' as secrets;
 
@@ -66,13 +65,6 @@ class RecordsProvider with ChangeNotifier {
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
                               diagnosis: f['diagnosis'],
-                              doctordetails: EhrDoctor(
-                                doctorid: f['doctordetails']['doctorid'],
-                                email: f['doctordetails']['email'],
-                                hospital: f['doctordetails']['hospital'],
-                                location: f['doctordetails']['location'],
-                                name: f['doctordetails']['name'],
-                              ),
                             ),
                           )
                           .toList(),

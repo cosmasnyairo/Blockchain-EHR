@@ -61,6 +61,7 @@ class _HomePageState extends State<HomePage> {
       await provider.resolveConflicts();
 
       _updatedrecords = provider.records;
+      print(_updatedrecords);
 
       while (i < _updatedrecords.length) {
         _events.putIfAbsent(
@@ -83,7 +84,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
       body: _erroroccurred
@@ -113,10 +113,9 @@ class _HomePageState extends State<HomePage> {
                     child: CustomButton('Retry', () {
                   setState(() {
                     _erroroccurred = false;
-                  });
-                  setState(() {
                     _isloading = true;
                   });
+
                   fetch().then((value) => {
                         setState(() {
                           _isloading = false;
@@ -143,11 +142,9 @@ class _HomePageState extends State<HomePage> {
                         headerStyle: HeaderStyle(
                           formatButtonShowsNext: false,
                           centerHeaderTitle: false,
-                          formatButtonTextStyle: TextStyle(color: Colors.white),
                           formatButtonDecoration: BoxDecoration(
                             border: Border.all(),
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           formatButtonPadding: EdgeInsets.all(7),
                         ),
@@ -161,11 +158,13 @@ class _HomePageState extends State<HomePage> {
                         calendarController: _calendarController,
                         startingDayOfWeek: StartingDayOfWeek.sunday,
                         availableGestures: AvailableGestures.horizontalSwipe,
-                        initialCalendarFormat: CalendarFormat.month,
+                        initialCalendarFormat: deviceheight < 768
+                            ? CalendarFormat.twoWeeks
+                            : CalendarFormat.month,
                         calendarStyle: CalendarStyle(
                           selectedColor:
                               Theme.of(context).primaryColor.withOpacity(0.7),
-                          todayColor: Theme.of(context).primaryColor,
+                          todayColor: Colors.grey,
                           markersColor: Theme.of(context).primaryColor,
                           outsideDaysVisible: false,
                         ),
@@ -241,6 +240,7 @@ class _HomePageState extends State<HomePage> {
 
     return fetchedtransaction.length > 0
         ? Card(
+            margin: EdgeInsets.all(20),
             elevation: 7,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

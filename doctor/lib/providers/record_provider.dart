@@ -60,13 +60,6 @@ class RecordsProvider with ChangeNotifier {
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
                               diagnosis: f['diagnosis'],
-                              doctordetails: EhrDoctor(
-                                doctorid: f['doctordetails']['doctorid'],
-                                email: f['doctordetails']['email'],
-                                hospital: f['doctordetails']['hospital'],
-                                location: f['doctordetails']['location'],
-                                name: f['doctordetails']['name'],
-                              ),
                             ),
                           )
                           .toList(),
@@ -96,7 +89,6 @@ class RecordsProvider with ChangeNotifier {
         "lab_results": details.labresults.toList(),
         "medical_notes": details.medicalnotes.toList(),
         "prescription": details.prescription.toList(),
-        "doctordetails": details.doctordetails.toJson(),
       },
       "receiver": receiver,
       "timestamp": timestamp.toIso8601String(),
@@ -152,13 +144,6 @@ class RecordsProvider with ChangeNotifier {
                       labresults: f['lab_results'],
                       prescription: f['prescription'],
                       diagnosis: f['diagnosis'],
-                      doctordetails: EhrDoctor(
-                        doctorid: f['doctordetails']['doctorid'],
-                        email: f['doctordetails']['email'],
-                        hospital: f['doctordetails']['hospital'],
-                        location: f['doctordetails']['location'],
-                        name: f['doctordetails']['name'],
-                      ),
                     ),
                   )
                   .toList(),

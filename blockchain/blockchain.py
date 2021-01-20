@@ -19,7 +19,7 @@ import secrets
 
 class Blockchain:
 
-    def __init__(self, public_key, node_id):
+    def __init__(self, public_key, node_id, hostname):
         # Genesis block
         genesis_block = Block(0, '', [], 100, 0)
         # Empty blockchain
@@ -29,6 +29,7 @@ class Blockchain:
         self.__peer_nodes = set()
         self.node_id = node_id
         self.resolve_conflicts = False
+        self.hostname = hostname
         self.load_data()
 
         # We will Store patient details in the blockchain
@@ -161,7 +162,7 @@ class Blockchain:
         if not is_receiving:
             for node in self.__peer_nodes:
                 url = 'http://{}:{}/broadcast_transaction'.format(
-                    secrets.ip_address, node)
+                    self.hostname, node)
                 print(url)
                 try:
                     response = requests.post(url, json={
@@ -244,7 +245,7 @@ class Blockchain:
         self.save_data()
         for node in self.__peer_nodes:
             url = 'http://{}:{}/broadcast_block'.format(
-                secrets.ip_address, node)
+                self.hostname, node)
             print(url)
             converted_block = block.__dict__.copy()
             converted_block['transactions'] = [
@@ -267,7 +268,7 @@ class Blockchain:
         replace = False
         for node in self.__peer_nodes:
             url = 'http://{}:{}/chain'.format(
-                secrets.ip_address, node)
+                self.hostname, node)
             try:
                 response = requests.get(url)
                 node_chain = response.json()
