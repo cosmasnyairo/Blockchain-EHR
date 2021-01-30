@@ -1,14 +1,21 @@
-from transaction import Transaction
+import os
+import json
+from time import time
+import socket
+from contextlib import closing
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from wallet import Wallet
 from blockchain import Blockchain
+from transaction import Transaction
+from wallet import Wallet
 
 app = Flask(__name__)
+unauthenticated = Flask(__name__)
 
 # enables opening up app to other nodes
 CORS(app)
+CORS(unauthenticated)
 
 
 @app.route('/create_keys', methods=['POST'])
@@ -271,9 +278,72 @@ def remove_node(node_url):
 
 @app.route('/get_nodes', methods=['GET'])
 def get_nodes():
+
     nodes = blockchain.get_peer_nodes()
     response = {'nodes': nodes}
     return jsonify(response), 200
+
+
+@unauthenticated.route('/assign', methods=['GET'])
+def register_port():
+    # logic for assigning port to user and running it
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+    name, email = values['name'],   values['email']
+
+    def find_free_port():
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            s.bind(('', 0))
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.getsockname()[1]
+            return s.getsockname()[1]
+    assigned_port = find_free_port()
+
+    data = {"assigned_port": assigned_port, "date_requested": time()}
+    path = 'data/peers.json'
+    if os.path.exists(path):
+        with open(path, mode='r+') as json_file:
+            loaded = json.load(json_file)
+
+            assigned = loaded['assigned']
+            if len(assigned) > 0:
+                port_assigned = [
+                    i for i in assigned if assigned_port == i['assigned_port']]
+                if len(port_assigned) > 0:
+                    response = {
+                        'message': 'Node already assigned'.format(assigned_port)}
+                    return jsonify(response), 400
+
+            unassigned = loaded['unassigned']
+
+            port_assigned = [
+                i for i in unassigned if assigned_port == i['assigned_port']]
+            if len(port_assigned) > 0:
+                response = {
+                    'message': 'Your request is in the queue'.format(assigned_port)}
+                return jsonify(response), 201
+
+            if assigned_port in range(0, 2):
+                response = {
+                    'message': 'Node can\'t be assigned'.format(assigned_port)}
+                return jsonify(response), 400
+
+            if data not in unassigned:
+                unassigned.append(data)
+                json_file.seek(0)
+                json.dump(loaded, json_file, indent=4)
+                response = {
+                    'message': 'Your request has been received'.format('assigned_port')}
+                return jsonify(response), 200
+
+    else:
+        with open(path, mode='w') as f:
+            json.dump({"unassigned": [data], "assigned": []}, f, indent=4)
+        response = {
+            'message': 'Your request has been received'.format('assigned_port')}
+        return jsonify(response), 200
 
 
 if __name__ == '__main__':
@@ -285,6 +355,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     global host
     port, host = args.port, args.host
-    wallet = Wallet(port)
-    blockchain = Blockchain(wallet.public_key, port, host)
-    app.run(host=host, port=port)
+    if port == 2:
+        unauthenticated.run(host=host, port=port)
+    else:
+        wallet = Wallet(port)
+        blockchain = Blockchain(wallet.public_key, port, host)
+        app.run(host=host, port=port)
