@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -76,20 +77,20 @@ class _AuthenticationState extends State<Authentication> {
   Future<void> signupuser() async {
     try {
       final provider = Provider.of<RecordsProvider>(context, listen: false);
-      await provider.createKeys();
+      // await provider.createKeys();
 
       await Provider.of<DoctorAuthProvider>(context, listen: false).signup(
         name: _authData['username'],
         email: _authData['email'],
         password: _authData['password'],
         doctorid: _authData['doctorid'],
-        publickey: provider.publickey,
-        privatekey: provider.privatekey,
       );
       setState(() {
         _isLoading = false;
       });
+
       Navigator.of(context).popUntil((route) => route.isFirst);
+      // Navigator.of(context).popAndPushNamed('activationscreen');
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -120,7 +121,7 @@ class _AuthenticationState extends State<Authentication> {
           body: ListView(
             children: [
               Container(
-                height: deviceheight * 0.4,
+                height: deviceheight * 0.33,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
@@ -149,6 +150,7 @@ class _AuthenticationState extends State<Authentication> {
                                 icondata: Icons.assignment_ind,
                                 labeltext: 'Doctor id',
                                 textInputAction: TextInputAction.next,
+                                keyboardtype: TextInputType.number,
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Doctor id can\'t be empty!';
@@ -211,6 +213,7 @@ class _AuthenticationState extends State<Authentication> {
                     CustomFormField(
                       focusNode: _passwordnode,
                       labeltext: 'Password',
+                      maxlines: 1,
                       icondata: Icons.remove_red_eye,
                       obscuretext: true,
                       textInputAction: TextInputAction.go,

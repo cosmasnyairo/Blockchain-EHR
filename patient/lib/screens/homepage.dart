@@ -54,11 +54,12 @@ class _HomePageState extends State<HomePage> {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
 
     try {
-      await provider.loadKeys();
-      final publicKey = provider.publickey;
-      await provider.getPatientChain(publicKey);
-      await provider.mine();
-      await provider.resolveConflicts();
+      await provider.getPortNumber(context);
+
+      await provider.loadKeys(provider.peernode);
+      await provider.getPatientChain(provider.peernode, provider.publickey);
+      await provider.mine(provider.peernode);
+      await provider.resolveConflicts(provider.peernode);
 
       _updatedrecords = provider.records;
       print(_updatedrecords);

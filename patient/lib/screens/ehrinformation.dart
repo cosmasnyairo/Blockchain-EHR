@@ -3,31 +3,34 @@ import 'package:flutter/services.dart';
 
 import '../widgets/custom_tile.dart';
 
-class ViewKeysPage extends StatelessWidget {
+class EhrInformationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    final ehrkey = [args['publickey'], args['privatekey']];
-    final list = ['Public key', 'Private key'];
+    final ehrkey = [args['peer_node'], args['publickey'], args['privatekey']];
+    final list = ['Peer Node', 'Public key', 'Private key'];
+    final iconslist = [Icons.nature, Icons.lock_open, Icons.lock];
     return Scaffold(
-      appBar: AppBar(title: Text('Ehr Keys')),
+      appBar: AppBar(title: Text('Ehr Information')),
       body: ListView.builder(
-        itemBuilder: (ctx, i) => EhrKeysWidget(ehrkey[i], list[i]),
+        itemBuilder: (ctx, i) =>
+            EhrInformationWidget(ehrkey[i].toString(), list[i], iconslist[i]),
         itemCount: ehrkey.length,
       ),
     );
   }
 }
 
-class EhrKeysWidget extends StatefulWidget {
+class EhrInformationWidget extends StatefulWidget {
   final String ehrkey;
   final String label;
-  EhrKeysWidget(this.ehrkey, this.label);
+  final IconData iconData;
+  EhrInformationWidget(this.ehrkey, this.label, this.iconData);
   @override
-  _EhrKeysWidgetState createState() => _EhrKeysWidgetState();
+  _EhrInformationWidgetState createState() => _EhrInformationWidgetState();
 }
 
-class _EhrKeysWidgetState extends State<EhrKeysWidget> {
+class _EhrInformationWidgetState extends State<EhrInformationWidget> {
   void showSnackBarMessage(String message) {
     Scaffold.of(context).showSnackBar(
       SnackBar(
@@ -45,6 +48,8 @@ class _EhrKeysWidgetState extends State<EhrKeysWidget> {
       child: CustomTile(
         expansion: true,
         title: widget.label,
+        isthreeline: true,
+        leadingiconData: widget.iconData,
         subtitle: 'Toggle to view your ${widget.label}',
         iconData: Icons.remove_red_eye,
         expansionchildren: CustomTile(

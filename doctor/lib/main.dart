@@ -1,3 +1,5 @@
+import 'package:doctor/screens/user_activated.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,11 +12,11 @@ import 'providers/record_provider.dart';
 import 'screens/add_record.dart';
 import 'screens/add_visit.dart';
 import 'screens/edit_account.dart';
+import 'screens/ehr_information.dart';
 import 'screens/landingpage.dart';
 import 'screens/screen.dart';
 import 'screens/settings.dart';
 import 'screens/view_open_transactions.dart';
-import 'screens/viewkeys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,7 +65,7 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.montserratTextTheme(),
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
-          home: auth.isLoggedIn() ? Screen() : LandingPage(),
+          home: auth.isLoggedIn() ? UserActivated() : LandingPage(),
           // home: OnboardingScreen(),
           routes: {
             'add_record': (ctx) => AddRecord(),
@@ -71,7 +73,7 @@ class MyApp extends StatelessWidget {
             'add_visit': (ctx) => AddVisit(),
             'edit_account': (ctx) => EditAccount(),
             'settings_page': (ctx) => SettingsPage(),
-            'view_keys': (ctx) => ViewKeysPage(),
+            'ehr_information': (ctx) => EhrInformationPage(),
             //to implement onboarding screen
             // 'landing_page': (ctx) => LandingPage()
           },

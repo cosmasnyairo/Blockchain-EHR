@@ -15,13 +15,13 @@ class ViewOpenTransactions extends StatefulWidget {
 
 class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
   var _isloading = false;
-
   Future<void> minerecords() async {
+    final provider = Provider.of<RecordsProvider>(context, listen: false);
     try {
       setState(() {
         _isloading = !_isloading;
       });
-      await Provider.of<RecordsProvider>(context, listen: false).mine().then(
+      await provider.mine(provider.peernode).then(
             (value) => {
               setState(() {
                 _isloading = false;

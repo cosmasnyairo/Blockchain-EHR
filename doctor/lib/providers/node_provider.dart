@@ -17,9 +17,9 @@ class NodeProvider extends ChangeNotifier {
     return [..._nodes];
   }
 
-  Future<void> getNodes() async {
+  Future<void> getNodes(int port) async {
     try {
-      final url = '$_apiurl/get_nodes';
+      final url = '$_apiurl:$port/get_nodes';
       final response = await http.get(url);
       var extractedData = json.decode(response.body) as Map<String, dynamic>;
       List<Node> loadednodes = [];
@@ -35,9 +35,9 @@ class NodeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addNodes(String node) async {
+  Future<void> addNodes(int port, String node) async {
     try {
-      final url = '$_apiurl/add_node';
+      final url = '$_apiurl:$port/add_node';
       Map<String, String> addednode = {"node": node};
       await http.post(
         url,
@@ -52,9 +52,9 @@ class NodeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> removeNode(String node) async {
+  Future<void> removeNode(int port, String node) async {
     try {
-      final url = '$_apiurl/remove_node/$node';
+      final url = '$_apiurl:$port/remove_node/$node';
       await http.delete(
         url,
         headers: {

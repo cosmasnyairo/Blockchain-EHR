@@ -48,9 +48,11 @@ class _AddVisitState extends State<AddVisit>
     final nodeprovider = Provider.of<NodeProvider>(context, listen: false);
 
     try {
-      await recordprovider.loadKeys();
-      await nodeprovider.getNodes();
-      await recordprovider.resolveConflicts();
+      await recordprovider.getPortNumber(context);
+
+      await recordprovider.loadKeys(recordprovider.peernode);
+      await nodeprovider.getNodes(recordprovider.peernode);
+      await recordprovider.resolveConflicts(recordprovider.peernode);
       _publicKey = recordprovider.publickey;
       _nodes = nodeprovider.nodes;
     } catch (e) {
@@ -65,6 +67,8 @@ class _AddVisitState extends State<AddVisit>
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
+    final peer_node =
+        Provider.of<RecordsProvider>(context, listen: false).peernode;
 
     return Scaffold(
       appBar: _erroroccurred || _isloading
@@ -160,7 +164,7 @@ class _AddVisitState extends State<AddVisit>
                                             await Provider.of<NodeProvider>(
                                                     context,
                                                     listen: false)
-                                                .addNodes(
+                                                .addNodes(peer_node,
                                                     texteditingcontroller.text);
                                           }
                                         } catch (e) {
@@ -177,7 +181,6 @@ class _AddVisitState extends State<AddVisit>
                                           fetch().then(
                                             (value) => {
                                               setState(() {
-                                                texteditingcontroller.clear();
                                                 _isloading = false;
                                               }),
                                             },
@@ -207,7 +210,8 @@ class _AddVisitState extends State<AddVisit>
                                             await Provider.of<NodeProvider>(
                                                     context,
                                                     listen: false)
-                                                .removeNode(_nodes[0].node);
+                                                .removeNode(
+                                                    peer_node, _nodes[0].node);
                                           } catch (e) {
                                             await showDialog(
                                               context: context,

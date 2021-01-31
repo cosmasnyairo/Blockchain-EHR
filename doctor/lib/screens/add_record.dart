@@ -74,6 +74,7 @@ class _StepperBodyState extends State<StepperBody> {
   Details _enteredDetails;
 
   Future<void> _saveForm() async {
+    final provider = Provider.of<RecordsProvider>(context, listen: false);
     final isvalid = _formkey.currentState.validate();
     if (!isvalid) {
       showSnackBarMessage('Please correct errors before proceeding');
@@ -94,7 +95,8 @@ class _StepperBodyState extends State<StepperBody> {
         _isloading = true;
       });
       print(_enteredDetails);
-      await Provider.of<RecordsProvider>(context, listen: false).addTransaction(
+      await provider.addTransaction(
+        provider.peernode,
         _enteredDetails,
         widget._doctorkey,
         widget._receiver,

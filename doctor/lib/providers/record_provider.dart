@@ -1,12 +1,15 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctor/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../models/block.dart';
 import '../models/details.dart';
 import '../models/doctor.dart';
-import '../models/transaction.dart';
+import '../models/transaction.dart' as EhrTransaction;
 import '../secrets.dart' as secrets;
 
 class RecordsProvider with ChangeNotifier {
@@ -14,14 +17,15 @@ class RecordsProvider with ChangeNotifier {
 
   String _publickey;
   String _privatekey;
+  int _peernode;
   List<Block> _records = [];
-  List<Transaction> _opentransactions = [];
+  List<EhrTransaction.Transaction> _opentransactions = [];
 
   List<Block> get records {
     return [..._records];
   }
 
-  List<Transaction> get opentransactions {
+  List<EhrTransaction.Transaction> get opentransactions {
     return [..._opentransactions];
   }
 
@@ -33,9 +37,26 @@ class RecordsProvider with ChangeNotifier {
     return _privatekey;
   }
 
-  Future<void> getChain() async {
+  int get peernode {
+    return _peernode;
+  }
+
+  Future<void> getPortNumber(BuildContext context) async {
+    final userid =
+        Provider.of<DoctorAuthProvider>(context, listen: false).userid;
+    final peernode = await FirebaseFirestore.instance
+        .collection('Doctors')
+        .doc(userid)
+        .get()
+        .then((f) {
+      return f['peer_node'];
+    });
+    _peernode = peernode;
+  }
+
+  Future<void> getChain(int port) async {
     try {
-      final url = '$_apiurl/chain';
+      final url = '$_apiurl:$port/chain';
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as List;
 
@@ -49,7 +70,7 @@ class RecordsProvider with ChangeNotifier {
               timestamp: element['timestamp'].toString(),
               transaction: (element['transactions'] as List<dynamic>)
                   .map(
-                    (e) => Transaction(
+                    (e) => EhrTransaction.Transaction(
                       sender: e['sender'],
                       receiver: e['receiver'],
                       timestamp: DateTime.parse(e['timestamp']),
@@ -78,6 +99,7 @@ class RecordsProvider with ChangeNotifier {
   }
 
   Future<void> addTransaction(
+    int port,
     Details details,
     String sender,
     String receiver,
@@ -94,7 +116,7 @@ class RecordsProvider with ChangeNotifier {
       "timestamp": timestamp.toIso8601String(),
     };
     try {
-      final url = '${secrets.apiurl}/add_transaction';
+      final url = '${secrets.apiurl}:$port/add_transaction';
       await http.post(
         url,
         body: json.encode(transaction),
@@ -107,33 +129,34 @@ class RecordsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> mine() async {
+  Future<void> mine(int port) async {
     try {
-      final url = '$_apiurl/mine';
+      final url = '$_apiurl:$port/mine';
       await http.post(url);
     } catch (e) {
       throw e;
     }
   }
 
-  Future<void> resolveConflicts() async {
+  Future<void> resolveConflicts(int port) async {
     try {
-      final url = '$_apiurl/resolve_conflicts';
+      final url = '$_apiurl:$port/resolve_conflicts';
+      print(url);
       await http.post(url);
     } catch (e) {}
   }
 
-  Future<void> getOpenTransactions() async {
+  Future<void> getOpenTransactions(int port) async {
     try {
-      final url = '$_apiurl/get_opentransactions';
+      final url = '$_apiurl:$port/get_opentransactions';
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as List;
-      final List<Transaction> loadedtransactions = [];
+      final List<EhrTransaction.Transaction> loadedtransactions = [];
 
       extractedData.forEach(
         (transaction) {
           loadedtransactions.add(
-            Transaction(
+            EhrTransaction.Transaction(
               sender: transaction['sender'],
               receiver: transaction['receiver'],
               timestamp: DateTime.parse(transaction['timestamp']),
@@ -159,9 +182,9 @@ class RecordsProvider with ChangeNotifier {
   }
 
 //signup
-  Future<void> createKeys() async {
+  Future<void> createKeys(int port) async {
     try {
-      final url = '$_apiurl/create_keys';
+      final url = '$_apiurl:$port/create_keys';
       final response = await http.post(url);
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
@@ -172,9 +195,9 @@ class RecordsProvider with ChangeNotifier {
   }
 
 //onlogin
-  Future<void> loadKeys() async {
+  Future<void> loadKeys(int port) async {
     try {
-      final url = '$_apiurl/load_keys';
+      final url = '$_apiurl:$port/load_keys';
       final response = await http.get(url);
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];

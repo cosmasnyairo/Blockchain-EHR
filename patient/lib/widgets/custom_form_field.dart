@@ -10,8 +10,8 @@ class CustomFormField extends StatelessWidget {
   final FocusNode focusNode;
   final Function onfieldsubmitted;
   final TextInputType keyboardtype;
+  final int maxlines;
   final TextEditingController controller;
-
   final bool obscuretext;
   const CustomFormField({
     this.initialvalue,
@@ -24,6 +24,7 @@ class CustomFormField extends StatelessWidget {
     this.focusNode,
     this.obscuretext = false,
     this.keyboardtype,
+    this.maxlines,
     this.controller,
   });
   @override
@@ -35,12 +36,15 @@ class CustomFormField extends StatelessWidget {
       initialValue: initialvalue,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        icon: Icon(icondata, size: 25, color: Theme.of(context).primaryColor),
+        icon: icondata == null
+            ? null
+            : Icon(icondata, size: 25, color: Theme.of(context).primaryColor),
         labelText: labeltext,
       ),
       textInputAction: textInputAction,
       validator: validator,
       onSaved: onsaved,
+      maxLines: maxlines == null ? null : maxlines,
       obscureText: obscuretext,
       onFieldSubmitted: onfieldsubmitted,
     );

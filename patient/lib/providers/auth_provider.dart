@@ -1,6 +1,14 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:patient/providers/record_provider.dart';
+import 'package:provider/provider.dart';
+
+import 'package:http/http.dart' as http;
+
+import '../secrets.dart' as secrets;
 
 class UserAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -16,6 +24,50 @@ class UserAuthProvider extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> isAuthenticated() async {
+    final authenticated = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userid)
+        .get()
+        .then((f) {
+      return f['authenticated'];
+    });
+    if (authenticated == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> checkStatus(String email) async {
+    final url = '${secrets.url}:2/check_status';
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({"useremail": email}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      throw [json.decode(response.body)['message'], response.statusCode];
+    } catch (e) {
+      throw e;
+      // TODO
+    }
+  }
+
+  Future<void> finishSignup(int port, BuildContext context) async {
+    final provider = Provider.of<RecordsProvider>(context, listen: false);
+    await provider.createKeys(port);
+    await FirebaseFirestore.instance.collection('Users').doc(userid).update({
+      'authenticated': true,
+      'privatekey': provider.privatekey,
+      'publickey': provider.publickey,
+      'peer_node': port
+    });
+    await Future.delayed(Duration(seconds: 1));
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
     notifyListeners();
@@ -24,10 +76,8 @@ class UserAuthProvider extends ChangeNotifier {
   Future<void> login({String email, String password}) async {
     String errorMessage;
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await isAuthenticated();
     } catch (error) {
       switch (error.code) {
         case "invalid-email":
@@ -74,12 +124,20 @@ class UserAuthProvider extends ChangeNotifier {
           .set({
         'name': name,
         'email': email,
-        'publickey': publickey,
-        'privatekey': privatekey,
         'location': '',
         'joindate': DateTime.now().toIso8601String(),
-        'gender': gender
+        'gender': gender,
+        'authenticated': false
       });
+      Map<String, dynamic> userdata = {"username": name, "useremail": email};
+      final url = '${secrets.url}:2/assign';
+      await http.post(
+        url,
+        body: json.encode(userdata),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
     } catch (error) {
       switch (error.code) {
         case "invalid-email":
@@ -96,7 +154,7 @@ class UserAuthProvider extends ChangeNotifier {
           errorMessage = "Too many requests please try again later.";
           break;
         default:
-          errorMessage = "An undefined Error happened.";
+          errorMessage = error;
       }
       throw errorMessage;
     }

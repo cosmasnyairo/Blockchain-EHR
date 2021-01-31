@@ -284,14 +284,45 @@ def get_nodes():
     return jsonify(response), 200
 
 
-@unauthenticated.route('/assign', methods=['GET'])
+@unauthenticated.route('/check_status', methods=['POST'])
+def check_status():
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+    useremail = values['useremail']
+    path = 'data/peers.json'
+    if os.path.exists(path):
+        with open(path) as json_file:
+            loaded = json.load(json_file)
+            assigned = loaded['assigned']
+            unassigned = loaded['unassigned']
+            assigneddetail = [
+                i for i in assigned if useremail == i['useremail']]
+
+            unassigneddetail = [
+                i for i in unassigned if useremail == i['useremail']]
+
+            if len(assigneddetail) > 0:
+                response = {'message': assigneddetail[0]['assigned_port']}
+                return jsonify(response), 200
+            elif len(unassigneddetail) > 0:
+                response = {'message': 'Your request is in the queue'}
+                return jsonify(response), 401
+
+    else:
+        response = {'message': 'An error occurred. Please try again'}
+        return jsonify(response), 200
+
+
+@unauthenticated.route('/assign', methods=['POST'])
 def register_port():
     # logic for assigning port to user and running it
     values = request.get_json()
     if not values:
         response = {'message': 'No data found!'}
         return jsonify(response), 400
-    name, email = values['name'],   values['email']
+    username, useremail = values['username'], values['useremail']
 
     def find_free_port():
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
@@ -301,48 +332,30 @@ def register_port():
             return s.getsockname()[1]
     assigned_port = find_free_port()
 
-    data = {"assigned_port": assigned_port, "date_requested": time()}
+    data = {
+        "assigned_port": assigned_port, "date_requested": time(),
+        "username": username, "useremail": useremail,
+    }
+
     path = 'data/peers.json'
     if os.path.exists(path):
-        with open(path, mode='r+') as json_file:
+        with open(path) as json_file:
             loaded = json.load(json_file)
-
             assigned = loaded['assigned']
-            if len(assigned) > 0:
-                port_assigned = [
-                    i for i in assigned if assigned_port == i['assigned_port']]
-                if len(port_assigned) > 0:
-                    response = {
-                        'message': 'Node already assigned'.format(assigned_port)}
-                    return jsonify(response), 400
-
             unassigned = loaded['unassigned']
-
-            port_assigned = [
-                i for i in unassigned if assigned_port == i['assigned_port']]
-            if len(port_assigned) > 0:
-                response = {
-                    'message': 'Your request is in the queue'.format(assigned_port)}
-                return jsonify(response), 201
-
-            if assigned_port in range(0, 2):
-                response = {
-                    'message': 'Node can\'t be assigned'.format(assigned_port)}
-                return jsonify(response), 400
-
-            if data not in unassigned:
+            if assigned_port in ([i['assigned_port'] for i in assigned] or [i['assigned_port'] for i in unassigned] or range(0, 2)):
+                response = {'message': 'An error occurred'}
+                return jsonify(response), 401
+            else:
                 unassigned.append(data)
-                json_file.seek(0)
-                json.dump(loaded, json_file, indent=4)
-                response = {
-                    'message': 'Your request has been received'.format('assigned_port')}
-                return jsonify(response), 200
-
+                with open(path, mode='w') as f:
+                    json.dump(loaded, f, indent=4)
+                    response = {'message': 'Your request has been received'}
+                    return jsonify(response), 200
     else:
         with open(path, mode='w') as f:
             json.dump({"unassigned": [data], "assigned": []}, f, indent=4)
-        response = {
-            'message': 'Your request has been received'.format('assigned_port')}
+        response = {'message': 'Your request has been received'}
         return jsonify(response), 200
 
 

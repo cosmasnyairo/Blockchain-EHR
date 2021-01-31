@@ -9,10 +9,10 @@ import 'providers/node_provider.dart';
 import 'providers/record_provider.dart';
 import 'screens/add_visit.dart';
 import 'screens/edit_account.dart';
+import 'screens/ehrinformation.dart';
 import 'screens/landingpage.dart';
-import 'screens/screen.dart';
 import 'screens/settings.dart';
-import 'screens/viewkeys.dart';
+import 'screens/user_activated.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,12 +65,12 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.montserratTextTheme(),
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
-          home: auth.isLoggedIn() ? Screen() : LandingPage(),
+          home: auth.isLoggedIn() ? UserActivated() : LandingPage(),
           routes: {
             'add_visit': (ctx) => AddVisit(),
             'edit_account': (ctx) => EditAccount(),
             'settings_page': (ctx) => SettingsPage(),
-            'view_keys': (ctx) => ViewKeysPage(),
+            'ehr_information': (ctx) => EhrInformationPage(),
           },
         ),
       ),

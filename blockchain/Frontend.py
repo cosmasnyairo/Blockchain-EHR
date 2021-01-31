@@ -135,8 +135,10 @@ class App:
 # arc
 # yaru
 
+
 if __name__ == "__main__":
     root = ThemedTk(theme="adapta")
     app = App(root)
+    app.start_node(2)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)
     root.mainloop()

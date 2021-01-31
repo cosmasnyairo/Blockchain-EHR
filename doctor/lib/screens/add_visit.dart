@@ -17,7 +17,7 @@ class AddVisit extends StatefulWidget {
 }
 
 class _AddVisitState extends State<AddVisit> {
-  final texteditingcontroller = TextEditingController();
+  final TextEditingController texteditingcontroller = TextEditingController();
   List<Transaction> _opentransactions;
   String _publicKey;
   List<Node> _nodes;
@@ -49,12 +49,12 @@ class _AddVisitState extends State<AddVisit> {
   Future<void> fetch() async {
     final recordprovider = Provider.of<RecordsProvider>(context, listen: false);
     final nodeprovider = Provider.of<NodeProvider>(context, listen: false);
-
     try {
-      await recordprovider.loadKeys();
-      await recordprovider.getOpenTransactions();
-      await recordprovider.resolveConflicts();
-      await nodeprovider.getNodes();
+      await recordprovider.getPortNumber(context);
+      await recordprovider.loadKeys(recordprovider.peernode);
+      await recordprovider.getOpenTransactions(recordprovider.peernode);
+      await recordprovider.resolveConflicts(recordprovider.peernode);
+      await nodeprovider.getNodes(recordprovider.peernode);
 
       _opentransactions = recordprovider.opentransactions;
       _publicKey = recordprovider.publickey;
@@ -80,10 +80,10 @@ class _AddVisitState extends State<AddVisit> {
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
+    final peer_node =
+        Provider.of<RecordsProvider>(context, listen: false).peernode;
     return Scaffold(
-      appBar: _erroroccurred || _isloading
-          ? null
-          : AppBar(title: Text('Ehr Visit')),
+      appBar: _erroroccurred ? null : AppBar(title: Text('Ehr Visit')),
       body: _erroroccurred
           ? ListView(
               children: [
@@ -110,8 +110,6 @@ class _AddVisitState extends State<AddVisit> {
                     () {
                       setState(() {
                         _erroroccurred = false;
-                      });
-                      setState(() {
                         _isloading = true;
                       });
                       fetch().then(
@@ -165,12 +163,9 @@ class _AddVisitState extends State<AddVisit> {
                                           texteditingcontroller.text == "") {
                                         throw 'Node can\'t be empty';
                                       } else {
-                                        setState(() {
-                                          _isloading = true;
-                                        });
                                         await Provider.of<NodeProvider>(context,
                                                 listen: false)
-                                            .addNodes(
+                                            .addNodes(peer_node,
                                                 texteditingcontroller.text);
                                       }
                                     } catch (e) {
@@ -187,7 +182,6 @@ class _AddVisitState extends State<AddVisit> {
                                         (value) => {
                                           setState(() {
                                             texteditingcontroller.clear();
-                                            _isloading = false;
                                           }),
                                         },
                                       );
@@ -214,7 +208,8 @@ class _AddVisitState extends State<AddVisit> {
                                       });
                                       await Provider.of<NodeProvider>(context,
                                               listen: false)
-                                          .removeNode(_nodes[0].node);
+                                          .removeNode(
+                                              peer_node, _nodes[0].node);
                                     } catch (e) {
                                       await showDialog(
                                         context: context,
@@ -305,7 +300,6 @@ class _AddVisitState extends State<AddVisit> {
                                     _receiver = codeSanner;
                                     _isloading = true;
                                   });
-                                  await Future.delayed(Duration(seconds: 1));
                                   setState(() {
                                     _isloading = false;
                                   });

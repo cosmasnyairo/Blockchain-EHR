@@ -52,8 +52,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetch() async {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     try {
-      await provider.resolveConflicts();
-      await provider.getChain();
+      await provider.getPortNumber(context);
+      await provider.resolveConflicts(provider.peernode);
+      await provider.getChain(provider.peernode);
 
       _updatedrecords = provider.records;
       while (i < _updatedrecords.length) {

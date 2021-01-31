@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -78,15 +80,12 @@ class _AuthenticationState extends State<Authentication> {
   Future<void> signupuser() async {
     try {
       final provider = Provider.of<RecordsProvider>(context, listen: false);
-      await provider.createKeys();
 
       await Provider.of<UserAuthProvider>(context, listen: false).signup(
         name: _authData['username'],
         email: _authData['email'],
         gender: _authData['gender'],
         password: _authData['password'],
-        publickey: provider.publickey,
-        privatekey: provider.privatekey,
       );
       setState(() {
         _isLoading = false;
@@ -122,7 +121,7 @@ class _AuthenticationState extends State<Authentication> {
           body: ListView(
             children: [
               Container(
-                height: deviceheight * 0.4,
+                height: deviceheight * 0.33,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
@@ -193,6 +192,7 @@ class _AuthenticationState extends State<Authentication> {
                     CustomFormField(
                       focusNode: _passwordnode,
                       labeltext: 'Password',
+                      maxlines: 1,
                       icondata: Icons.remove_red_eye,
                       obscuretext: true,
                       textInputAction: TextInputAction.go,
