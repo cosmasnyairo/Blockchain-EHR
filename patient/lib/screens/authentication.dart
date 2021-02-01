@@ -55,10 +55,12 @@ class _AuthenticationState extends State<Authentication> {
 
   Future<void> loginuser() async {
     try {
-      await Provider.of<UserAuthProvider>(context, listen: false).login(
+      final provider = Provider.of<UserAuthProvider>(context, listen: false);
+      await provider.login(
         email: _authData['email'],
         password: _authData['password'],
       );
+      await provider.isAuthenticated();
       setState(() {
         _isLoading = false;
       });
@@ -79,14 +81,15 @@ class _AuthenticationState extends State<Authentication> {
 
   Future<void> signupuser() async {
     try {
-      final provider = Provider.of<RecordsProvider>(context, listen: false);
-
-      await Provider.of<UserAuthProvider>(context, listen: false).signup(
+      final provider = Provider.of<UserAuthProvider>(context, listen: false);
+      await provider.signup(
         name: _authData['username'],
         email: _authData['email'],
         gender: _authData['gender'],
         password: _authData['password'],
       );
+      await provider.isAuthenticated();
+
       setState(() {
         _isLoading = false;
       });
@@ -121,18 +124,13 @@ class _AuthenticationState extends State<Authentication> {
           body: ListView(
             children: [
               Container(
-                height: deviceheight * 0.33,
+                padding: EdgeInsets.all(10),
+                height: deviceheight * 0.4,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
-              ),
-              CustomText(
-                'Ehr Kenya',
-                color: Colors.black,
-                fontsize: 30,
-                alignment: TextAlign.center,
               ),
               Form(
                 key: _formkey,

@@ -117,12 +117,12 @@ class _VisitDetailsState extends State<VisitDetails>
                         SizedBox(height: 10),
                         CustomTile(
                           leadingiconData: Icons.person,
-                          title: 'Doctor',
+                          title: 'Doctor Name',
                           subtitle: '$doctorname',
                         ),
                         CustomTile(
                           leadingiconData: Icons.email,
-                          title: 'Email',
+                          title: 'Doctor Email',
                           subtitle: '$doctoremail',
                         ),
                       ],

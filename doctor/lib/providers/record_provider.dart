@@ -19,10 +19,16 @@ class RecordsProvider with ChangeNotifier {
   String _privatekey;
   int _peernode;
   List<Block> _records = [];
+
+  List<Block> _patientrecords = [];
   List<EhrTransaction.Transaction> _opentransactions = [];
 
   List<Block> get records {
     return [..._records];
+  }
+
+  List<Block> get patientrecords {
+    return [..._patientrecords];
   }
 
   List<EhrTransaction.Transaction> get opentransactions {
@@ -126,6 +132,56 @@ class RecordsProvider with ChangeNotifier {
       );
     } catch (e) {
       throw e;
+    }
+  }
+
+  Future<void> getPatientChain(int port, String patientKey) async {
+    try {
+      final url = '$_apiurl:$port/patientchain';
+
+      Map<String, String> patientrequest = {"receiver": patientKey};
+      final response = await http.post(
+        url,
+        body: json.encode(patientrequest),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      final extractedData = json.decode(response.body) as List;
+      final List<Block> loadedblocks = [];
+      extractedData.forEach(
+        (element) {
+          loadedblocks.add(
+            Block(
+              index: element['index'].toString(),
+              timestamp: element['timestamp'].toString(),
+              transaction: (element['transactions'] as List<dynamic>)
+                  .map(
+                    (e) => EhrTransaction.Transaction(
+                      sender: e['sender'],
+                      receiver: e['receiver'],
+                      timestamp: DateTime.parse(e['timestamp']),
+                      details: List<dynamic>.from([e['details']])
+                          .map(
+                            (f) => Details(
+                              medicalnotes: f['medical_notes'],
+                              labresults: f['lab_results'],
+                              prescription: f['prescription'],
+                              diagnosis: f['diagnosis'],
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
+        },
+      );
+      _patientrecords = loadedblocks;
+      notifyListeners();
+    } catch (e) {
+      throw (e);
     }
   }
 

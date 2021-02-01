@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   return Center(child: CircularProgressIndicator());
                 }
 
-                provider.fetchdoctordetails(snapshot.data);
+                // provider.fetchdoctordetails(snapshot.data);
                 return Container(
                   height: deviceheight,
                   child: ListView(

@@ -166,6 +166,9 @@ class _AddVisitState extends State<AddVisit>
                                                     listen: false)
                                                 .addNodes(peer_node,
                                                     texteditingcontroller.text);
+                                            setState(() {
+                                              _isloading = false;
+                                            });
                                           }
                                         } catch (e) {
                                           await showDialog(
@@ -182,6 +185,7 @@ class _AddVisitState extends State<AddVisit>
                                             (value) => {
                                               setState(() {
                                                 _isloading = false;
+                                                texteditingcontroller.clear();
                                               }),
                                             },
                                           );

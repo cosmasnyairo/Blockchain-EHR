@@ -49,12 +49,12 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
     final f = DateFormat.yMd().add_jm();
     return Scaffold(
       appBar: AppBar(
-        title: CustomText('Open Transactions'),
+        title: CustomText('Added Records'),
       ),
       body: _isloading
           ? Center(child: CircularProgressIndicator())
           : transaction.length <= 0
-              ? Center(child: CustomText('You have no open transactions'))
+              ? Center(child: CustomText('You have no added records'))
               : ListView.separated(
                   padding: const EdgeInsets.all(20),
                   separatorBuilder: (context, index) => SizedBox(height: 20),
@@ -80,9 +80,8 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => VisitDetails(
-                                  transaction[i],
-                                ),
+                                builder: (context) =>
+                                    VisitDetails(transaction[i], false),
                               ),
                             );
                           },
@@ -90,9 +89,8 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => VisitDetails(
-                                transaction[i],
-                              ),
+                              builder: (context) =>
+                                  VisitDetails(transaction[i], false),
                             ),
                           );
                         },

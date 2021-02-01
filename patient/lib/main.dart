@@ -12,7 +12,8 @@ import 'screens/edit_account.dart';
 import 'screens/ehrinformation.dart';
 import 'screens/landingpage.dart';
 import 'screens/settings.dart';
-import 'screens/user_activated.dart';
+import 'screens/screen.dart';
+import 'screens/pending_activation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,7 +66,11 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.montserratTextTheme(),
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
-          home: auth.isLoggedIn() ? UserActivated() : LandingPage(),
+          home: auth.isLoggedIn()
+              ? auth.authenticated
+                  ? Screen()
+                  : PendingActivation()
+              : LandingPage(),
           routes: {
             'add_visit': (ctx) => AddVisit(),
             'edit_account': (ctx) => EditAccount(),

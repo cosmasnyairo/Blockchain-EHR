@@ -8,7 +8,8 @@ import '../widgets/custom_tile.dart';
 
 class VisitDetails extends StatefulWidget {
   final UserTransaction.Transaction transaction;
-  VisitDetails(this.transaction);
+  final bool isavisit;
+  VisitDetails(this.transaction, this.isavisit);
   @override
   _VisitDetailsState createState() => _VisitDetailsState();
 }
@@ -18,6 +19,7 @@ class _VisitDetailsState extends State<VisitDetails>
   TabController _controller;
   int _selectedIndex = 0;
   String patientemail, patientname;
+  String doctoremail, doctorname;
   List medicalNotes, labResults, prescription, diagnosis = [];
 
   var _isloading = false;
@@ -55,7 +57,11 @@ class _VisitDetailsState extends State<VisitDetails>
 
   @override
   void initState() {
-    fetchpatientdetails();
+    if (widget.isavisit == true) {
+      fetchdoctordetails();
+    } else {
+      fetchpatientdetails();
+    }
     _controller = TabController(length: widgetlist.length, vsync: this);
     _controller.addListener(() {
       setState(() {
@@ -63,6 +69,24 @@ class _VisitDetailsState extends State<VisitDetails>
       });
     });
     super.initState();
+  }
+
+  Future<void> fetchdoctordetails() async {
+    setState(() {
+      _isloading = true;
+    });
+    Query query = FirebaseFirestore.instance
+        .collection('Doctors')
+        .where("publickey", isEqualTo: widget.transaction.sender);
+
+    await query.get().then((f) {
+      doctorname = f.docs[0]['name'];
+      doctoremail = f.docs[0]['email'];
+    });
+
+    setState(() {
+      _isloading = false;
+    });
   }
 
   Future<void> fetchpatientdetails() async {
@@ -121,13 +145,17 @@ class _VisitDetailsState extends State<VisitDetails>
                         SizedBox(height: 10),
                         CustomTile(
                           leadingiconData: Icons.person,
-                          title: 'Patient',
-                          subtitle: '$patientname',
+                          title:
+                              widget.isavisit ? 'Doctor Name' : 'Patient Name',
+                          subtitle:
+                              widget.isavisit ? '$doctorname' : '$patientname',
                         ),
                         CustomTile(
                           leadingiconData: Icons.email,
-                          title: 'Email',
-                          subtitle: '$patientemail',
+                          title: 'Doctor Email',
+                          subtitle: widget.isavisit
+                              ? '$doctoremail'
+                              : '$patientemail',
                         ),
                       ],
                     ),

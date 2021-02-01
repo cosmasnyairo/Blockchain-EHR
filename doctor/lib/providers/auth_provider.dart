@@ -5,6 +5,8 @@ import 'package:doctor/providers/record_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -17,9 +19,17 @@ class DoctorAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   EhrDoctor _ehrDoctor;
+  bool _authenticated;
 
   EhrDoctor get ehrDoctor {
     return _ehrDoctor;
+  }
+
+  bool get authenticated {
+    if (_authenticated == null) {
+      _authenticated = false;
+    }
+    return _authenticated;
   }
 
   String get userid {
@@ -33,7 +43,7 @@ class DoctorAuthProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> isAuthenticated() async {
+  Future<void> isAuthenticated() async {
     final authenticated = await FirebaseFirestore.instance
         .collection('Doctors')
         .doc(userid)
@@ -41,11 +51,11 @@ class DoctorAuthProvider extends ChangeNotifier {
         .then((f) {
       return f['authenticated'];
     });
-    if (authenticated == true) {
-      return true;
-    } else {
-      return false;
-    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('authenticated', authenticated);
+    _authenticated = authenticated;
+
+    notifyListeners();
   }
 
   Future<void> checkStatus(String email) async {
@@ -65,6 +75,19 @@ class DoctorAuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> getUserDetails(String userid) async {
+    var name, email;
+    await FirebaseFirestore.instance
+        .collection('Doctors')
+        .doc(userid)
+        .get()
+        .then((f) {
+      name = f['name'];
+      email = f['email'];
+    });
+    return [name, email];
+  }
+
   Future<void> finishSignup(int port, BuildContext context) async {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     await provider.createKeys(port);
@@ -74,7 +97,7 @@ class DoctorAuthProvider extends ChangeNotifier {
       'publickey': provider.publickey,
       'peer_node': port
     });
-    await Future.delayed(Duration(seconds: 1));
+    await isAuthenticated();
   }
 
   Future<void> logout() async {
@@ -86,7 +109,6 @@ class DoctorAuthProvider extends ChangeNotifier {
     String errorMessage;
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      await isAuthenticated();
     } catch (error) {
       switch (error.code) {
         case "invalid-email":
@@ -168,16 +190,6 @@ class DoctorAuthProvider extends ChangeNotifier {
     }
 
     notifyListeners();
-  }
-
-  void fetchdoctordetails(DocumentSnapshot snapshot) {
-    _ehrDoctor = EhrDoctor(
-      name: snapshot['name'],
-      doctorid: snapshot['doctorid'],
-      email: snapshot['email'],
-      hospital: snapshot['hospital'],
-      location: snapshot['location'],
-    );
   }
 
   Future<void> editdetails({

@@ -16,11 +16,12 @@ class LandingPage extends StatelessWidget {
         body: ListView(
           children: [
             Container(
-              height: deviceheight * 0.4,
+              padding: EdgeInsets.all(20),
+              height: deviceheight * 0.5,
               width: double.infinity,
               child: Image.asset(
                 'assets/background.png',
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             ),
             ListView(
@@ -29,9 +30,9 @@ class LandingPage extends StatelessWidget {
               physics: ClampingScrollPhysics(),
               children: [
                 CustomText(
-                  'Ehr Kenya',
+                  'EHR KENYA',
                   color: Colors.black,
-                  fontsize: 40,
+                  fontsize: 30,
                 ),
                 SizedBox(height: 10),
                 CustomText(
@@ -39,7 +40,7 @@ class LandingPage extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                   fontsize: 18,
                 ),
-                Divider(thickness: 1.5, color: Colors.black),
+                Divider(endIndent: 20, thickness: 1, color: Colors.grey),
                 SizedBox(height: deviceheight * 0.075),
                 Center(
                   child: SizedBox(

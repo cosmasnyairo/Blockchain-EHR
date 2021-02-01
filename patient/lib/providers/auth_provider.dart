@@ -5,14 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:patient/providers/record_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../secrets.dart' as secrets;
 
 class UserAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
-
+  bool _authenticated;
   String get userid {
     return _auth.currentUser.uid;
   }
@@ -24,7 +24,14 @@ class UserAuthProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> isAuthenticated() async {
+  bool get authenticated {
+    if (_authenticated == null) {
+      _authenticated = false;
+    }
+    return _authenticated;
+  }
+
+  Future<void> isAuthenticated() async {
     final authenticated = await FirebaseFirestore.instance
         .collection('Users')
         .doc(userid)
@@ -32,11 +39,11 @@ class UserAuthProvider extends ChangeNotifier {
         .then((f) {
       return f['authenticated'];
     });
-    if (authenticated == true) {
-      return true;
-    } else {
-      return false;
-    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('authenticated', authenticated);
+    _authenticated = authenticated;
+
+    notifyListeners();
   }
 
   Future<void> checkStatus(String email) async {
@@ -56,6 +63,19 @@ class UserAuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> getUserDetails(String userid) async {
+    var name, email;
+    await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userid)
+        .get()
+        .then((f) {
+      name = f['name'];
+      email = f['email'];
+    });
+    return [name, email];
+  }
+
   Future<void> finishSignup(int port, BuildContext context) async {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     await provider.createKeys(port);
@@ -65,7 +85,7 @@ class UserAuthProvider extends ChangeNotifier {
       'publickey': provider.publickey,
       'peer_node': port
     });
-    await Future.delayed(Duration(seconds: 1));
+    await isAuthenticated();
   }
 
   Future<void> logout() async {
@@ -77,7 +97,6 @@ class UserAuthProvider extends ChangeNotifier {
     String errorMessage;
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      await isAuthenticated();
     } catch (error) {
       switch (error.code) {
         case "invalid-email":

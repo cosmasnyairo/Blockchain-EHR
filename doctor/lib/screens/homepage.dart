@@ -1,3 +1,4 @@
+import 'package:doctor/widgets/custom_form_field.dart';
 import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -268,9 +269,8 @@ class _HomePageState extends State<HomePage> {
                     onpressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => VisitDetails(
-                            fetchedtransaction[index],
-                          ),
+                          builder: (context) =>
+                              VisitDetails(fetchedtransaction[index], false),
                         ),
                       );
                     },

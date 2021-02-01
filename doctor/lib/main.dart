@@ -1,5 +1,3 @@
-import 'package:doctor/screens/user_activated.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +12,7 @@ import 'screens/add_visit.dart';
 import 'screens/edit_account.dart';
 import 'screens/ehr_information.dart';
 import 'screens/landingpage.dart';
+import 'screens/pending_activation.dart';
 import 'screens/screen.dart';
 import 'screens/settings.dart';
 import 'screens/view_open_transactions.dart';
@@ -65,7 +64,11 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.montserratTextTheme(),
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
-          home: auth.isLoggedIn() ? UserActivated() : LandingPage(),
+          home: auth.isLoggedIn()
+              ? auth.authenticated
+                  ? Screen()
+                  : PendingActivation()
+              : LandingPage(),
           // home: OnboardingScreen(),
           routes: {
             'add_record': (ctx) => AddRecord(),
