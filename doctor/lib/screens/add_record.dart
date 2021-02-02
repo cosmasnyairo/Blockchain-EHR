@@ -59,7 +59,6 @@ class _StepperBodyState extends State<StepperBody> {
 
   List _medicalnotes = [];
   List _labresults = [];
-  List _diagnosis = [];
 
   List _prescription = [];
   List drugname = [];
@@ -69,7 +68,6 @@ class _StepperBodyState extends State<StepperBody> {
   List<Widget> _medicalwidgets = [];
   List<Widget> _labresultswidgets = [];
   List<Widget> _prescriptionwidgets = [];
-  List<Widget> _diagnosiswidgets = [];
 
   Details _enteredDetails;
 
@@ -88,7 +86,6 @@ class _StepperBodyState extends State<StepperBody> {
       medicalnotes: _medicalnotes,
       labresults: _labresults,
       prescription: _prescription,
-      diagnosis: _diagnosis,
     );
     try {
       setState(() {
@@ -109,7 +106,6 @@ class _StepperBodyState extends State<StepperBody> {
       interval = [];
       _medicalnotes = [];
       _labresults = [];
-      _diagnosis = [];
       _prescription = [];
       _enteredDetails = null;
       Navigator.of(context).pop();
@@ -119,7 +115,6 @@ class _StepperBodyState extends State<StepperBody> {
       interval = [];
       _medicalnotes = [];
       _labresults = [];
-      _diagnosis = [];
       _prescription = [];
       _enteredDetails = null;
       await showDialog(
@@ -186,15 +181,6 @@ class _StepperBodyState extends State<StepperBody> {
         title: 'Prescription',
         formfields: prescriptionformfields(),
         widgetlist: _prescriptionwidgets,
-      ),
-      customStepper(
-        title: 'Diagnosis',
-        widgetlist: _diagnosiswidgets,
-        formfields: customformfieldslist(
-          dynamiclist: _diagnosis,
-          message: 'Enter Diagnosis',
-          iconData: Icons.format_align_center,
-        ),
       ),
     ];
     return _isloading

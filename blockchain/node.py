@@ -290,8 +290,9 @@ def check_status():
     if not values:
         response = {'message': 'No data found!'}
         return jsonify(response), 400
-    useremail = values['useremail']
+    useremail, username = values['useremail'], values['username']
     path = 'data/peers.json'
+
     if os.path.exists(path):
         with open(path) as json_file:
             loaded = json.load(json_file)
@@ -309,10 +310,30 @@ def check_status():
             elif len(unassigneddetail) > 0:
                 response = {'message': 'Your request is in the queue'}
                 return jsonify(response), 401
+            elif (username, useremail) not in unassigned and assigned:
+                data = {
+                    "assigned_port": find_free_port(), "date_requested": time(),
+                    "username": username, "useremail": useremail,
+                }
+                response = {'message': 'Your request is in the queue'}
+                unassigned.append(data)
+                with open(path, mode='w') as f:
+                    print('bcjdd')
+                    json.dump(loaded, f, indent=4)
+                    response = {'message': 'Your request has been received'}
+                    return jsonify(response), 401
 
     else:
         response = {'message': 'An error occurred. Please try again'}
         return jsonify(response), 200
+
+
+def find_free_port():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.getsockname()[1]
+        return s.getsockname()[1]
 
 
 @unauthenticated.route('/assign', methods=['POST'])
@@ -324,12 +345,6 @@ def register_port():
         return jsonify(response), 400
     username, useremail = values['username'], values['useremail']
 
-    def find_free_port():
-        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-            s.bind(('', 0))
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.getsockname()[1]
-            return s.getsockname()[1]
     assigned_port = find_free_port()
 
     data = {

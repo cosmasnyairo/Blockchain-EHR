@@ -23,7 +23,6 @@ class _AuthenticationState extends State<Authentication> {
   final _usernamenode = FocusNode();
   final _emailnode = FocusNode();
   final _passwordnode = FocusNode();
-
   var _isLoading = false;
 
   Map<String, String> _authData = {
@@ -57,7 +56,7 @@ class _AuthenticationState extends State<Authentication> {
         email: _authData['email'],
         password: _authData['password'],
       );
-      await provider.isAuthenticated();
+
       setState(() {
         _isLoading = false;
       });
@@ -84,10 +83,8 @@ class _AuthenticationState extends State<Authentication> {
         email: _authData['email'],
         password: _authData['password'],
         doctorid: _authData['doctorid'],
+        gender: _authData['gender'],
       );
-      print(" checking authentication status");
-      await provider.isAuthenticated();
-
       setState(() {
         _isLoading = false;
       });
@@ -125,12 +122,18 @@ class _AuthenticationState extends State<Authentication> {
             children: [
               Container(
                 padding: EdgeInsets.all(10),
-                height: deviceheight * 0.4,
+                height: deviceheight * 0.33,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
                   fit: BoxFit.contain,
                 ),
+              ),
+              SizedBox(height: 10),
+              CustomText(
+                widget.authAction == AuthAction.signup ? "Sign up" : " Sign In",
+                alignment: TextAlign.center,
+                fontsize: 30,
               ),
               Form(
                 key: _formkey,
@@ -225,6 +228,39 @@ class _AuthenticationState extends State<Authentication> {
                         _authData['password'] = value.trim();
                       },
                     ),
+                    SizedBox(height: 20),
+                    widget.authAction == AuthAction.signup
+                        ? DropdownButtonFormField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                size: 25,
+                                color: Colors.black,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please choose your gender';
+                              }
+                              return null;
+                            },
+                            hint: Text("Enter Gender"),
+                            items: [
+                              DropdownMenuItem(
+                                child: Text("Male"),
+                                value: "Male",
+                              ),
+                              DropdownMenuItem(
+                                child: Text("Female"),
+                                value: "Female",
+                              ),
+                            ],
+                            onChanged: (value) {
+                              _authData['gender'] = value;
+                            },
+                          )
+                        : SizedBox(),
                     SizedBox(height: 20),
                     Center(
                       child: _isLoading

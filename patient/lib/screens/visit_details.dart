@@ -18,7 +18,7 @@ class _VisitDetailsState extends State<VisitDetails>
   int _selectedIndex = 0;
 
   String doctoremail, doctorname;
-  List medicalNotes, labResults, prescription, diagnosis = [];
+  List medicalNotes, labResults, prescription = [];
 
   var _isloading = false;
   List<Widget> widgetlist = [
@@ -33,13 +33,6 @@ class _VisitDetailsState extends State<VisitDetails>
       children: [
         Icon(Icons.search, size: 30),
         CustomText('Lab Results', fontsize: 11),
-        SizedBox(height: 5),
-      ],
-    ),
-    Column(
-      children: [
-        Icon(Icons.analytics, size: 30),
-        CustomText('Diagnosis', fontsize: 11),
         SizedBox(height: 5),
       ],
     ),
@@ -88,7 +81,6 @@ class _VisitDetailsState extends State<VisitDetails>
 
     for (var item in widget.transaction.details) {
       medicalNotes = item.medicalnotes;
-      diagnosis = item.diagnosis;
       prescription = item.prescription;
       labResults = item.labresults;
     }
@@ -155,7 +147,6 @@ class _VisitDetailsState extends State<VisitDetails>
                       children: [
                         ehrDetails(medicalNotes, Icons.assignment),
                         ehrDetails(labResults, Icons.search),
-                        ehrDetails(diagnosis, Icons.analytics),
                         ehrDetails(prescription, Icons.healing),
                       ],
                     ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,7 +18,7 @@ class UserAuthProvider extends ChangeNotifier {
     return _auth.currentUser.uid;
   }
 
-  bool isLoggedIn() {
+  bool get isLoggedIn {
     if (_auth.currentUser == null) {
       return false;
     }
@@ -32,26 +33,32 @@ class UserAuthProvider extends ChangeNotifier {
   }
 
   Future<void> isAuthenticated() async {
-    final authenticated = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userid)
-        .get()
-        .then((f) {
-      return f['authenticated'];
-    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('authenticated', authenticated);
-    _authenticated = authenticated;
+    if (!prefs.containsKey('authenticated')) {
+      final variable = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userid)
+          .get()
+          .then((f) {
+        return f['authenticated'];
+      });
+      prefs.setBool('authenticated', variable);
+    }
+    bool userauthenticated = prefs.getBool('authenticated');
 
-    notifyListeners();
+    print(userauthenticated);
+    _authenticated = userauthenticated;
   }
 
-  Future<void> checkStatus(String email) async {
+  Future checkStatus(String email, String name) async {
     final url = '${secrets.url}:2/check_status';
     try {
       final response = await http.post(
         url,
-        body: json.encode({"useremail": email}),
+        body: json.encode({
+          "username": name,
+          "useremail": email,
+        }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -77,6 +84,8 @@ class UserAuthProvider extends ChangeNotifier {
   }
 
   Future<void> finishSignup(int port, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     await provider.createKeys(port);
     await FirebaseFirestore.instance.collection('Users').doc(userid).update({
@@ -85,11 +94,14 @@ class UserAuthProvider extends ChangeNotifier {
       'publickey': provider.publickey,
       'peer_node': port
     });
-    await isAuthenticated();
+    prefs.setBool('authenticated', true);
+    notifyListeners();
   }
 
   Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await _auth.signOut();
+    await prefs.remove('authenticated');
     notifyListeners();
   }
 
@@ -112,6 +124,9 @@ class UserAuthProvider extends ChangeNotifier {
           errorMessage = "User accountdisabled.";
           break;
         case "operation-not-allowed":
+          errorMessage = "Too many requests please try again later.";
+          break;
+        case "too-many-requests":
           errorMessage = "Too many requests please try again later.";
           break;
         default:
@@ -156,7 +171,11 @@ class UserAuthProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
+      ;
     } catch (error) {
       switch (error.code) {
         case "invalid-email":
@@ -184,9 +203,6 @@ class UserAuthProvider extends ChangeNotifier {
   Future<void> editdetails({
     String name,
     String email,
-    String doctorid,
-    String hospital,
-    String location,
   }) async {
     await FirebaseFirestore.instance
         .collection('Users')
@@ -194,7 +210,6 @@ class UserAuthProvider extends ChangeNotifier {
         .update({
       'name': name,
       'email': email,
-      'location': location,
     }).catchError((error) => throw error);
   }
 

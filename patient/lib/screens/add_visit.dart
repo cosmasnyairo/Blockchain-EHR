@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patient/widgets/custom_form_field.dart';
 import 'package:patient/widgets/custom_text.dart';
+import 'package:patient/widgets/error_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -77,62 +78,21 @@ class _AddVisitState extends State<AddVisit>
       body: _isloading
           ? Center(child: CircularProgressIndicator())
           : _erroroccurred
-              ? ListView(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      height: deviceheight * 0.6,
-                      child: Image.asset('assets/404.png', fit: BoxFit.contain),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'An Error Occured!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, color: Colors.red),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'The Server may be offline, please retry after some time',
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    Center(
-                      child: CustomButton(
-                        'Retry',
-                        () {
-                          setState(() {
-                            _erroroccurred = false;
-                          });
-                          setState(() {
-                            _isloading = true;
-                          });
-                          fetch().then(
-                            (value) => {
-                              setState(() {
-                                _isloading = false;
-                              }),
-                            },
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                )
+              ? ErrorPage()
               : _isloading
                   ? Center(child: CircularProgressIndicator())
                   : ListView(
                       physics: ClampingScrollPhysics(),
                       shrinkWrap: true,
                       children: [
-                        SizedBox(height: 10),
-                        CustomText(
-                          _nodes.length == 0
-                              ? 'Choose doctor node to add visit.'
-                              : 'You currently have an ongoing visit.\n\nPresent Qr code to doctor',
-                          color:
-                              _nodes.length == 0 ? Colors.grey : Colors.black,
-                          alignment: TextAlign.center,
-                        ),
+                        SizedBox(height: 5),
+                        _nodes.length == 0
+                            ? SizedBox()
+                            : CustomText(
+                                'You have an ongoing visit',
+                                alignment: TextAlign.center,
+                              ),
+                        SizedBox(height: 5),
                         ListView(
                           shrinkWrap: true,
                           padding: EdgeInsets.all(20),
@@ -147,7 +107,8 @@ class _AddVisitState extends State<AddVisit>
                                     labeltext: "Enter Doctor's node ",
                                   ),
                                   SizedBox(height: 20),
-                                  Center(
+                                  Align(
+                                    alignment: Alignment.centerRight,
                                     child: CustomButton(
                                       'Add Visit',
                                       () async {

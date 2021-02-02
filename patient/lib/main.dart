@@ -14,6 +14,7 @@ import 'screens/landingpage.dart';
 import 'screens/settings.dart';
 import 'screens/screen.dart';
 import 'screens/pending_activation.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,11 +67,7 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.montserratTextTheme(),
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
-          home: auth.isLoggedIn()
-              ? auth.authenticated
-                  ? Screen()
-                  : PendingActivation()
-              : LandingPage(),
+          home: auth.isLoggedIn ? SplashScreen() : LandingPage(),
           routes: {
             'add_visit': (ctx) => AddVisit(),
             'edit_account': (ctx) => EditAccount(),

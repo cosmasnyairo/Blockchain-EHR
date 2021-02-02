@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -64,7 +65,10 @@ class RecordsProvider with ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       final extractedData = json.decode(response.body) as List;
       final List<Block> loadedblocks = [];
       extractedData.forEach(
@@ -85,7 +89,6 @@ class RecordsProvider with ChangeNotifier {
                               medicalnotes: f['medical_notes'],
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
-                              diagnosis: f['diagnosis'],
                             ),
                           )
                           .toList(),
@@ -109,7 +112,11 @@ class RecordsProvider with ChangeNotifier {
   ) async {
     try {
       final url = '$_apiurl:$port/create_keys';
-      final response = await http.post(url);
+      final response = await http.post(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
@@ -123,7 +130,10 @@ class RecordsProvider with ChangeNotifier {
   ) async {
     try {
       final url = '$_apiurl:$port/resolve_conflicts';
-      await http.post(url);
+      await http.post(url).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
     } catch (e) {}
   }
 
@@ -133,7 +143,11 @@ class RecordsProvider with ChangeNotifier {
   ) async {
     try {
       final url = '$_apiurl:$port/load_keys';
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
@@ -147,7 +161,10 @@ class RecordsProvider with ChangeNotifier {
   ) async {
     try {
       final url = '$_apiurl:$port/mine';
-      await http.post(url);
+      await http.post(url).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
     } catch (e) {
       throw e;
     }

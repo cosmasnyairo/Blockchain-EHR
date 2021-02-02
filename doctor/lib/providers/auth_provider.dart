@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctor/providers/record_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,7 +38,7 @@ class DoctorAuthProvider extends ChangeNotifier {
     return _auth.currentUser.uid;
   }
 
-  bool isLoggedIn() {
+  bool get isLoggedIn {
     if (_auth.currentUser == null) {
       return false;
     }
@@ -44,26 +46,33 @@ class DoctorAuthProvider extends ChangeNotifier {
   }
 
   Future<void> isAuthenticated() async {
-    final authenticated = await FirebaseFirestore.instance
-        .collection('Doctors')
-        .doc(userid)
-        .get()
-        .then((f) {
-      return f['authenticated'];
-    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('authenticated', authenticated);
-    _authenticated = authenticated;
+    if (!prefs.containsKey('authenticated')) {
+      final variable = await FirebaseFirestore.instance
+          .collection('Doctors')
+          .doc(userid)
+          .get()
+          .then((f) {
+        return f['authenticated'];
+      });
+      prefs.setBool('authenticated', variable);
+      print('prefs is $variable');
+    }
+    bool userauthenticated = prefs.getBool('authenticated');
 
-    notifyListeners();
+    print(userauthenticated);
+    _authenticated = userauthenticated;
   }
 
-  Future<void> checkStatus(String email) async {
+  Future checkStatus(String email, String name) async {
     final url = '${secrets.apiurl}:2/check_status';
     try {
       final response = await http.post(
         url,
-        body: json.encode({"useremail": email}),
+        body: json.encode({
+          "username": name,
+          "useremail": email,
+        }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -89,6 +98,7 @@ class DoctorAuthProvider extends ChangeNotifier {
   }
 
   Future<void> finishSignup(int port, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     await provider.createKeys(port);
     await FirebaseFirestore.instance.collection('Doctors').doc(userid).update({
@@ -97,11 +107,15 @@ class DoctorAuthProvider extends ChangeNotifier {
       'publickey': provider.publickey,
       'peer_node': port
     });
-    await isAuthenticated();
+    prefs.setBool('authenticated', true);
+    notifyListeners();
   }
 
   Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await _auth.signOut();
+    await prefs.remove('authenticated');
+    print(prefs.getBool('authenticated'));
     notifyListeners();
   }
 
@@ -110,6 +124,7 @@ class DoctorAuthProvider extends ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (error) {
+      print(error);
       switch (error.code) {
         case "invalid-email":
           errorMessage = "You entered an invalid email.";
@@ -126,12 +141,14 @@ class DoctorAuthProvider extends ChangeNotifier {
         case "operation-not-allowed":
           errorMessage = "Too many requests please try again later.";
           break;
+        case "too-many-requests":
+          errorMessage = "Too many requests please try again later.";
+          break;
         default:
           errorMessage = "An undefined Error happened.";
       }
       throw errorMessage;
     }
-
     notifyListeners();
   }
 
@@ -142,6 +159,7 @@ class DoctorAuthProvider extends ChangeNotifier {
     String password,
     String publickey,
     String privatekey,
+    String gender,
   }) async {
     String errorMessage;
     try {
@@ -153,12 +171,13 @@ class DoctorAuthProvider extends ChangeNotifier {
           .set({
         'name': name,
         'email': email,
-        'location': '',
         'joindate': DateTime.now().toIso8601String(),
         'doctorid': doctorid,
-        'hospital': '',
+        'gender': gender,
         'authenticated': false
       });
+      //errror occurred here// add button to send request for being added to chain
+
       Map<String, dynamic> userdata = {"username": name, "useremail": email};
       final url = '${secrets.apiurl}:2/assign';
       await http.post(
@@ -167,7 +186,10 @@ class DoctorAuthProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 2), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
     } catch (error) {
       switch (error.code) {
         case "invalid-email":
@@ -188,7 +210,6 @@ class DoctorAuthProvider extends ChangeNotifier {
       }
       throw errorMessage;
     }
-
     notifyListeners();
   }
 
@@ -196,8 +217,6 @@ class DoctorAuthProvider extends ChangeNotifier {
     String name,
     String email,
     String doctorid,
-    String hospital,
-    String location,
   }) async {
     await FirebaseFirestore.instance
         .collection('Doctors')
@@ -206,15 +225,11 @@ class DoctorAuthProvider extends ChangeNotifier {
       'name': name,
       'email': email,
       'doctorid': doctorid,
-      'hospital': hospital,
-      'location': location,
     }).catchError((error) => throw error);
     _ehrDoctor = EhrDoctor(
       name: name,
       doctorid: doctorid,
       email: email,
-      hospital: hospital,
-      location: location,
     );
     notifyListeners();
   }

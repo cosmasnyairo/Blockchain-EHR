@@ -11,13 +11,11 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      child: RaisedButton(
-        onPressed: onpressed,
-        child: CustomText(text),
-        color: backgroundcolor,
-        disabledColor: backgroundcolor,
-      ),
+    return RaisedButton(
+      onPressed: onpressed,
+      child: CustomText(text),
+      color: backgroundcolor,
+      disabledColor: backgroundcolor,
     );
   }
 }

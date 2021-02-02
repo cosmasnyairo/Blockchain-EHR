@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctor/widgets/custom_text.dart';
+import 'package:doctor/widgets/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,11 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
             body: StreamBuilder<DocumentSnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('Doctors')
-                  .doc(Provider.of<DoctorAuthProvider>(context).userid)
+                  .doc(Provider.of<DoctorAuthProvider>(context, listen: false)
+                      .userid)
                   .snapshots(),
               builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Center(child: CustomText('Something went wrong'));
+                  return ErrorPage();
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -51,12 +53,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: EdgeInsets.all(20),
                     children: [
                       Container(
-                        height: deviceheight * 0.33,
-                        child: Image.asset(
-                          'assets/doctor.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                          color: Theme.of(context).primaryColor,
+                          height: deviceheight * 0.33,
+                          child: CircleAvatar(
+                            backgroundImage: AssetImage(
+                              snapshot.data['gender'] == "Male"
+                                  ? 'assets/male_avatar.png'
+                                  : 'assets/female_avatar.png',
+                            ),
+                            backgroundColor: Colors.transparent,
+                          )
+
+                          //  Image.asset(
+                          //
+                          //   fit: BoxFit.contain,
+                          // ),
+                          ),
                       SizedBox(height: 5),
                       Card(
                         shape: RoundedRectangleBorder(
@@ -131,6 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   _isloading = true;
                                 });
                                 await provider.logout();
+
                                 setState(() {
                                   _isloading = false;
                                 });

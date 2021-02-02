@@ -60,7 +60,6 @@ class _AuthenticationState extends State<Authentication> {
         email: _authData['email'],
         password: _authData['password'],
       );
-      await provider.isAuthenticated();
       setState(() {
         _isLoading = false;
       });
@@ -88,8 +87,6 @@ class _AuthenticationState extends State<Authentication> {
         gender: _authData['gender'],
         password: _authData['password'],
       );
-      await provider.isAuthenticated();
-
       setState(() {
         _isLoading = false;
       });
@@ -125,12 +122,18 @@ class _AuthenticationState extends State<Authentication> {
             children: [
               Container(
                 padding: EdgeInsets.all(10),
-                height: deviceheight * 0.4,
+                height: deviceheight * 0.33,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/background.png',
                   fit: BoxFit.contain,
                 ),
+              ),
+              SizedBox(height: 10),
+              CustomText(
+                widget.authAction == AuthAction.signup ? "Sign up" : " Sign In",
+                alignment: TextAlign.center,
+                fontsize: 30,
               ),
               Form(
                 key: _formkey,
@@ -213,12 +216,15 @@ class _AuthenticationState extends State<Authentication> {
                             focusNode: _genderfocusnode,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              icon: Icon(
-                                Icons.person_outline,
-                                size: 25,
-                                color: Theme.of(context).primaryColor,
-                              ),
+                              prefixIcon: Icon(Icons.person_outline,
+                                  size: 25, color: Colors.black),
                             ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please choose your gender';
+                              }
+                              return null;
+                            },
                             hint: Text("Enter Gender"),
                             items: [
                               DropdownMenuItem(

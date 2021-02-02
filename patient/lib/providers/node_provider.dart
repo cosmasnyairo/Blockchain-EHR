@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -22,7 +23,11 @@ class NodeProvider extends ChangeNotifier {
   ) async {
     try {
       final url = '$_apiurl:$port/get_nodes';
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       var extractedData = json.decode(response.body) as Map<String, dynamic>;
       List<Node> loadednodes = [];
       extractedData.forEach((key, value) {
@@ -49,7 +54,10 @@ class NodeProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       throw 'True';
     } catch (e) {
       throw (e);
@@ -64,7 +72,10 @@ class NodeProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
 
       throw 'True';
     } catch (e) {

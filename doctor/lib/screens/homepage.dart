@@ -1,5 +1,7 @@
+import 'package:doctor/widgets/custom_floating_action_button.dart';
 import 'package:doctor/widgets/custom_form_field.dart';
 import 'package:doctor/widgets/custom_tile.dart';
+import 'package:doctor/widgets/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -69,6 +71,7 @@ class _HomePageState extends State<HomePage> {
       _selectedEvents = _events[_selectedDay] ?? [];
       _calendarController = CalendarController();
     } catch (e) {
+      print(e);
       setState(() {
         _erroroccurred = true;
         _isloading = false;
@@ -79,48 +82,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      appBar: AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
+      appBar: _erroroccurred
+          ? null
+          : AppBar(title: CustomText('Ehr Kenya', fontsize: 20)),
       body: _erroroccurred
-          ? ListView(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  height: deviceheight * 0.5,
-                  child: Image.asset(
-                    'assets/404.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'An Error Occured!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.red),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'The Server may be offline, please retry after some time',
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Center(
-                    child: CustomButton('Retry', () {
-                  setState(() {
-                    _erroroccurred = false;
-                  });
-                  setState(() {
-                    _isloading = true;
-                  });
-                  fetch().then((value) => {
-                        setState(() {
-                          _isloading = false;
-                        }),
-                      });
-                }))
-              ],
-            )
+          ? ErrorPage()
           : _isloading
               ? Center(child: CircularProgressIndicator())
               : Container(
@@ -192,6 +159,25 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+      floatingActionButton: _erroroccurred
+          ? CustomFAB(
+              'Try again',
+              Icons.refresh,
+              () {
+                setState(() {
+                  _erroroccurred = false;
+                  _isloading = true;
+                });
+                fetch().then(
+                  (value) => {
+                    setState(() {
+                      _isloading = false;
+                    }),
+                  },
+                );
+              },
+            )
+          : null,
     );
   }
 
@@ -210,6 +196,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildEventList(DateTime day) {
+    final deviceheight = MediaQuery.of(context).size.height;
     final f = DateFormat('dd-MM-yyyy');
     final transactionformat = DateFormat().add_jms();
 
@@ -290,11 +277,14 @@ class _HomePageState extends State<HomePage> {
                 fontweight: FontWeight.bold,
               ),
               SizedBox(height: 20),
-              Icon(
-                Icons.event_busy_rounded,
-                color: Theme.of(context).accentColor,
-                size: 100,
+              Container(
+                height: deviceheight * 0.25,
+                child: Image.asset(
+                  'assets/pending.png',
+                  fit: BoxFit.contain,
+                ),
               ),
+              SizedBox(height: 20),
             ],
           );
   }

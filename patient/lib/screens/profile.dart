@@ -32,7 +32,8 @@ class _ProfilePageState extends State<ProfilePage> {
             body: StreamBuilder<DocumentSnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('Users')
-                  .doc(Provider.of<UserAuthProvider>(context).userid)
+                  .doc(Provider.of<UserAuthProvider>(context, listen: false)
+                      .userid)
                   .snapshots(),
               builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasError) {
@@ -51,8 +52,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: deviceheight * 0.33,
                         child: Image.asset(
                           snapshot.data['gender'] == 'Male'
-                              ? 'assets/male_patient.png'
-                              : 'assets/female_patient.png',
+                              ? 'assets/male_avatar.png'
+                              : 'assets/female_avatar.png',
                           fit: BoxFit.contain,
                         ),
                       ),

@@ -32,7 +32,6 @@ class _EditAccountState extends State<EditAccount> {
       await Provider.of<UserAuthProvider>(context, listen: false).editdetails(
         name: _userData['name'],
         email: _userData['email'],
-        location: _userData['location'],
       );
       setState(() {
         _isLoading = false;

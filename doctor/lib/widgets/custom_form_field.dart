@@ -35,10 +35,12 @@ class CustomFormField extends StatelessWidget {
       keyboardType: keyboardtype,
       initialValue: initialvalue,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        icon: icondata == null
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        enabledBorder: OutlineInputBorder(),
+        labelStyle: TextStyle(color: Colors.black),
+        prefixIcon: icondata == null
             ? null
-            : Icon(icondata, size: 25, color: Theme.of(context).primaryColor),
+            : Icon(icondata, size: 25, color: Colors.black),
         labelText: labeltext,
       ),
       textInputAction: textInputAction,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,6 @@ import 'package:provider/provider.dart';
 
 import '../models/block.dart';
 import '../models/details.dart';
-import '../models/doctor.dart';
 import '../models/transaction.dart' as EhrTransaction;
 import '../secrets.dart' as secrets;
 
@@ -63,7 +63,11 @@ class RecordsProvider with ChangeNotifier {
   Future<void> getChain(int port) async {
     try {
       final url = '$_apiurl:$port/chain';
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       final extractedData = json.decode(response.body) as List;
 
       final List<Block> loadedblocks = [];
@@ -86,7 +90,6 @@ class RecordsProvider with ChangeNotifier {
                               medicalnotes: f['medical_notes'],
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
-                              diagnosis: f['diagnosis'],
                             ),
                           )
                           .toList(),
@@ -113,7 +116,6 @@ class RecordsProvider with ChangeNotifier {
     final timestamp = DateTime.now();
     Map<String, dynamic> transaction = {
       "details": {
-        "diagnosis": details.diagnosis.toList(),
         "lab_results": details.labresults.toList(),
         "medical_notes": details.medicalnotes.toList(),
         "prescription": details.prescription.toList(),
@@ -129,7 +131,10 @@ class RecordsProvider with ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
     } catch (e) {
       throw e;
     }
@@ -146,7 +151,10 @@ class RecordsProvider with ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       final extractedData = json.decode(response.body) as List;
       final List<Block> loadedblocks = [];
       extractedData.forEach(
@@ -167,7 +175,6 @@ class RecordsProvider with ChangeNotifier {
                               medicalnotes: f['medical_notes'],
                               labresults: f['lab_results'],
                               prescription: f['prescription'],
-                              diagnosis: f['diagnosis'],
                             ),
                           )
                           .toList(),
@@ -188,7 +195,10 @@ class RecordsProvider with ChangeNotifier {
   Future<void> mine(int port) async {
     try {
       final url = '$_apiurl:$port/mine';
-      await http.post(url);
+      await http.post(url).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
     } catch (e) {
       throw e;
     }
@@ -197,15 +207,24 @@ class RecordsProvider with ChangeNotifier {
   Future<void> resolveConflicts(int port) async {
     try {
       final url = '$_apiurl:$port/resolve_conflicts';
-      print(url);
-      await http.post(url);
-    } catch (e) {}
+      await http.post(url).timeout(const Duration(seconds: 20), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> getOpenTransactions(int port) async {
     try {
       final url = '$_apiurl:$port/get_opentransactions';
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
+
       final extractedData = json.decode(response.body) as List;
       final List<EhrTransaction.Transaction> loadedtransactions = [];
 
@@ -222,7 +241,6 @@ class RecordsProvider with ChangeNotifier {
                       medicalnotes: f['medical_notes'],
                       labresults: f['lab_results'],
                       prescription: f['prescription'],
-                      diagnosis: f['diagnosis'],
                     ),
                   )
                   .toList(),
@@ -241,7 +259,11 @@ class RecordsProvider with ChangeNotifier {
   Future<void> createKeys(int port) async {
     try {
       final url = '$_apiurl:$port/create_keys';
-      final response = await http.post(url);
+      final response = await http.post(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];
@@ -254,7 +276,11 @@ class RecordsProvider with ChangeNotifier {
   Future<void> loadKeys(int port) async {
     try {
       final url = '$_apiurl:$port/load_keys';
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 10),
+          onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again!');
+      });
       var keys = json.decode(response.body);
       _publickey = keys["public_key"];
       _privatekey = keys["private_key"];

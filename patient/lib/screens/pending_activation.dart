@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:patient/providers/auth_provider.dart';
@@ -31,15 +33,10 @@ class _PendingActivationState extends State<PendingActivation> {
     setState(() {
       _isloading = true;
     });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    authenticated = prefs.getBool('authenticated');
-    if (authenticated = true) {
-      provider.isAuthenticated();
-    } else {
-      final details = await provider.getUserDetails(provider.userid) as List;
-      username = details[0];
-      useremail = details[1];
-    }
+
+    final details = await provider.getUserDetails(provider.userid) as List;
+    username = details[0];
+    useremail = details[1];
     setState(() {
       _isloading = false;
     });
@@ -77,10 +74,11 @@ class _PendingActivationState extends State<PendingActivation> {
               padding: EdgeInsets.all(20),
               children: [
                 Container(
+                  padding: EdgeInsets.all(10),
                   height: deviceheight * 0.5,
                   child: Image.asset(
-                    "assets/base.png",
-                    fit: BoxFit.cover,
+                    "assets/pending.png",
+                    fit: BoxFit.contain,
                   ),
                 ),
                 CustomText(
@@ -132,28 +130,33 @@ class _PendingActivationState extends State<PendingActivation> {
                       try {
                         await Provider.of<UserAuthProvider>(context,
                                 listen: false)
-                            .checkStatus(useremail);
+                            .checkStatus(useremail, username);
+                        setState(() {
+                          _isloading = false;
+                        });
                       } catch (e) {
+                        print(e);
+                        final message = e[0];
+                        final statuscode = e[1];
                         await showDialog(
                           context: context,
                           builder: (ctx) => CustomAlertDialog(
-                            message: e[1] == 200
-                                ? 'You have been assigned port ${e[0].toString()}'
-                                : e[0].toString(),
-                            success: e[1] == 200 ? true : false,
+                            message: statuscode == 200
+                                ? 'You have been assigned port $message'
+                                : message,
+                            success: statuscode == 200 ? true : false,
                           ),
                         );
-                        if (e[1] == 200) {
+                        if (statuscode == 200) {
                           setState(() {
                             peerassigned = true;
-                            assignedpeer = e[0];
+                            assignedpeer = message;
                           });
                         }
-                        // add user details to firestore and log them in
+                        setState(() {
+                          _isloading = false;
+                        });
                       }
-                      setState(() {
-                        _isloading = false;
-                      });
                     },
                     label: Text('Check Status'),
                     shape: RoundedRectangleBorder(

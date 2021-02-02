@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:patient/widgets/custom_button.dart';
+
+import 'custom_text.dart';
 
 class CustomAlertDialog extends StatelessWidget {
   final bool success;
@@ -7,36 +10,30 @@ class CustomAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.width;
     return AlertDialog(
       title: Container(
-        width: width * 0.6,
+        height: height * 0.33,
+        width: width * 0.33,
         child: Image.asset(
-          success ? 'assets/success.gif' : 'assets/error.gif',
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
+          success ? 'assets/success.png' : 'assets/error.png',
+          fit: BoxFit.contain,
         ),
       ),
-      content: Text(
+      content: CustomText(
         message,
-        textAlign: TextAlign.center,
+        alignment: TextAlign.center,
       ),
-      contentPadding: EdgeInsets.all(10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      actionsPadding: EdgeInsets.all(10),
       actions: [
-        SizedBox(height: 10),
-        FlatButton(
-          child: Text(
-            'Okay',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            ),
-          ),
-          onPressed: () {
+        CustomButton(
+          'Dismiss',
+          () {
             Navigator.of(context).pop();
           },
-        ),
-        SizedBox(height: 10),
+          backgroundcolor: Colors.black,
+        )
       ],
     );
   }

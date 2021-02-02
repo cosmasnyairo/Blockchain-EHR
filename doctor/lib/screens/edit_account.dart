@@ -31,8 +31,6 @@ class _EditAccountState extends State<EditAccount> {
         name: _doctorData['name'],
         email: _doctorData['email'],
         doctorid: _doctorData['doctorid'],
-        hospital: _doctorData['hospital'],
-        location: _doctorData['location'],
       );
       setState(() {
         _isLoading = false;
@@ -51,8 +49,6 @@ class _EditAccountState extends State<EditAccount> {
       'name': snapshot['name'],
       'email': snapshot['email'],
       'doctorid': snapshot['doctorid'],
-      'hospital': snapshot['hospital'],
-      'location': snapshot['location'],
     };
     return Scaffold(
       appBar: AppBar(
@@ -128,37 +124,6 @@ class _EditAccountState extends State<EditAccount> {
                         },
                       ),
                       SizedBox(height: 20),
-                      CustomFormField(
-                        initialvalue: _doctorData['hospital'],
-                        icondata: Icons.local_hospital,
-                        labeltext: 'Hospital',
-                        textInputAction: TextInputAction.go,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Hospital can\'t be empty!';
-                          }
-                          return null;
-                        },
-                        onsaved: (value) {
-                          _doctorData['hospital'] = value.trim();
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      CustomFormField(
-                        initialvalue: _doctorData['location'],
-                        icondata: Icons.location_on,
-                        labeltext: 'Location',
-                        textInputAction: TextInputAction.go,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Location can\'t be empty!';
-                          }
-                          return null;
-                        },
-                        onsaved: (value) {
-                          _doctorData['location'] = value.trim();
-                        },
-                      ),
                     ],
                   ),
                 )
@@ -182,16 +147,6 @@ class _EditAccountState extends State<EditAccount> {
                       title: 'Doctor id',
                       subtitle: snapshot['doctorid'],
                       leadingiconData: Icons.assignment_ind,
-                    ),
-                    CustomTile(
-                      title: 'Hospital',
-                      subtitle: snapshot['hospital'],
-                      leadingiconData: Icons.local_hospital,
-                    ),
-                    CustomTile(
-                      title: 'Location',
-                      subtitle: snapshot['location'],
-                      leadingiconData: Icons.location_on,
                     ),
                     CustomTile(
                       title: 'Join Date',

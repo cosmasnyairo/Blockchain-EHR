@@ -1,3 +1,5 @@
+import 'package:doctor/widgets/error_screen.dart';
+import 'package:async/async.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,7 @@ import 'screens/landingpage.dart';
 import 'screens/pending_activation.dart';
 import 'screens/screen.dart';
 import 'screens/settings.dart';
+import 'screens/splash_screen.dart';
 import 'screens/view_open_transactions.dart';
 
 void main() async {
@@ -64,11 +67,7 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.montserratTextTheme(),
             primaryTextTheme: GoogleFonts.montserratTextTheme(),
           ),
-          home: auth.isLoggedIn()
-              ? auth.authenticated
-                  ? Screen()
-                  : PendingActivation()
-              : LandingPage(),
+          home: auth.isLoggedIn ? SplashScreen() : LandingPage(),
           // home: OnboardingScreen(),
           routes: {
             'add_record': (ctx) => AddRecord(),

@@ -31,7 +31,7 @@ class OnboardingScreen extends StatelessWidget {
       ),
       PageData(
           title: "Drag and\ndrop to move",
-          imageProvider: AssetImage('assets/base.png')),
+          imageProvider: AssetImage('assets/pending.png')),
     ];
     return Scaffold(
       body: ConcentricPageView(
