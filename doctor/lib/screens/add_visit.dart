@@ -21,7 +21,7 @@ class AddVisit extends StatefulWidget {
 
 class _AddVisitState extends State<AddVisit> {
   final TextEditingController texteditingcontroller = TextEditingController();
-  List<Transaction> _opentransactions;
+  List<Transaction> _opentransactions = [];
   String _publicKey;
   List<Node> _nodes = [];
   String _receiver;
@@ -96,6 +96,12 @@ class _AddVisitState extends State<AddVisit> {
       Icons.description_outlined,
       Icons.add,
       Icons.center_focus_weak
+    ];
+    final actionsColor = [
+      Colors.white,
+      _opentransactions.length > 0 ? Colors.red : Colors.white,
+      Colors.white,
+      Colors.white
     ];
     final actionslist = [
       _receiver == null
@@ -356,6 +362,7 @@ class _AddVisitState extends State<AddVisit> {
                         shrinkWrap: true,
                         itemCount: actionstitlelist.length,
                         itemBuilder: (ctx, i) => Card(
+                          color: actionsColor[i],
                           elevation: 3,
                           child: InkWell(
                             onTap: actionslist[i],

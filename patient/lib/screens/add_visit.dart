@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:patient/widgets/custom_floating_action_button.dart';
 import 'package:patient/widgets/custom_form_field.dart';
 import 'package:patient/widgets/custom_text.dart';
 import 'package:patient/widgets/error_screen.dart';
@@ -72,118 +73,74 @@ class _AddVisitState extends State<AddVisit>
         Provider.of<RecordsProvider>(context, listen: false).peernode;
 
     return Scaffold(
-      appBar: _erroroccurred || _isloading
-          ? null
-          : AppBar(title: Text('Ehr Visit')),
-      body: _isloading
-          ? Center(child: CircularProgressIndicator())
-          : _erroroccurred
-              ? ErrorPage()
-              : _isloading
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView(
-                      physics: ClampingScrollPhysics(),
-                      shrinkWrap: true,
-                      children: [
-                        SizedBox(height: 5),
-                        _nodes.length == 0
-                            ? SizedBox()
-                            : CustomText(
-                                'You have an ongoing visit',
-                                alignment: TextAlign.center,
-                              ),
-                        SizedBox(height: 5),
-                        ListView(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(20),
-                          physics: ClampingScrollPhysics(),
-                          children: _nodes.length == 0
-                              ? [
-                                  CustomFormField(
-                                    controller: texteditingcontroller,
-                                    keyboardtype: TextInputType.number,
-                                    textInputAction: TextInputAction.go,
-                                    icondata: Icons.person_outline,
-                                    labeltext: "Enter Doctor's node ",
-                                  ),
-                                  SizedBox(height: 20),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: CustomButton(
-                                      'Add Visit',
-                                      () async {
-                                        try {
-                                          if (texteditingcontroller.text ==
-                                                  null ||
-                                              texteditingcontroller.text ==
-                                                  "") {
-                                            throw 'Node can\'t be empty';
-                                          } else {
-                                            setState(() {
-                                              _isloading = true;
-                                            });
-                                            await Provider.of<NodeProvider>(
-                                                    context,
-                                                    listen: false)
-                                                .addNodes(peer_node,
-                                                    texteditingcontroller.text);
-                                            setState(() {
-                                              _isloading = false;
-                                            });
-                                          }
-                                        } catch (e) {
-                                          await showDialog(
-                                            context: context,
-                                            builder: (ctx) => CustomAlertDialog(
-                                              message: e == 'True'
-                                                  ? 'Succesfully added visit'
-                                                  : e.toString(),
-                                              success:
-                                                  e == 'True' ? true : false,
-                                            ),
-                                          );
-                                          fetch().then(
-                                            (value) => {
+        appBar: _erroroccurred || _isloading
+            ? null
+            : AppBar(title: Text('Ehr Visit')),
+        body: _isloading
+            ? Center(child: CircularProgressIndicator())
+            : _erroroccurred
+                ? ErrorPage()
+                : _isloading
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView(
+                        physics: ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        children: [
+                          SizedBox(height: 5),
+                          _nodes.length == 0
+                              ? SizedBox()
+                              : CustomText(
+                                  'You have an ongoing visit',
+                                  alignment: TextAlign.center,
+                                ),
+                          SizedBox(height: 5),
+                          ListView(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.all(20),
+                            physics: ClampingScrollPhysics(),
+                            children: _nodes.length == 0
+                                ? [
+                                    CustomFormField(
+                                      controller: texteditingcontroller,
+                                      keyboardtype: TextInputType.number,
+                                      textInputAction: TextInputAction.go,
+                                      icondata: Icons.person_outline,
+                                      labeltext: "Enter Doctor's node ",
+                                    ),
+                                    SizedBox(height: 20),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: CustomButton(
+                                        'Add Visit',
+                                        () async {
+                                          try {
+                                            if (texteditingcontroller.text ==
+                                                    null ||
+                                                texteditingcontroller.text ==
+                                                    "") {
+                                              throw 'Node can\'t be empty';
+                                            } else {
+                                              setState(() {
+                                                _isloading = true;
+                                              });
+                                              await Provider.of<NodeProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .addNodes(
+                                                      peer_node,
+                                                      texteditingcontroller
+                                                          .text);
                                               setState(() {
                                                 _isloading = false;
-                                                texteditingcontroller.clear();
-                                              }),
-                                            },
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ]
-                              : [
-                                  ListTile(
-                                    title: Text(_nodes[0].node.toString()),
-                                    leading: Icon(Icons.person),
-                                    subtitle: Text(_nodes[0].node.toString()),
-                                    trailing: RaisedButton.icon(
-                                        label: Text('End Visit'),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        icon: Icon(Icons.delete),
-                                        onPressed: () async {
-                                          try {
-                                            setState(() {
-                                              _isloading = true;
-                                            });
-                                            await Provider.of<NodeProvider>(
-                                                    context,
-                                                    listen: false)
-                                                .removeNode(
-                                                    peer_node, _nodes[0].node);
+                                              });
+                                            }
                                           } catch (e) {
                                             await showDialog(
                                               context: context,
                                               builder: (ctx) =>
                                                   CustomAlertDialog(
                                                 message: e == 'True'
-                                                    ? 'Visit removed'
+                                                    ? 'Succesfully added visit'
                                                     : e.toString(),
                                                 success:
                                                     e == 'True' ? true : false,
@@ -193,26 +150,106 @@ class _AddVisitState extends State<AddVisit>
                                               (value) => {
                                                 setState(() {
                                                   _isloading = false;
+                                                  texteditingcontroller.clear();
                                                 }),
                                               },
                                             );
                                           }
-                                        }),
-                                  )
-                                ],
-                        ),
-                        _nodes.length == 0
-                            ? SizedBox()
-                            : Center(
-                                child: QrImage(
-                                  size: deviceheight * 0.5,
-                                  data: _publicKey,
-                                  constrainErrorBounds: true,
-                                  gapless: true,
+                                        },
+                                      ),
+                                    ),
+                                  ]
+                                : [
+                                    ListTile(
+                                      title: Text(_nodes[0].node.toString()),
+                                      leading: Icon(Icons.person),
+                                      subtitle: Text(_nodes[0].node.toString()),
+                                      trailing: RaisedButton.icon(
+                                          label: Text('End Visit'),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () async {
+                                            try {
+                                              setState(() {
+                                                _isloading = true;
+                                              });
+                                              await Provider.of<NodeProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .removeNode(peer_node,
+                                                      _nodes[0].node);
+                                            } catch (e) {
+                                              await showDialog(
+                                                context: context,
+                                                builder: (ctx) =>
+                                                    CustomAlertDialog(
+                                                  message: e == 'True'
+                                                      ? 'Visit removed'
+                                                      : e.toString(),
+                                                  success: e == 'True'
+                                                      ? true
+                                                      : false,
+                                                ),
+                                              );
+                                              fetch().then(
+                                                (value) => {
+                                                  setState(() {
+                                                    _isloading = false;
+                                                  }),
+                                                },
+                                              );
+                                            }
+                                          }),
+                                    )
+                                  ],
+                          ),
+                          SizedBox(height: 20),
+                          _nodes.length == 0
+                              ? Container(
+                                  padding: EdgeInsets.all(20),
+                                  height: deviceheight * 0.4,
+                                  child: Image.asset('assets/peers2.png'),
+                                )
+                              : Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: deviceheight * 0.4,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    elevation: 10,
+                                    child: QrImage(
+                                      data: _publicKey,
+                                      constrainErrorBounds: true,
+                                      gapless: true,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                      ],
-                    ),
-    );
+                        ],
+                      ),
+        floatingActionButton: _erroroccurred
+            ? CustomFAB(
+                'Try again',
+                Icons.refresh,
+                () {
+                  setState(() {
+                    _erroroccurred = false;
+                    _isloading = true;
+                  });
+                  fetch().then(
+                    (value) => {
+                      setState(() {
+                        _isloading = false;
+                      }),
+                    },
+                  );
+                },
+              )
+            : null);
   }
 }

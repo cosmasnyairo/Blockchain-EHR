@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:patient/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -60,10 +61,15 @@ class _AuthenticationState extends State<Authentication> {
         email: _authData['email'],
         password: _authData['password'],
       );
-      setState(() {
-        _isLoading = false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+        (route) => false,
+      ).then((_) {
+        setState(() {
+          _isLoading = false;
+        });
       });
-      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -87,10 +93,15 @@ class _AuthenticationState extends State<Authentication> {
         gender: _authData['gender'],
         password: _authData['password'],
       );
-      setState(() {
-        _isLoading = false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+        (route) => false,
+      ).then((_) {
+        setState(() {
+          _isLoading = false;
+        });
       });
-      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -113,194 +124,227 @@ class _AuthenticationState extends State<Authentication> {
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
     final devicewidth = MediaQuery.of(context).size.width;
-
-    return SafeArea(
-      child: WillPopScope(
-        onWillPop: _onBackPressed,
-        child: Scaffold(
-          body: ListView(
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                height: deviceheight * 0.33,
-                width: double.infinity,
-                child: Image.asset(
-                  'assets/background.png',
-                  fit: BoxFit.contain,
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: SafeArea(
+        child: _isLoading
+            ? Scaffold(body: Center(child: CircularProgressIndicator()))
+            : Scaffold(
+                appBar: AppBar(
+                  title: CustomText(
+                    widget.authAction == AuthAction.signup
+                        ? "Create account"
+                        : "Sign in",
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              CustomText(
-                widget.authAction == AuthAction.signup ? "Sign up" : " Sign In",
-                alignment: TextAlign.center,
-                fontsize: 30,
-              ),
-              Form(
-                key: _formkey,
-                child: ListView(
-                  padding: EdgeInsets.all(25),
-                  physics: ClampingScrollPhysics(),
-                  shrinkWrap: true,
+                body: ListView(
+                  padding: EdgeInsets.all(20),
                   children: [
-                    widget.authAction == AuthAction.signup
-                        ? ListView(
-                            shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
-                            children: [
-                              CustomFormField(
-                                labeltext: 'Username',
-                                icondata: Icons.person,
-                                textInputAction: TextInputAction.next,
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return 'Username can\'t be empty!';
-                                  }
-                                  return null;
-                                },
-                                onfieldsubmitted: (_) {
-                                  FocusScope.of(context)
-                                      .requestFocus(_emailnode);
-                                },
-                                onsaved: (value) {
-                                  _authData['username'] = value.trim();
-                                },
-                              ),
-                              SizedBox(height: 20)
-                            ],
-                          )
-                        : SizedBox(),
-                    CustomFormField(
-                      focusNode: _emailnode,
-                      labeltext: 'Email',
-                      icondata: Icons.email,
-                      textInputAction: TextInputAction.next,
-                      validator: (value) {
-                        if (value.trim().isEmpty ||
-                            !value.trim().contains('@') ||
-                            !value.trim().endsWith('com')) {
-                          return 'Invalid email!';
-                        }
-                        return null;
-                      },
-                      onfieldsubmitted: (_) {
-                        FocusScope.of(context).requestFocus(_passwordnode);
-                      },
-                      onsaved: (value) {
-                        _authData['email'] = value.trim();
-                      },
+                    Container(
+                      height: widget.authAction == AuthAction.signin
+                          ? deviceheight * 0.33
+                          : deviceheight * 0.2,
+                      width: double.infinity,
+                      child: Image.asset(
+                        'assets/peers2.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                    SizedBox(height: 20),
-                    CustomFormField(
-                      focusNode: _passwordnode,
-                      labeltext: 'Password',
-                      maxlines: 1,
-                      icondata: Icons.remove_red_eye,
-                      obscuretext: true,
-                      textInputAction: TextInputAction.go,
-                      validator: (value) {
-                        if (value.isEmpty || value.length < 8) {
-                          return 'Password is too short!';
-                        }
-                        return null;
-                      },
-                      onsaved: (value) {
-                        _authData['password'] = value.trim();
-                      },
-                      onfieldsubmitted: (_) {
-                        FocusScope.of(context).requestFocus(_genderfocusnode);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    widget.authAction == AuthAction.signup
-                        ? DropdownButtonFormField(
-                            focusNode: _genderfocusnode,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.person_outline,
-                                  size: 25, color: Colors.black),
-                            ),
+                    widget.authAction == AuthAction.signin
+                        ? SizedBox(height: deviceheight * 0.05)
+                        : SizedBox(height: deviceheight * 0.025),
+                    Form(
+                      key: _formkey,
+                      child: ListView(
+                        physics: ClampingScrollPhysics(),
+                        padding: EdgeInsets.all(10),
+                        shrinkWrap: true,
+                        children: [
+                          widget.authAction == AuthAction.signup
+                              ? ListView(
+                                  shrinkWrap: true,
+                                  physics: ClampingScrollPhysics(),
+                                  children: [
+                                    CustomFormField(
+                                      icondata: Icons.person,
+                                      labeltext: 'Username',
+                                      textInputAction: TextInputAction.next,
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return 'Username can\'t be empty!';
+                                        }
+                                        return null;
+                                      },
+                                      onfieldsubmitted: (_) {
+                                        FocusScope.of(context)
+                                            .requestFocus(_emailnode);
+                                      },
+                                      onsaved: (value) {
+                                        _authData['username'] = value.trim();
+                                      },
+                                    ),
+                                    SizedBox(height: deviceheight * 0.025),
+                                  ],
+                                )
+                              : SizedBox(),
+                          CustomFormField(
+                            focusNode: _emailnode,
+                            labeltext: 'Email',
+                            icondata: Icons.email,
+                            textInputAction: TextInputAction.next,
                             validator: (value) {
-                              if (value == null) {
-                                return 'Please choose your gender';
+                              if (value.trim().isEmpty ||
+                                  !value.trim().contains('@') ||
+                                  !value.trim().endsWith('com')) {
+                                return 'Invalid email!';
                               }
                               return null;
                             },
-                            hint: Text("Enter Gender"),
-                            items: [
-                              DropdownMenuItem(
-                                child: Text("Male"),
-                                value: "Male",
-                              ),
-                              DropdownMenuItem(
-                                child: Text("Female"),
-                                value: "Female",
-                              ),
-                            ],
-                            onChanged: (value) {
-                              _authData['gender'] = value;
+                            onfieldsubmitted: (_) {
+                              FocusScope.of(context)
+                                  .requestFocus(_passwordnode);
                             },
-                          )
-                        : SizedBox(),
-                    SizedBox(height: 30),
-                    Center(
-                      child: _isLoading
-                          ? CircularProgressIndicator()
-                          : Container(
-                              width: devicewidth * 0.4,
-                              child: CustomButton(
+                            onsaved: (value) {
+                              _authData['email'] = value.trim();
+                            },
+                          ),
+                          SizedBox(height: deviceheight * 0.025),
+                          CustomFormField(
+                            focusNode: _passwordnode,
+                            labeltext: 'Password',
+                            maxlines: 1,
+                            icondata: Icons.remove_red_eye,
+                            obscuretext: true,
+                            textInputAction: TextInputAction.go,
+                            validator: (value) {
+                              if (value.isEmpty || value.length < 8) {
+                                return 'Password is too short!';
+                              }
+                              return null;
+                            },
+                            onfieldsubmitted: (_) {
+                              FocusScope.of(context)
+                                  .requestFocus(_genderfocusnode);
+                            },
+                            onsaved: (value) {
+                              _authData['password'] = value.trim();
+                            },
+                          ),
+                          widget.authAction == AuthAction.signup
+                              ? SizedBox(height: deviceheight * 0.025)
+                              : SizedBox(),
+                          widget.authAction == AuthAction.signup
+                              ? DropdownButtonFormField(
+                                  focusNode: _genderfocusnode,
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(),
+                                    border: OutlineInputBorder(),
+                                    prefixIcon: Icon(
+                                      Icons.person_outline,
+                                      size: 25,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Please choose your gender';
+                                    }
+                                    return null;
+                                  },
+                                  hint: CustomText("Enter Gender",
+                                      color: Colors.black),
+                                  items: [
+                                    DropdownMenuItem(
+                                      child: Text("Male"),
+                                      value: "Male",
+                                    ),
+                                    DropdownMenuItem(
+                                      child: Text("Female"),
+                                      value: "Female",
+                                    ),
+                                  ],
+                                  onChanged: (value) {
+                                    _authData['gender'] = value;
+                                  },
+                                )
+                              : SizedBox(),
+                          SizedBox(height: deviceheight * 0.025),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: RaisedButton.icon(
+                              label: CustomText(
                                 widget.authAction == AuthAction.signup
-                                    ? 'Signup'
-                                    : 'Signin',
-                                _submit,
-                                backgroundcolor:
-                                    widget.authAction == AuthAction.signup
-                                        ? Colors.red
-                                        : null,
+                                    ? 'Create account'
+                                    : 'Sign in',
                               ),
+                              onPressed: _submit,
+                              icon: Icon(
+                                widget.authAction == AuthAction.signup
+                                    ? Icons.add
+                                    : Icons.home,
+                              ),
+                              color: widget.authAction == AuthAction.signup
+                                  ? Colors.red
+                                  : null,
                             ),
-                    )
+                          ),
+                          SizedBox(height: deviceheight * 0.025),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: InkWell(
+                              child: RichText(
+                                textAlign: TextAlign.left,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          widget.authAction == AuthAction.signup
+                                              ? 'Already have an account?  '
+                                              : 'Don\'t have an account?  ',
+                                      style: GoogleFonts.montserrat().copyWith(
+                                          color: Colors.black, fontSize: 16),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          widget.authAction == AuthAction.signup
+                                              ? 'Sign in'
+                                              : 'Sign up',
+                                      style: GoogleFonts.montserrat().copyWith(
+                                        color: widget.authAction ==
+                                                AuthAction.signup
+                                            ? Theme.of(context).primaryColor
+                                            : Colors.red,
+                                        fontSize: 16,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              onTap: widget.authAction == AuthAction.signup
+                                  ? () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              Authentication(AuthAction.signin),
+                                        ),
+                                      );
+                                    }
+                                  : () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              Authentication(AuthAction.signup),
+                                        ),
+                                      ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              FlatButton(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: widget.authAction == AuthAction.signup
-                            ? 'Already have an account? '
-                            : 'Don\'t have an account? ',
-                        style: GoogleFonts.montserrat()
-                            .copyWith(color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: widget.authAction == AuthAction.signup
-                            ? 'Sign in'
-                            : 'Sign up',
-                        style: GoogleFonts.montserrat()
-                            .copyWith(color: Theme.of(context).primaryColor),
-                      )
-                    ],
-                  ),
-                ),
-                onPressed: widget.authAction == AuthAction.signup
-                    ? () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (ctx) => Authentication(AuthAction.signin),
-                          ),
-                        )
-                    : () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (ctx) => Authentication(AuthAction.signup),
-                          ),
-                        ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

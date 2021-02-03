@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'add_visit.dart';
 import 'homepage.dart';
+import 'landingpage.dart';
 
 class PendingActivation extends StatefulWidget {
   @override
@@ -63,11 +64,14 @@ class _PendingActivationState extends State<PendingActivation> {
                     setState(() {
                       _isloading = true;
                     });
-                    await Provider.of<DoctorAuthProvider>(context,
-                            listen: false)
-                        .logout();
-                    setState(() {
-                      _isloading = false;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LandingPage()),
+                      (route) => false,
+                    ).then((_) {
+                      setState(() {
+                        _isloading = false;
+                      });
                     });
                   },
                 )

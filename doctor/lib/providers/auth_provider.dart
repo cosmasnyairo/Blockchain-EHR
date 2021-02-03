@@ -46,21 +46,13 @@ class DoctorAuthProvider extends ChangeNotifier {
   }
 
   Future<void> isAuthenticated() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('authenticated')) {
-      final variable = await FirebaseFirestore.instance
-          .collection('Doctors')
-          .doc(userid)
-          .get()
-          .then((f) {
-        return f['authenticated'];
-      });
-      prefs.setBool('authenticated', variable);
-      print('prefs is $variable');
-    }
-    bool userauthenticated = prefs.getBool('authenticated');
-
-    print(userauthenticated);
+    final userauthenticated = await FirebaseFirestore.instance
+        .collection('Doctors')
+        .doc(userid)
+        .get()
+        .then((f) {
+      return f['authenticated'];
+    });
     _authenticated = userauthenticated;
   }
 
@@ -76,8 +68,15 @@ class DoctorAuthProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      );
+      ).timeout(const Duration(seconds: 2), onTimeout: () {
+        throw TimeoutException(
+            'The connection has timed out, Please try again');
+      });
+
       throw [json.decode(response.body)['message'], response.statusCode];
+    } on TimeoutException catch (e) {
+      final TimeoutException error = e;
+      throw [error.message, 400];
     } catch (e) {
       throw e;
       // TODO
@@ -98,7 +97,6 @@ class DoctorAuthProvider extends ChangeNotifier {
   }
 
   Future<void> finishSignup(int port, BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     await provider.createKeys(port);
     await FirebaseFirestore.instance.collection('Doctors').doc(userid).update({
@@ -107,15 +105,12 @@ class DoctorAuthProvider extends ChangeNotifier {
       'publickey': provider.publickey,
       'peer_node': port
     });
-    prefs.setBool('authenticated', true);
+    _authenticated = true;
     notifyListeners();
   }
 
   Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await _auth.signOut();
-    await prefs.remove('authenticated');
-    print(prefs.getBool('authenticated'));
     notifyListeners();
   }
 
@@ -188,8 +183,10 @@ class DoctorAuthProvider extends ChangeNotifier {
         },
       ).timeout(const Duration(seconds: 2), onTimeout: () {
         throw TimeoutException(
-            'The connection has timed out, Please try again!');
+            'The server is offline, proceed to login as we assign you a port');
       });
+    } on TimeoutException catch (error) {
+      throw error.message;
     } catch (error) {
       switch (error.code) {
         case "invalid-email":

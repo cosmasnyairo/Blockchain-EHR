@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:patient/providers/auth_provider.dart';
+import 'package:patient/screens/landingpage.dart';
+import 'package:patient/widgets/custom_floating_action_button.dart';
 import 'package:patient/widgets/custom_tile.dart';
 import 'package:provider/provider.dart';
 import '../widgets/custom_text.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -20,6 +23,23 @@ class _ProfilePageState extends State<ProfilePage> {
         content: CustomText(message),
       ),
     );
+  }
+
+  void logout() async {
+    setState(() {
+      _isloading = true;
+    });
+
+    await Provider.of<UserAuthProvider>(context, listen: false).logout();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LandingPage()),
+      (route) => false,
+    ).then((_) {
+      setState(() {
+        _isloading = false;
+      });
+    });
   }
 
   @override
@@ -46,106 +66,101 @@ class _ProfilePageState extends State<ProfilePage> {
                 return Container(
                   height: deviceheight,
                   child: ListView(
+                    shrinkWrap: true,
                     padding: EdgeInsets.all(20),
                     children: [
                       Container(
-                        height: deviceheight * 0.33,
-                        child: Image.asset(
-                          snapshot.data['gender'] == 'Male'
-                              ? 'assets/male_avatar.png'
-                              : 'assets/female_avatar.png',
-                          fit: BoxFit.contain,
+                        height: deviceheight * 0.15,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          image: DecorationImage(
+                            image: AssetImage(
+                              snapshot.data['gender'] == "Male"
+                                  ? 'assets/male_avatar.png'
+                                  : 'assets/female_avatar.png',
+                            ),
+                            fit: BoxFit.contain,
+                          ),
+                          shape: BoxShape.circle,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      SizedBox(height: deviceheight * 0.025),
+                      CustomText(
+                        snapshot.data['name'],
+                        fontweight: FontWeight.bold,
+                        fontsize: 18,
+                        alignment: TextAlign.center,
+                      ),
+                      SizedBox(height: deviceheight * 0.0125),
+                      CustomText(
+                        'Joined on ${DateFormat.yMMMMd().format(DateTime.parse(snapshot.data['joindate']))}',
+                        alignment: TextAlign.center,
+                      ),
+                      SizedBox(height: deviceheight * 0.025),
                       Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
                         elevation: 8,
-                        child: ListView(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(10),
-                          physics: ClampingScrollPhysics(),
-                          children: [
-                            SizedBox(height: 5),
-                            CustomText(
-                              'Hello, ${snapshot.data['name'][0].toUpperCase()}${snapshot.data['name'].substring(1)}',
-                              alignment: TextAlign.center,
-                              fontsize: 20,
-                              fontweight: FontWeight.bold,
-                            ),
-                            SizedBox(height: 10),
-                            CustomTile(
-                              leadingiconData: Icons.person,
-                              title: 'Account',
-                              subtitle: 'Update your profile',
-                              iconData: Icons.navigate_next,
-                              onpressed: () {
-                                Navigator.of(context)
-                                    .pushNamed('edit_account',
-                                        arguments: snapshot.data)
-                                    .then(
-                                      (value) => {
-                                        if (value != null)
-                                          {showSnackBarMessage(value)}
-                                      },
-                                    );
-                              },
-                            ),
-                            Divider(
-                                color: Colors.grey, endIndent: 20, indent: 10),
-                            CustomTile(
-                              title: 'Ehr Information',
-                              iconData: Icons.navigate_next,
-                              leadingiconData: Icons.info,
-                              onpressed: () {
-                                Navigator.of(context)
-                                    .pushNamed('ehr_information', arguments: {
-                                  'publickey': snapshot.data['publickey'],
-                                  'privatekey': snapshot.data['privatekey'],
-                                  'peer_node': snapshot.data['peer_node'],
-                                });
-                              },
-                            ),
-                            Divider(
-                                color: Colors.grey, endIndent: 20, indent: 10),
-                            CustomTile(
-                              title: 'Settings',
-                              subtitle: 'Explore app settings',
-                              leadingiconData: Icons.settings,
-                              iconData: Icons.navigate_next,
-                              onpressed: () {
-                                Navigator.of(context)
-                                    .pushNamed('settings_page');
-                              },
-                            ),
-                            Divider(
-                                color: Colors.grey, endIndent: 20, indent: 10),
-                            CustomTile(
-                              title: 'Logout',
-                              subtitle: 'Logout from your account',
-                              iconData: Icons.navigate_next,
-                              leadingiconData: Icons.exit_to_app,
-                              onpressed: () {
-                                setState(() {
-                                  _isloading = true;
-                                });
-                                Provider.of<UserAuthProvider>(context,
-                                        listen: false)
-                                    .logout();
-                                setState(() {
-                                  _isloading = false;
-                                });
-                              },
-                              iconcolor: Theme.of(context).accentColor,
-                            ),
-                          ],
+                        child: CustomTile(
+                          leadingiconData: Icons.person,
+                          title: 'Account',
+                          subtitle: 'View acccount information ',
+                          iconData: Icons.navigate_next,
+                          isthreeline: true,
+                          onpressed: () {
+                            Navigator.of(context)
+                                .pushNamed('edit_account',
+                                    arguments: snapshot.data)
+                                .then(
+                                  (value) => {
+                                    if (value != null)
+                                      {showSnackBarMessage(value)}
+                                  },
+                                );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: deviceheight * 0.025),
+                      Card(
+                        elevation: 8,
+                        child: CustomTile(
+                          title: 'Ehr Information',
+                          iconData: Icons.navigate_next,
+                          subtitle: 'View your keys and peer node',
+                          leadingiconData: Icons.info,
+                          isthreeline: true,
+                          onpressed: () {
+                            Navigator.of(context)
+                                .pushNamed('ehr_information', arguments: {
+                              'publickey': snapshot.data['publickey'],
+                              'privatekey': snapshot.data['privatekey'],
+                              'peer_node': snapshot.data['peer_node'],
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(height: deviceheight * 0.025),
+                      Card(
+                        elevation: 8,
+                        child: CustomTile(
+                          title: 'Settings',
+                          subtitle: 'View app settings',
+                          leadingiconData: Icons.settings,
+                          isthreeline: true,
+                          iconData: Icons.navigate_next,
+                          onpressed: () {
+                            Navigator.of(context).pushNamed('settings_page');
+                          },
                         ),
                       ),
                     ],
                   ),
                 );
               },
+            ),
+            floatingActionButton: CustomFAB(
+              'Logout',
+              Icons.exit_to_app,
+              logout,
+              color: Theme.of(context).accentColor,
             ),
           );
   }

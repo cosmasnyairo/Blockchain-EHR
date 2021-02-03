@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctor/widgets/custom_floating_action_button.dart';
 import 'package:doctor/widgets/custom_text.dart';
 import 'package:doctor/widgets/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import '../providers/auth_provider.dart';
 import '../widgets/custom_tile.dart';
+import 'landingpage.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -23,141 +26,145 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void logout() async {
+    setState(() {
+      _isloading = true;
+    });
+
+    await Provider.of<DoctorAuthProvider>(context, listen: false).logout();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LandingPage()),
+      (route) => false,
+    ).then((_) {
+      setState(() {
+        _isloading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DoctorAuthProvider>(context, listen: false);
 
     final deviceheight = MediaQuery.of(context).size.height;
-    return _isloading
-        ? Scaffold(body: Center(child: CircularProgressIndicator()))
-        : Scaffold(
-            appBar: AppBar(title: CustomText('Profile')),
-            body: StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('Doctors')
-                  .doc(Provider.of<DoctorAuthProvider>(context, listen: false)
-                      .userid)
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return ErrorPage();
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                // provider.fetchdoctordetails(snapshot.data);
-                return Container(
-                  height: deviceheight,
-                  child: ListView(
-                    padding: EdgeInsets.all(20),
-                    children: [
-                      Container(
-                          color: Theme.of(context).primaryColor,
-                          height: deviceheight * 0.33,
-                          child: CircleAvatar(
-                            backgroundImage: AssetImage(
-                              snapshot.data['gender'] == "Male"
-                                  ? 'assets/male_avatar.png'
-                                  : 'assets/female_avatar.png',
+    return SafeArea(
+      child: _isloading
+          ? Scaffold(body: Center(child: CircularProgressIndicator()))
+          : Scaffold(
+              appBar: AppBar(title: CustomText('Profile')),
+              body: StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('Doctors')
+                    .doc(provider.userid)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return ErrorPage();
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  return Container(
+                    height: deviceheight,
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.all(20),
+                      children: [
+                        Container(
+                          height: deviceheight * 0.15,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            image: DecorationImage(
+                              image: AssetImage(
+                                snapshot.data['gender'] == "Male"
+                                    ? 'assets/male_avatar.png'
+                                    : 'assets/female_avatar.png',
+                              ),
+                              fit: BoxFit.contain,
                             ),
-                            backgroundColor: Colors.transparent,
-                          )
-
-                          //  Image.asset(
-                          //
-                          //   fit: BoxFit.contain,
-                          // ),
+                            shape: BoxShape.circle,
                           ),
-                      SizedBox(height: 5),
-                      Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        elevation: 8,
-                        child: ListView(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(10),
-                          physics: ClampingScrollPhysics(),
-                          children: [
-                            SizedBox(height: 5),
-                            CustomText(
-                              'Hello, ${snapshot.data['name'][0].toUpperCase()}${snapshot.data['name'].substring(1)}',
-                              alignment: TextAlign.center,
-                              fontsize: 20,
-                              fontweight: FontWeight.bold,
-                            ),
-                            SizedBox(height: 10),
-                            CustomTile(
-                              leadingiconData: Icons.person,
-                              title: 'Account',
-                              subtitle: 'Update your profile',
-                              iconData: Icons.navigate_next,
-                              onpressed: () {
-                                Navigator.of(context)
-                                    .pushNamed('edit_account',
-                                        arguments: snapshot.data)
-                                    .then(
-                                      (value) => {
-                                        if (value != null)
-                                          {showSnackBarMessage(value)}
-                                      },
-                                    );
-                              },
-                            ),
-                            Divider(
-                                color: Colors.grey, endIndent: 20, indent: 10),
-                            CustomTile(
-                              title: 'Ehr Information',
-                              iconData: Icons.navigate_next,
-                              leadingiconData: Icons.info,
-                              onpressed: () {
-                                Navigator.of(context)
-                                    .pushNamed('ehr_information', arguments: {
-                                  'publickey': snapshot.data['publickey'],
-                                  'privatekey': snapshot.data['privatekey'],
-                                  'peer_node': snapshot.data['peer_node'],
-                                });
-                              },
-                            ),
-                            Divider(
-                                color: Colors.grey, endIndent: 20, indent: 10),
-                            CustomTile(
-                              title: 'Settings',
-                              subtitle: 'Explore app settings',
-                              leadingiconData: Icons.settings,
-                              iconData: Icons.navigate_next,
-                              onpressed: () {
-                                Navigator.of(context)
-                                    .pushNamed('settings_page');
-                              },
-                            ),
-                            Divider(
-                                color: Colors.grey, endIndent: 20, indent: 10),
-                            CustomTile(
-                              title: 'Logout',
-                              subtitle: 'Logout from your account',
-                              iconData: Icons.navigate_next,
-                              leadingiconData: Icons.exit_to_app,
-                              onpressed: () async {
-                                setState(() {
-                                  _isloading = true;
-                                });
-                                await provider.logout();
-
-                                setState(() {
-                                  _isloading = false;
-                                });
-                              },
-                              iconcolor: Theme.of(context).accentColor,
-                            ),
-                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        SizedBox(height: deviceheight * 0.025),
+                        CustomText(
+                          snapshot.data['name'],
+                          fontweight: FontWeight.bold,
+                          fontsize: 18,
+                          alignment: TextAlign.center,
+                        ),
+                        SizedBox(height: deviceheight * 0.0125),
+                        CustomText(
+                          'Joined on ${DateFormat.yMMMMd().format(DateTime.parse(snapshot.data['joindate']))}',
+                          alignment: TextAlign.center,
+                        ),
+                        SizedBox(height: deviceheight * 0.025),
+                        Card(
+                          elevation: 8,
+                          child: CustomTile(
+                            leadingiconData: Icons.person,
+                            title: 'Account',
+                            subtitle: 'View acccount information ',
+                            iconData: Icons.navigate_next,
+                            isthreeline: true,
+                            onpressed: () {
+                              Navigator.of(context)
+                                  .pushNamed('edit_account',
+                                      arguments: snapshot.data)
+                                  .then(
+                                    (value) => {
+                                      if (value != null)
+                                        {showSnackBarMessage(value)}
+                                    },
+                                  );
+                            },
+                          ),
+                        ),
+                        SizedBox(height: deviceheight * 0.025),
+                        Card(
+                          elevation: 8,
+                          child: CustomTile(
+                            title: 'Ehr Information',
+                            iconData: Icons.navigate_next,
+                            subtitle: 'View your keys and peer node',
+                            leadingiconData: Icons.info,
+                            isthreeline: true,
+                            onpressed: () {
+                              Navigator.of(context)
+                                  .pushNamed('ehr_information', arguments: {
+                                'publickey': snapshot.data['publickey'],
+                                'privatekey': snapshot.data['privatekey'],
+                                'peer_node': snapshot.data['peer_node'],
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(height: deviceheight * 0.025),
+                        Card(
+                          elevation: 8,
+                          child: CustomTile(
+                            title: 'Settings',
+                            subtitle: 'View app settings',
+                            leadingiconData: Icons.settings,
+                            isthreeline: true,
+                            iconData: Icons.navigate_next,
+                            onpressed: () {
+                              Navigator.of(context).pushNamed('settings_page');
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              floatingActionButton: CustomFAB(
+                'Logout',
+                Icons.exit_to_app,
+                logout,
+                color: Theme.of(context).accentColor,
+              ),
             ),
-          );
+    );
   }
 }

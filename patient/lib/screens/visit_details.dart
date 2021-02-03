@@ -94,72 +94,93 @@ class _VisitDetailsState extends State<VisitDetails>
       appBar: AppBar(title: Text('Health Record')),
       body: _isloading
           ? Center(child: CircularProgressIndicator())
-          : Container(
-              height: deviceheight,
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              child: ListView(
-                children: [
-                  Card(
-                    elevation: 4,
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      children: [
-                        SizedBox(height: 10),
-                        CustomTile(
-                          leadingiconData: Icons.person,
-                          title: 'Doctor Name',
-                          subtitle: '$doctorname',
-                        ),
-                        CustomTile(
-                          leadingiconData: Icons.email,
-                          title: 'Doctor Email',
-                          subtitle: '$doctoremail',
-                        ),
-                      ],
+          : SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Container(
+                height: deviceheight,
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Card(
+                      elevation: 4,
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        children: [
+                          SizedBox(height: 10),
+                          CustomTile(
+                            leadingiconData: Icons.person,
+                            title: 'Doctor Name',
+                            subtitle: '$doctorname',
+                          ),
+                          CustomTile(
+                            leadingiconData: Icons.email,
+                            title: 'Doctor Email',
+                            subtitle: '$doctoremail',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  CustomText(
-                    'Tap the icons below to view health record details',
-                    fontsize: 14,
-                    color: Colors.grey,
-                    alignment: TextAlign.center,
-                  ),
-                  SizedBox(height: 20),
-                  TabBar(
-                    indicatorWeight: 3,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelPadding: EdgeInsets.all(5),
-                    indicatorColor: Theme.of(context).accentColor,
-                    onTap: (index) {},
-                    controller: _controller,
-                    labelColor: Colors.black,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: widgetlist,
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    height: deviceheight * 0.4,
-                    child: TabBarView(
+                    SizedBox(height: 20),
+                    CustomText(
+                      'Tap the icons below to view health record details',
+                      fontsize: 14,
+                      color: Colors.grey,
+                      alignment: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                    TabBar(
+                      indicatorWeight: 3,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelPadding: EdgeInsets.all(5),
+                      indicatorColor: Theme.of(context).accentColor,
+                      onTap: (index) {},
                       controller: _controller,
-                      children: [
-                        ehrDetails(medicalNotes, Icons.assignment),
-                        ehrDetails(labResults, Icons.search),
-                        ehrDetails(prescription, Icons.healing),
-                      ],
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.grey,
+                      tabs: widgetlist,
                     ),
-                  ),
-                ],
+                    SizedBox(height: 20),
+                    Container(
+                      height: deviceheight * 0.4,
+                      child: TabBarView(
+                        physics: BouncingScrollPhysics(),
+                        controller: _controller,
+                        children: [
+                          ehrDetails(
+                            medicalNotes,
+                            Icons.assignment,
+                            'assets/medical_notes.png',
+                            deviceheight,
+                          ),
+                          ehrDetails(
+                            labResults,
+                            Icons.search,
+                            'assets/lab_results.png',
+                            deviceheight,
+                          ),
+                          ehrDetails(
+                            prescription,
+                            Icons.healing,
+                            'assets/prescription.png',
+                            deviceheight,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );
   }
 
-  ListView ehrDetails(List ehrdetailslist, IconData iconData) {
+  ListView ehrDetails(
+      List ehrdetailslist, IconData iconData, String image, double height) {
     return ListView(
-      physics: ClampingScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       shrinkWrap: true,
       children: [
         CustomText(
@@ -169,8 +190,17 @@ class _VisitDetailsState extends State<VisitDetails>
           color: Colors.grey,
           alignment: TextAlign.center,
         ),
-        SizedBox(height: 10),
-        ListView.builder(
+        SizedBox(height: height * 0.025),
+        Container(
+          height: height * 0.1,
+          child: Image.asset(
+            image,
+            fit: BoxFit.contain,
+          ),
+        ),
+        SizedBox(height: height * 0.025),
+        ListView.separated(
+          separatorBuilder: (ctx, i) => Divider(color: Colors.black),
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
           itemCount: ehrdetailslist.length,

@@ -11,69 +11,105 @@ class LandingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final deviceheight = MediaQuery.of(context).size.height;
     final devicewidth = MediaQuery.of(context).size.width;
+    final actionsiconslist = [Icons.add, Icons.home];
+    final actionstitlelist = ['Create account', 'Sign in'];
+    final actionslist = [
+      () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => Authentication(AuthAction.signup),
+            ),
+          ),
+      () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => Authentication(AuthAction.signin),
+            ),
+          ),
+    ];
+    final actionscolorlist = [Colors.red, Theme.of(context).primaryColor];
     return SafeArea(
       child: Scaffold(
         body: ListView(
+          padding: EdgeInsets.all(20),
           children: [
             Container(
-              padding: EdgeInsets.all(20),
               height: deviceheight * 0.5,
               width: double.infinity,
               child: Image.asset(
-                'assets/background.png',
+                'assets/peers2.png',
                 fit: BoxFit.contain,
               ),
             ),
-            ListView(
-              padding: EdgeInsets.all(20),
-              shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
-              children: [
-                CustomText(
-                  'EHR KENYA',
-                  color: Colors.black,
-                  fontsize: 30,
-                ),
-                SizedBox(height: 10),
-                CustomText(
-                  'Secure health records storage & sharing',
-                  color: Theme.of(context).primaryColor,
-                  fontsize: 18,
-                ),
-                Divider(endIndent: 20, thickness: 1, color: Colors.grey),
-                SizedBox(height: deviceheight * 0.075),
-                Center(
-                  child: SizedBox(
-                    width: devicewidth * 0.4,
-                    child: CustomButton(
-                      'Sign in',
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => Authentication(AuthAction.signin),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: deviceheight * 0.025),
-                Center(
-                  child: SizedBox(
-                    width: devicewidth * 0.4,
-                    child: CustomButton(
-                      'Sign up',
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (ctx) => Authentication(AuthAction.signup),
-                        ),
-                      ),
-                      backgroundcolor: Colors.red,
-                    ),
-                  ),
-                ),
-              ],
+            SizedBox(height: deviceheight * 0.025),
+            CustomText(
+              'EHR KENYA',
+              color: Colors.black,
+              fontsize: 30,
             ),
+            SizedBox(height: deviceheight * 0.025),
+            CustomText(
+              'Secure health records storage & sharing',
+              fontsize: 18,
+            ),
+            Divider(thickness: 2, color: Colors.grey),
+            SizedBox(height: deviceheight * 0.05),
+            GridView.builder(
+              physics: ClampingScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 1.5,
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+              ),
+              shrinkWrap: true,
+              itemCount: actionstitlelist.length,
+              itemBuilder: (ctx, i) => Card(
+                elevation: 3,
+                color: actionscolorlist[i],
+                child: InkWell(
+                  onTap: actionslist[i],
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: GridTile(
+                      child: Icon(actionsiconslist[i], size: 30),
+                      footer: CustomText(actionstitlelist[i],
+                          alignment: TextAlign.center),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Center(
+            //   child: SizedBox(
+            //     width: devicewidth * 0.4,
+            //     child: CustomButton(
+            //       'Sign in',
+            //       () => Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (ctx) => Authentication(AuthAction.signin),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // SizedBox(height: deviceheight * 0.025),
+            // Center(
+            //   child: SizedBox(
+            //     width: devicewidth * 0.4,
+            //     child: CustomButton(
+            //       'Sign up',
+            //       () => Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (ctx) => Authentication(AuthAction.signup),
+            //         ),
+            //       ),
+            //       backgroundcolor: Colors.red,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

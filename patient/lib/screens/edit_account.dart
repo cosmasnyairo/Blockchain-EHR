@@ -149,13 +149,6 @@ class _EditAccountState extends State<EditAccount> {
                       subtitle: snapshot['location'],
                       leadingiconData: Icons.location_on,
                     ),
-                    CustomTile(
-                      title: 'Join Date',
-                      leadingiconData: Icons.calendar_today,
-                      subtitle: DateFormat.jm()
-                          .add_yMMMMd()
-                          .format(DateTime.parse(snapshot['joindate'])),
-                    ),
                   ],
                 ),
       floatingActionButton: editdetails

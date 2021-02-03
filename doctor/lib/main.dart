@@ -76,8 +76,6 @@ class MyApp extends StatelessWidget {
             'edit_account': (ctx) => EditAccount(),
             'settings_page': (ctx) => SettingsPage(),
             'ehr_information': (ctx) => EhrInformationPage(),
-            //to implement onboarding screen
-            // 'landing_page': (ctx) => LandingPage()
           },
         ),
       ),
