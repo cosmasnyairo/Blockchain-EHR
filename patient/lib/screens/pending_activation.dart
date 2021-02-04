@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:patient/providers/auth_provider.dart';
 import 'package:patient/screens/profile.dart';
 import 'package:patient/widgets/alert_dialog.dart';
+import 'package:patient/widgets/custom_image.dart';
 import 'package:patient/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,10 +82,7 @@ class _PendingActivationState extends State<PendingActivation> {
                 Container(
                   padding: EdgeInsets.all(10),
                   height: deviceheight * 0.5,
-                  child: Image.asset(
-                    "assets/pending.png",
-                    fit: BoxFit.contain,
-                  ),
+                  child: CustomImage("assets/pending.png", BoxFit.contain),
                 ),
                 CustomText(
                   'Hi. $username',
@@ -123,7 +121,6 @@ class _PendingActivationState extends State<PendingActivation> {
                         _isloading = false;
                       });
                     },
-                    backgroundColor: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   )

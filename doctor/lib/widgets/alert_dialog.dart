@@ -2,6 +2,8 @@ import 'package:doctor/widgets/custom_button.dart';
 import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
+import 'custom_image.dart';
+
 class CustomAlertDialog extends StatelessWidget {
   final bool success;
   final String message;
@@ -14,15 +16,12 @@ class CustomAlertDialog extends StatelessWidget {
       title: Container(
         height: height * 0.33,
         width: width * 0.33,
-        child: Image.asset(
+        child: CustomImage(
           success ? 'assets/success.png' : 'assets/error.png',
-          fit: BoxFit.contain,
+          BoxFit.contain,
         ),
       ),
-      content: CustomText(
-        message,
-        alignment: TextAlign.center,
-      ),
+      content: CustomText(message, alignment: TextAlign.center),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       actionsPadding: EdgeInsets.all(10),
       actions: [
@@ -31,7 +30,7 @@ class CustomAlertDialog extends StatelessWidget {
           () {
             Navigator.of(context).pop();
           },
-          backgroundcolor: Colors.black,
+          backgroundcolor: Theme.of(context).primaryColor,
         )
       ],
     );

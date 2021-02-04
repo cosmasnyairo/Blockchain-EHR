@@ -16,7 +16,6 @@ class CustomFAB extends StatelessWidget {
         heroTag: null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         onPressed: onpressed,
-        backgroundColor: color == null ? Theme.of(context).primaryColor : color,
       ),
     );
   }

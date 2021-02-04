@@ -12,7 +12,9 @@ class EhrInformationPage extends StatelessWidget {
     final iconslist = [Icons.nature, Icons.lock_open, Icons.lock];
     return Scaffold(
       appBar: AppBar(title: Text('Ehr Information')),
-      body: ListView.builder(
+      body: ListView.separated(
+        padding: EdgeInsets.all(20),
+        separatorBuilder: (_, _$) => SizedBox(height: 20),
         itemBuilder: (ctx, i) =>
             EhrInformationWidget(ehrkey[i].toString(), list[i], iconslist[i]),
         itemCount: ehrkey.length,
@@ -33,18 +35,13 @@ class EhrInformationWidget extends StatefulWidget {
 class _EhrInformationWidgetState extends State<EhrInformationWidget> {
   void showSnackBarMessage(String message) {
     Scaffold.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        content: Text(message),
-      ),
+      SnackBar(content: Text(message)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      margin: EdgeInsets.all(20),
       child: CustomTile(
         expansion: true,
         title: widget.label,

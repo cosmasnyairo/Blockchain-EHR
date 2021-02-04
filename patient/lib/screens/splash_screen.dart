@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:patient/providers/auth_provider.dart';
 import 'package:patient/screens/screen.dart';
+import 'package:patient/widgets/custom_image.dart';
 import 'package:patient/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +38,6 @@ class _SplashScreenState extends State<SplashScreen> {
     final deviceheight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
         body: Container(
           alignment: Alignment.center,
           height: deviceheight,
@@ -48,11 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               Container(
                 height: deviceheight * 0.33,
-                child: Image.asset(
-                  'assets/background.png',
-                  fit: BoxFit.contain,
-                  color: Colors.black,
-                ),
+                child: CustomImage('assets/background.png', BoxFit.contain),
               ),
               SizedBox(height: deviceheight * 0.025),
               Center(child: CircularProgressIndicator())

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'custom_image.dart';
 import 'custom_text.dart';
 
 class ErrorPage extends StatelessWidget {
@@ -12,14 +13,14 @@ class ErrorPage extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(30),
           height: deviceheight * 0.5,
-          child: Image.asset('assets/404.png', fit: BoxFit.contain),
+          child: CustomImage('assets/404.png', BoxFit.contain),
         ),
         SizedBox(height: 20),
         CustomText(
           'An Error Occured!',
           alignment: TextAlign.center,
           fontsize: 20,
-          color: Colors.red,
+          color: Theme.of(context).errorColor,
         ),
         SizedBox(height: 20),
         CustomText(

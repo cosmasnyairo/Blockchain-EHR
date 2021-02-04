@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:patient/theme/customtheme.dart';
 import 'package:patient/widgets/custom_floating_action_button.dart';
 import 'package:patient/widgets/custom_form_field.dart';
 import 'package:patient/widgets/custom_text.dart';
+import 'package:patient/widgets/custom_tile.dart';
 import 'package:patient/widgets/error_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -160,50 +162,44 @@ class _AddVisitState extends State<AddVisit>
                                     ),
                                   ]
                                 : [
-                                    ListTile(
-                                      title: Text(_nodes[0].node.toString()),
-                                      leading: Icon(Icons.person),
-                                      subtitle: Text(_nodes[0].node.toString()),
-                                      trailing: RaisedButton.icon(
-                                          label: Text('End Visit'),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          icon: Icon(Icons.delete),
-                                          onPressed: () async {
-                                            try {
+                                    CustomTile(
+                                      title: _nodes[0].node.toString(),
+                                      leadingiconData: Icons.person,
+                                      subtitle: _nodes[0].node.toString(),
+                                      label: 'End Visit',
+                                      visit: true,
+                                      visiticon: Icons.delete,
+                                      onpressed: () async {
+                                        try {
+                                          setState(() {
+                                            _isloading = true;
+                                          });
+                                          await Provider.of<NodeProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .removeNode(
+                                                  peer_node, _nodes[0].node);
+                                        } catch (e) {
+                                          await showDialog(
+                                            context: context,
+                                            builder: (ctx) => CustomAlertDialog(
+                                              message: e == 'True'
+                                                  ? 'Visit removed'
+                                                  : e.toString(),
+                                              success:
+                                                  e == 'True' ? true : false,
+                                            ),
+                                          );
+                                          fetch().then(
+                                            (value) => {
                                               setState(() {
-                                                _isloading = true;
-                                              });
-                                              await Provider.of<NodeProvider>(
-                                                      context,
-                                                      listen: false)
-                                                  .removeNode(peer_node,
-                                                      _nodes[0].node);
-                                            } catch (e) {
-                                              await showDialog(
-                                                context: context,
-                                                builder: (ctx) =>
-                                                    CustomAlertDialog(
-                                                  message: e == 'True'
-                                                      ? 'Visit removed'
-                                                      : e.toString(),
-                                                  success: e == 'True'
-                                                      ? true
-                                                      : false,
-                                                ),
-                                              );
-                                              fetch().then(
-                                                (value) => {
-                                                  setState(() {
-                                                    _isloading = false;
-                                                  }),
-                                                },
-                                              );
-                                            }
-                                          }),
-                                    )
+                                                _isloading = false;
+                                              }),
+                                            },
+                                          );
+                                        }
+                                      },
+                                    ),
                                   ],
                           ),
                           SizedBox(height: 20),
@@ -219,10 +215,11 @@ class _AddVisitState extends State<AddVisit>
                                   ),
                                   alignment: Alignment.center,
                                   child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    elevation: 10,
+                                    color: Provider.of<CustomThemeProvider>(
+                                                context)
+                                            .darkthemechosen
+                                        ? Theme.of(context).accentColor
+                                        : Colors.white,
                                     child: QrImage(
                                       data: _publicKey,
                                       constrainErrorBounds: true,

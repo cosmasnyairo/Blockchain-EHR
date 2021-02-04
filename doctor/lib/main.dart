@@ -14,11 +14,13 @@ import 'screens/add_visit.dart';
 import 'screens/edit_account.dart';
 import 'screens/ehr_information.dart';
 import 'screens/landingpage.dart';
+import 'screens/libraries_used.dart';
 import 'screens/pending_activation.dart';
 import 'screens/screen.dart';
 import 'screens/settings.dart';
 import 'screens/splash_screen.dart';
 import 'screens/view_open_transactions.dart';
+import 'theme/customtheme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +32,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final primarycolor = Color(0xff3FD5AE);
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Color(0xff3FD5AE),
@@ -39,44 +40,28 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (ctx) => CustomThemeProvider()),
         ChangeNotifierProvider(create: (ctx) => RecordsProvider()),
         ChangeNotifierProvider(create: (ctx) => NodeProvider()),
         ChangeNotifierProvider(create: (ctx) => DoctorAuthProvider())
       ],
-      child: Consumer<DoctorAuthProvider>(
-        builder: (ctx, auth, _) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'EhrDoctor',
-          theme: ThemeData(
-            canvasColor: Colors.white,
-            primaryColor: primarycolor,
-            accentColor: Colors.redAccent,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            buttonTheme: ButtonThemeData(
-              buttonColor: primarycolor,
-              height: 50,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(7),
-              ),
-            ),
-            appBarTheme: AppBarTheme(
-              color: Colors.white,
-              centerTitle: true,
-              elevation: 0,
-            ),
-            textTheme: GoogleFonts.montserratTextTheme(),
-            primaryTextTheme: GoogleFonts.montserratTextTheme(),
+      child: Consumer<CustomThemeProvider>(
+        builder: (ctx, theme, _) => Consumer<DoctorAuthProvider>(
+          builder: (ctx, auth, _) => MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'EhrDoctor',
+            theme: theme.chosentheme,
+            home: auth.isLoggedIn ? SplashScreen() : LandingPage(),
+            routes: {
+              'add_record': (ctx) => AddRecord(),
+              'view_open_transaction': (ctx) => ViewOpenTransactions(),
+              'add_visit': (ctx) => AddVisit(),
+              'edit_account': (ctx) => EditAccount(),
+              'settings_page': (ctx) => SettingsPage(),
+              'ehr_information': (ctx) => EhrInformationPage(),
+              'libraries_used': (ctx) => LibrariesUsed(),
+            },
           ),
-          home: auth.isLoggedIn ? SplashScreen() : LandingPage(),
-          // home: OnboardingScreen(),
-          routes: {
-            'add_record': (ctx) => AddRecord(),
-            'view_open_transaction': (ctx) => ViewOpenTransactions(),
-            'add_visit': (ctx) => AddVisit(),
-            'edit_account': (ctx) => EditAccount(),
-            'settings_page': (ctx) => SettingsPage(),
-            'ehr_information': (ctx) => EhrInformationPage(),
-          },
         ),
       ),
     );

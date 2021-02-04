@@ -1,6 +1,8 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:doctor/screens/view_patient_records.dart';
 import 'package:doctor/widgets/custom_floating_action_button.dart';
+import 'package:doctor/widgets/custom_image.dart';
+import 'package:doctor/widgets/custom_tile.dart';
 import 'package:doctor/widgets/error_screen.dart';
 import '../widgets/custom_form_field.dart';
 import '../widgets/custom_text.dart';
@@ -71,11 +73,7 @@ class _AddVisitState extends State<AddVisit> {
 
   void showSnackBarMessage(String message) {
     Scaffold.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        duration: Duration(seconds: 2),
-        content: Text(message),
-      ),
+      SnackBar(duration: Duration(seconds: 2), content: Text(message)),
     );
   }
 
@@ -99,7 +97,9 @@ class _AddVisitState extends State<AddVisit> {
     ];
     final actionsColor = [
       Colors.white,
-      _opentransactions.length > 0 ? Colors.red : Colors.white,
+      _opentransactions.length > 0
+          ? Theme.of(context).errorColor
+          : Colors.white,
       Colors.white,
       Colors.white
     ];
@@ -203,7 +203,7 @@ class _AddVisitState extends State<AddVisit> {
                 setState(() {
                   _isloading = false;
                 });
-              } catch (e) {
+              } on FormatException catch (e) {} catch (e) {
                 await showDialog(
                   context: context,
                   builder: (ctx) => CustomAlertDialog(
@@ -294,48 +294,44 @@ class _AddVisitState extends State<AddVisit> {
                                 ),
                               ]
                             : [
-                                ListTile(
-                                  title: Text(_nodes[0].node.toString()),
-                                  leading: Icon(Icons.person),
-                                  subtitle: Text(_nodes[0].node.toString()),
-                                  trailing: RaisedButton.icon(
-                                    label: Text('End Visit'),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () async {
-                                      try {
-                                        setState(() {
-                                          _isloading = true;
-                                        });
-                                        await Provider.of<NodeProvider>(context,
-                                                listen: false)
-                                            .removeNode(
-                                                peer_node, _nodes[0].node);
-                                      } catch (e) {
-                                        await showDialog(
-                                          context: context,
-                                          builder: (ctx) => CustomAlertDialog(
-                                            message: e == 'True'
-                                                ? 'Visit removed'
-                                                : e.toString(),
-                                            success: e == 'True' ? true : false,
+                                CustomTile(
+                                  title: _nodes[0].node.toString(),
+                                  leadingiconData: Icons.person,
+                                  subtitle: _nodes[0].node.toString(),
+                                  label: 'End Visit',
+                                  visit: true,
+                                  visiticon: Icons.delete,
+                                  onpressed: () async {
+                                    try {
+                                      setState(() {
+                                        _isloading = true;
+                                      });
+                                      await Provider.of<NodeProvider>(context,
+                                              listen: false)
+                                          .removeNode(
+                                              peer_node, _nodes[0].node);
+                                    } catch (e) {
+                                      await showDialog(
+                                        context: context,
+                                        builder: (ctx) => CustomAlertDialog(
+                                          message: e == 'True'
+                                              ? 'Visit removed'
+                                              : e.toString(),
+                                          success: e == 'True' ? true : false,
+                                        ),
+                                      );
+                                      fetch().then(
+                                        (value) => {
+                                          setState(
+                                            () {
+                                              _receiver = null;
+                                              _isloading = false;
+                                            },
                                           ),
-                                        );
-                                        fetch().then(
-                                          (value) => {
-                                            setState(
-                                              () {
-                                                _receiver = null;
-                                                _isloading = false;
-                                              },
-                                            ),
-                                          },
-                                        );
-                                      }
-                                    },
-                                  ),
+                                        },
+                                      );
+                                    }
+                                  },
                                 )
                               ],
                       ),
@@ -362,14 +358,12 @@ class _AddVisitState extends State<AddVisit> {
                         shrinkWrap: true,
                         itemCount: actionstitlelist.length,
                         itemBuilder: (ctx, i) => Card(
-                          color: actionsColor[i],
-                          elevation: 3,
                           child: InkWell(
                             onTap: actionslist[i],
                             child: Padding(
                               padding: const EdgeInsets.all(10),
                               child: GridTile(
-                                child: Icon(actionsiconslist[i], size: 30),
+                                child: Icon(actionsiconslist[i]),
                                 header: CustomText(actionstitlelist[i],
                                     alignment: TextAlign.center),
                               ),
@@ -380,7 +374,7 @@ class _AddVisitState extends State<AddVisit> {
                       SizedBox(height: 10),
                       Container(
                         height: deviceheight * 0.25,
-                        child: Image.asset('assets/peers2.png'),
+                        child: CustomImage('assets/peers2.png', BoxFit.contain),
                       ),
                       SizedBox(height: 10),
                     ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:patient/widgets/custom_floating_action_button.dart';
+import 'package:patient/widgets/custom_image.dart';
 import 'package:patient/widgets/error_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -128,12 +129,19 @@ class _HomePageState extends State<HomePage> {
                         initialCalendarFormat: deviceheight < 768
                             ? CalendarFormat.twoWeeks
                             : CalendarFormat.month,
+                        daysOfWeekStyle: DaysOfWeekStyle(
+                            weekendStyle: TextStyle(
+                                color: Theme.of(context).accentColor)),
                         calendarStyle: CalendarStyle(
+                          weekendStyle:
+                              TextStyle(color: Theme.of(context).accentColor),
                           selectedColor:
-                              Theme.of(context).primaryColor.withOpacity(0.7),
+                              Theme.of(context).accentColor.withOpacity(0.7),
                           todayColor: Colors.grey,
                           markersColor: Theme.of(context).primaryColor,
                           outsideDaysVisible: false,
+                          outsideWeekendStyle:
+                              TextStyle(color: Theme.of(context).accentColor),
                         ),
                         onDaySelected: (day, events, holidays) {
                           _chosen = day;
@@ -190,8 +198,8 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: _calendarController.isSelected(date)
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).primaryColor.withOpacity(0.7),
+            ? Theme.of(context).accentColor
+            : Theme.of(context).accentColor.withOpacity(0.7),
       ),
       width: 8.0,
       height: 8.0,
@@ -229,9 +237,6 @@ class _HomePageState extends State<HomePage> {
     return fetchedtransaction.length > 0
         ? Card(
             margin: EdgeInsets.all(20),
-            elevation: 7,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: ListView(
               shrinkWrap: true,
               padding: EdgeInsets.all(10),
@@ -285,10 +290,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 20),
               Container(
                 height: deviceheight * 0.25,
-                child: Image.asset(
-                  'assets/pending.png',
-                  fit: BoxFit.contain,
-                ),
+                child: CustomImage('assets/pending.png', BoxFit.contain),
               ),
               SizedBox(height: 20),
             ],

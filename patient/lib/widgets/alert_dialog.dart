@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patient/widgets/custom_button.dart';
 
+import 'custom_image.dart';
 import 'custom_text.dart';
 
 class CustomAlertDialog extends StatelessWidget {
@@ -15,9 +16,9 @@ class CustomAlertDialog extends StatelessWidget {
       title: Container(
         height: height * 0.33,
         width: width * 0.33,
-        child: Image.asset(
+        child: CustomImage(
           success ? 'assets/success.png' : 'assets/error.png',
-          fit: BoxFit.contain,
+          BoxFit.contain,
         ),
       ),
       content: CustomText(
@@ -32,7 +33,7 @@ class CustomAlertDialog extends StatelessWidget {
           () {
             Navigator.of(context).pop();
           },
-          backgroundcolor: Colors.black,
+          backgroundcolor: Theme.of(context).primaryColor,
         )
       ],
     );

@@ -43,10 +43,6 @@ class _ScreenState extends State<Screen> {
           _currentindex = index;
         },
         currentIndex: _currentindex,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).primaryColor,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.white,
         items: [
           BottomNavigationBarItem(
             title: CustomText('Home'),

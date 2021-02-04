@@ -149,10 +149,7 @@ class _StepperBodyState extends State<StepperBody> {
 
   void showSnackBarMessage(String message) {
     Scaffold.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        content: Text(message),
-      ),
+      SnackBar(content: Text(message)),
     );
   }
 
@@ -208,7 +205,6 @@ class _StepperBodyState extends State<StepperBody> {
                 Align(
                   child: FloatingActionButton.extended(
                     icon: Icon(Icons.save),
-                    backgroundColor: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -244,10 +240,11 @@ class _StepperBodyState extends State<StepperBody> {
                   ? Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).errorColor,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.delete, semanticLabel: 'Remove Entry'),
+                        icon: Icon(Icons.delete,
+                            color: Theme.of(context).errorColor,
+                            semanticLabel: 'Remove Entry'),
                         onPressed: () {
                           setState(() {
                             widgetlist..removeLast();
@@ -260,7 +257,6 @@ class _StepperBodyState extends State<StepperBody> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).primaryColor,
                 ),
                 child: IconButton(
                   icon: Icon(Icons.add, semanticLabel: 'Add Entry'),
@@ -287,6 +283,7 @@ class _StepperBodyState extends State<StepperBody> {
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       children: [
+        SizedBox(height: 10),
         CustomFormField(
           keyboardtype: TextInputType.multiline,
           textInputAction: TextInputAction.newline,
@@ -312,6 +309,7 @@ class _StepperBodyState extends State<StepperBody> {
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       children: [
+        SizedBox(height: 10),
         CustomFormField(
           keyboardtype: TextInputType.text,
           textInputAction: TextInputAction.go,

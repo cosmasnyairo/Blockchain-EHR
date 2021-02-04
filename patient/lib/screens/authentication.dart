@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:patient/screens/splash_screen.dart';
+import 'package:patient/widgets/custom_image.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -145,10 +146,7 @@ class _AuthenticationState extends State<Authentication> {
                           ? deviceheight * 0.33
                           : deviceheight * 0.2,
                       width: double.infinity,
-                      child: Image.asset(
-                        'assets/peers2.png',
-                        fit: BoxFit.contain,
-                      ),
+                      child: CustomImage('assets/peers2.png', BoxFit.contain),
                     ),
                     widget.authAction == AuthAction.signin
                         ? SizedBox(height: deviceheight * 0.05)
@@ -234,25 +232,17 @@ class _AuthenticationState extends State<Authentication> {
                               ? SizedBox(height: deviceheight * 0.025)
                               : SizedBox(),
                           widget.authAction == AuthAction.signup
-                              ? DropdownButtonFormField(
+                              ? CustomFormField(
                                   focusNode: _genderfocusnode,
-                                  decoration: InputDecoration(
-                                    enabledBorder: OutlineInputBorder(),
-                                    border: OutlineInputBorder(),
-                                    prefixIcon: Icon(
-                                      Icons.person_outline,
-                                      size: 25,
-                                      color: Colors.black,
-                                    ),
-                                  ),
+                                  icondata: Icons.person_outline,
                                   validator: (value) {
                                     if (value == null) {
                                       return 'Please choose your gender';
                                     }
                                     return null;
                                   },
-                                  hint: CustomText("Enter Gender",
-                                      color: Colors.black),
+                                  dropdown: true,
+                                  hinttext: "Enter Gender",
                                   items: [
                                     DropdownMenuItem(
                                       child: Text("Male"),
@@ -263,7 +253,7 @@ class _AuthenticationState extends State<Authentication> {
                                       value: "Female",
                                     ),
                                   ],
-                                  onChanged: (value) {
+                                  onchanged: (value) {
                                     _authData['gender'] = value;
                                   },
                                 )
@@ -284,7 +274,7 @@ class _AuthenticationState extends State<Authentication> {
                                     : Icons.home,
                               ),
                               color: widget.authAction == AuthAction.signup
-                                  ? Colors.red
+                                  ? Theme.of(context).errorColor
                                   : null,
                             ),
                           ),

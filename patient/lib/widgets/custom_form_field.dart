@@ -13,6 +13,10 @@ class CustomFormField extends StatelessWidget {
   final int maxlines;
   final TextEditingController controller;
   final bool obscuretext;
+  final bool dropdown;
+  final String hinttext;
+  final Function onchanged;
+  final List<DropdownMenuItem> items;
   const CustomFormField({
     this.initialvalue,
     this.icondata,
@@ -26,29 +30,39 @@ class CustomFormField extends StatelessWidget {
     this.keyboardtype,
     this.maxlines,
     this.controller,
+    this.dropdown = false,
+    this.hinttext,
+    this.onchanged,
+    this.items,
   });
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      focusNode: focusNode,
-      keyboardType: keyboardtype,
-      initialValue: initialvalue,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        enabledBorder: OutlineInputBorder(),
-        labelStyle: TextStyle(color: Colors.black),
-        prefixIcon: icondata == null
-            ? null
-            : Icon(icondata, size: 25, color: Colors.black),
-        labelText: labeltext,
-      ),
-      textInputAction: textInputAction,
-      validator: validator,
-      onSaved: onsaved,
-      maxLines: maxlines == null ? null : maxlines,
-      obscureText: obscuretext,
-      onFieldSubmitted: onfieldsubmitted,
-    );
+    return dropdown
+        ? DropdownButtonFormField(
+            focusNode: focusNode,
+            decoration: InputDecoration(
+              prefixIcon: icondata == null ? null : Icon(icondata),
+              hintText: hinttext,
+            ),
+            validator: validator,
+            items: items,
+            onChanged: onchanged,
+          )
+        : TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardType: keyboardtype,
+            initialValue: initialvalue,
+            decoration: InputDecoration(
+              prefixIcon: icondata == null ? null : Icon(icondata),
+              labelText: labeltext,
+            ),
+            textInputAction: textInputAction,
+            validator: validator,
+            onSaved: onsaved,
+            maxLines: maxlines == null ? null : maxlines,
+            obscureText: obscuretext,
+            onFieldSubmitted: onfieldsubmitted,
+          );
   }
 }

@@ -61,7 +61,6 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
                   itemBuilder: (ctx, i) => SizedBox(
                     height: 100,
                     child: Card(
-                      elevation: 7,
                       child: ListTile(
                         title: CustomText(
                           'Transaction  ${(i + 1).toString()}',

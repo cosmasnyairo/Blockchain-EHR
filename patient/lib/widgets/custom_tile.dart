@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:patient/theme/customtheme.dart';
+import 'package:patient/widgets/custom_text.dart';
+import 'package:provider/provider.dart';
 
 class CustomTile extends StatelessWidget {
   final String title;
@@ -7,31 +10,48 @@ class CustomTile extends StatelessWidget {
   final bool isthreeline;
   final IconData iconData;
   final IconData leadingiconData;
-  final Color iconcolor;
   final bool expansion;
   final Widget expansionchildren;
+  final Color color;
+
+  final bool visit;
+  final String label;
+  final IconData visiticon;
+
   const CustomTile({
     this.title,
     this.subtitle,
     this.onpressed,
     this.isthreeline,
     this.iconData,
-    this.iconcolor,
     this.leadingiconData,
     this.expansionchildren,
     this.expansion = false,
+    this.visit = false,
+    this.label,
+    this.visiticon,
+    this.color,
   });
+
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<CustomThemeProvider>(context, listen: false);
     return expansion
         ? ExpansionTile(
             title: title == null ? null : Text(title),
             subtitle: subtitle == null ? null : Text(subtitle),
             children: [expansionchildren, SizedBox(height: 20)],
+            leading: Icon(
+              leadingiconData,
+              color: theme.darkthemechosen
+                  ? Theme.of(context).accentColor
+                  : Theme.of(context).primaryColor,
+            ),
             trailing: Icon(
               iconData,
-              color: Theme.of(context).primaryColor,
-              size: 25,
+              color: theme.darkthemechosen
+                  ? Theme.of(context).accentColor
+                  : Theme.of(context).primaryColor,
             ),
           )
         : ListTile(
@@ -43,21 +63,31 @@ class CustomTile extends StatelessWidget {
                 ? null
                 : Icon(
                     leadingiconData,
-                    color: iconcolor == null
-                        ? Theme.of(context).primaryColor
-                        : iconcolor,
-                    size: 25,
+                    color: theme.darkthemechosen
+                        ? Theme.of(context).accentColor
+                        : Theme.of(context).primaryColor,
                   ),
-            trailing: IconButton(
-              icon: Icon(
-                iconData,
-                color: iconcolor == null
-                    ? Theme.of(context).primaryColor
-                    : iconcolor,
-                size: 25,
-              ),
-              onPressed: onpressed,
-            ),
+            trailing: visit
+                ? RaisedButton.icon(
+                    label: CustomText(label),
+                    icon: Icon(
+                      visiticon,
+                      color: theme.darkthemechosen
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).accentColor,
+                    ),
+                    onPressed: onpressed,
+                  )
+                : IconButton(
+                    icon: Icon(
+                      iconData,
+                      color: color == null
+                          ? theme.darkthemechosen
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).primaryColor
+                          : color,
+                    ),
+                    onPressed: onpressed),
           );
   }
 }

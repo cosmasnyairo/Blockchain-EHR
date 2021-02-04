@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:patient/widgets/custom_image.dart';
 
 import '../models/transaction.dart' as UserTransaction;
 import '../widgets/custom_text.dart';
@@ -104,7 +105,6 @@ class _VisitDetailsState extends State<VisitDetails>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Card(
-                      elevation: 4,
                       child: ListView(
                         shrinkWrap: true,
                         physics: ClampingScrollPhysics(),
@@ -133,13 +133,8 @@ class _VisitDetailsState extends State<VisitDetails>
                     SizedBox(height: 20),
                     TabBar(
                       indicatorWeight: 3,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      labelPadding: EdgeInsets.all(5),
-                      indicatorColor: Theme.of(context).accentColor,
                       onTap: (index) {},
                       controller: _controller,
-                      labelColor: Colors.black,
-                      unselectedLabelColor: Colors.grey,
                       tabs: widgetlist,
                     ),
                     SizedBox(height: 20),
@@ -193,10 +188,7 @@ class _VisitDetailsState extends State<VisitDetails>
         SizedBox(height: height * 0.025),
         Container(
           height: height * 0.1,
-          child: Image.asset(
-            image,
-            fit: BoxFit.contain,
-          ),
+          child: CustomImage(image, BoxFit.contain),
         ),
         SizedBox(height: height * 0.025),
         ListView.separated(

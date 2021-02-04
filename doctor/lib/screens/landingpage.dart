@@ -1,3 +1,4 @@
+import 'package:doctor/widgets/custom_image.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/custom_button.dart';
@@ -27,7 +28,10 @@ class LandingPage extends StatelessWidget {
             ),
           ),
     ];
-    final actionscolorlist = [Colors.red, Theme.of(context).primaryColor];
+    final actionscolorlist = [
+      Theme.of(context).errorColor,
+      Theme.of(context).primaryColor
+    ];
     return SafeArea(
       child: Scaffold(
         body: ListView(
@@ -36,15 +40,11 @@ class LandingPage extends StatelessWidget {
             Container(
               height: deviceheight * 0.5,
               width: double.infinity,
-              child: Image.asset(
-                'assets/peers2.png',
-                fit: BoxFit.contain,
-              ),
+              child: CustomImage('assets/peers2.png', BoxFit.contain),
             ),
             SizedBox(height: deviceheight * 0.025),
             CustomText(
               'EHR KENYA',
-              color: Colors.black,
               fontsize: 30,
             ),
             SizedBox(height: deviceheight * 0.025),
@@ -64,14 +64,13 @@ class LandingPage extends StatelessWidget {
               shrinkWrap: true,
               itemCount: actionstitlelist.length,
               itemBuilder: (ctx, i) => Card(
-                elevation: 3,
                 color: actionscolorlist[i],
                 child: InkWell(
                   onTap: actionslist[i],
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: GridTile(
-                      child: Icon(actionsiconslist[i], size: 30),
+                      child: Icon(actionsiconslist[i], color: Colors.black),
                       footer: CustomText(actionstitlelist[i],
                           alignment: TextAlign.center),
                     ),
