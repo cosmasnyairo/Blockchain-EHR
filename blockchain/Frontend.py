@@ -132,12 +132,11 @@ class App:
             root.destroy()
 # adapta
 # breeze
-# arc
 # yaru
 
 
 if __name__ == "__main__":
-    root = ThemedTk(theme="adapta")
+    root = ThemedTk(theme="breeze")
     app = App(root)
     app.start_node(2)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)

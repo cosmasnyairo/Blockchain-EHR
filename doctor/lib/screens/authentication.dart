@@ -150,7 +150,7 @@ class _AuthenticationState extends State<Authentication> {
                           ? deviceheight * 0.33
                           : deviceheight * 0.2,
                       width: double.infinity,
-                      child: CustomImage('assets/peers2.png', BoxFit.contain),
+                      child: CustomImage('assets/peers.png', BoxFit.contain),
                     ),
                     widget.authAction == AuthAction.signin
                         ? SizedBox(height: deviceheight * 0.05)

@@ -146,7 +146,7 @@ class _AuthenticationState extends State<Authentication> {
                           ? deviceheight * 0.33
                           : deviceheight * 0.2,
                       width: double.infinity,
-                      child: CustomImage('assets/peers2.png', BoxFit.contain),
+                      child: CustomImage('assets/peers.png', BoxFit.contain),
                     ),
                     widget.authAction == AuthAction.signin
                         ? SizedBox(height: deviceheight * 0.05)
@@ -282,33 +282,11 @@ class _AuthenticationState extends State<Authentication> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: InkWell(
-                              child: RichText(
-                                textAlign: TextAlign.left,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          widget.authAction == AuthAction.signup
-                                              ? 'Already have an account?  '
-                                              : 'Don\'t have an account?  ',
-                                      style: GoogleFonts.montserrat().copyWith(
-                                          color: Colors.black, fontSize: 16),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          widget.authAction == AuthAction.signup
-                                              ? 'Sign in'
-                                              : 'Sign up',
-                                      style: GoogleFonts.montserrat().copyWith(
-                                        color: widget.authAction ==
-                                                AuthAction.signup
-                                            ? Theme.of(context).primaryColor
-                                            : Colors.red,
-                                        fontSize: 16,
-                                      ),
-                                    )
-                                  ],
-                                ),
+                              child: CustomText(
+                                widget.authAction == AuthAction.signup
+                                    ? 'Already have an account? Sign in '
+                                    : 'Don\'t have an account? Sign up',
+                                alignment: TextAlign.left,
                               ),
                               onTap: widget.authAction == AuthAction.signup
                                   ? () {

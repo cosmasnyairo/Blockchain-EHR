@@ -120,7 +120,7 @@ class Blockchain:
                 data["blockchain"] = saveable_chain
                 data["opentransactions"] = saveable_tx
                 data["peer_nodes"] = list(self.__peer_nodes)
-                json.dump(data, f)
+                json.dump(data, f, indent=4)
 
                 # savedata(self.node_id, saveable_chain,
                 #          saveable_tx, list(self.__peer_nodes))

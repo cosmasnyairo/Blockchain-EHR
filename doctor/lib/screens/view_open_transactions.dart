@@ -106,7 +106,6 @@ class _ViewOpenTransactionsState extends State<ViewOpenTransactions> {
               icon: Icon(Icons.check),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              backgroundColor: Theme.of(context).primaryColor,
               onPressed: minerecords,
             ),
     );

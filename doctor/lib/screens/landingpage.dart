@@ -40,7 +40,7 @@ class LandingPage extends StatelessWidget {
             Container(
               height: deviceheight * 0.5,
               width: double.infinity,
-              child: CustomImage('assets/peers2.png', BoxFit.contain),
+              child: CustomImage('assets/peers.png', BoxFit.contain),
             ),
             SizedBox(height: deviceheight * 0.025),
             CustomText(

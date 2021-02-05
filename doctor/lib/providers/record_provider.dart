@@ -131,7 +131,7 @@ class RecordsProvider with ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      ).timeout(const Duration(seconds: 10), onTimeout: () {
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
       });
@@ -219,7 +219,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> getOpenTransactions(int port) async {
     try {
       final url = '$_apiurl:$port/get_opentransactions';
-      final response = await http.get(url).timeout(const Duration(seconds: 10),
+      final response = await http.get(url).timeout(const Duration(seconds: 30),
           onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
@@ -227,7 +227,6 @@ class RecordsProvider with ChangeNotifier {
 
       final extractedData = json.decode(response.body) as List;
       final List<EhrTransaction.Transaction> loadedtransactions = [];
-
       extractedData.forEach(
         (transaction) {
           loadedtransactions.add(

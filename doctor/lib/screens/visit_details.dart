@@ -147,7 +147,9 @@ class _VisitDetailsState extends State<VisitDetails>
                           ),
                           CustomTile(
                             leadingiconData: Icons.email,
-                            title: 'Doctor Email',
+                            title: widget.isavisit
+                                ? 'Doctor Email'
+                                : 'Patient Email',
                             subtitle: widget.isavisit
                                 ? '$doctoremail'
                                 : '$patientemail',

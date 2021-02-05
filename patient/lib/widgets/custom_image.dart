@@ -9,6 +9,7 @@ class CustomImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<CustomThemeProvider>(context, listen: false);
+
     return Image.asset(
       path,
       fit: boxFit,

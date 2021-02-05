@@ -23,8 +23,14 @@ class DoctorAuthProvider extends ChangeNotifier {
   EhrDoctor _ehrDoctor;
   bool _authenticated;
 
+  bool _shownboarding = true;
+
   EhrDoctor get ehrDoctor {
     return _ehrDoctor;
+  }
+
+  bool get shownboarding {
+    return _shownboarding;
   }
 
   bool get authenticated {
@@ -43,6 +49,19 @@ class DoctorAuthProvider extends ChangeNotifier {
       return false;
     }
     return true;
+  }
+
+  Future<void> showOnboarding(bool shownboarding) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('shownboarding', shownboarding);
+    _shownboarding = shownboarding;
+    notifyListeners();
+  }
+
+  Future<void> getonboarding(bool shownboarding) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _shownboarding = prefs.getBool('shownboarding');
+    notifyListeners();
   }
 
   Future<void> isAuthenticated() async {

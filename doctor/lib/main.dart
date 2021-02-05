@@ -1,3 +1,4 @@
+import 'package:doctor/screens/onboarding.dart';
 import 'package:doctor/widgets/error_screen.dart';
 import 'package:async/async.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -51,7 +52,11 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'EhrDoctor',
             theme: theme.chosentheme,
-            home: auth.isLoggedIn ? SplashScreen() : LandingPage(),
+            home: auth.isLoggedIn
+                ? SplashScreen()
+                : auth.shownboarding
+                    ? OnboardingScreen()
+                    : LandingPage(),
             routes: {
               'add_record': (ctx) => AddRecord(),
               'view_open_transaction': (ctx) => ViewOpenTransactions(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:patient/theme/customtheme.dart';
 import 'package:patient/widgets/custom_floating_action_button.dart';
 import 'package:patient/widgets/custom_form_field.dart';
+import 'package:patient/widgets/custom_image.dart';
 import 'package:patient/widgets/custom_text.dart';
 import 'package:patient/widgets/custom_tile.dart';
 import 'package:patient/widgets/error_screen.dart';
@@ -207,7 +208,8 @@ class _AddVisitState extends State<AddVisit>
                               ? Container(
                                   padding: EdgeInsets.all(20),
                                   height: deviceheight * 0.4,
-                                  child: Image.asset('assets/peers2.png'),
+                                  child: CustomImage(
+                                      'assets/peers.png', BoxFit.contain),
                                 )
                               : Container(
                                   constraints: BoxConstraints(
@@ -221,6 +223,7 @@ class _AddVisitState extends State<AddVisit>
                                         ? Theme.of(context).accentColor
                                         : Colors.white,
                                     child: QrImage(
+                                      padding: EdgeInsets.all(20),
                                       data: _publicKey,
                                       constrainErrorBounds: true,
                                       gapless: true,

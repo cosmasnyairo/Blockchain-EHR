@@ -374,7 +374,7 @@ class _AddVisitState extends State<AddVisit> {
                       SizedBox(height: 10),
                       Container(
                         height: deviceheight * 0.25,
-                        child: CustomImage('assets/peers2.png', BoxFit.contain),
+                        child: CustomImage('assets/peers.png', BoxFit.contain),
                       ),
                       SizedBox(height: 10),
                     ],

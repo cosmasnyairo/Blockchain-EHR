@@ -29,7 +29,7 @@ class Wallet:
                     data = {}
                     data["public_key"] = self.public_key
                     data["private_key"] = self.private_key
-                    json.dump(data, f)
+                    json.dump(data, f, indent=4)
                 # savekeys(self.node_id, self.public_key, self.private_key)
                 return True
             except (IOError, IndexError):

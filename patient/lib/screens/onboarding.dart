@@ -1,9 +1,8 @@
-import 'package:doctor/providers/auth_provider.dart';
-import 'package:doctor/theme/customtheme.dart';
-import 'package:doctor/widgets/custom_floating_action_button.dart';
-import 'package:doctor/widgets/custom_image.dart';
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:patient/providers/auth_provider.dart';
+import 'package:patient/widgets/custom_floating_action_button.dart';
+import 'package:patient/widgets/custom_image.dart';
+import 'package:patient/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -82,7 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 setState(() {
                   _isloading = true;
                 });
-                await Provider.of<DoctorAuthProvider>(context, listen: false)
+                await Provider.of<UserAuthProvider>(context, listen: false)
                     .showOnboarding(false)
                     .then((_) {
                   setState(() {

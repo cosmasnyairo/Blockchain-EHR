@@ -91,7 +91,6 @@ class _StepperBodyState extends State<StepperBody> {
       setState(() {
         _isloading = true;
       });
-      print(_enteredDetails);
       await provider.addTransaction(
         provider.peernode,
         _enteredDetails,
@@ -155,6 +154,7 @@ class _StepperBodyState extends State<StepperBody> {
 
   @override
   Widget build(BuildContext context) {
+    print(_enteredDetails);
     List<Step> steps = [
       customStepper(
         title: 'Medical Notes',

@@ -14,6 +14,8 @@ import '../secrets.dart' as secrets;
 class UserAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
   bool _authenticated;
+
+  bool _shownboarding = true;
   String get userid {
     return _auth.currentUser.uid;
   }
@@ -25,11 +27,28 @@ class UserAuthProvider extends ChangeNotifier {
     return true;
   }
 
+  bool get shownboarding {
+    return _shownboarding;
+  }
+
   bool get authenticated {
     if (_authenticated == null) {
       _authenticated = false;
     }
     return _authenticated;
+  }
+
+  Future<void> showOnboarding(bool shownboarding) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('shownboarding', shownboarding);
+    _shownboarding = shownboarding;
+    notifyListeners();
+  }
+
+  Future<void> getonboarding(bool shownboarding) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _shownboarding = prefs.getBool('shownboarding');
+    notifyListeners();
   }
 
   Future<void> isAuthenticated() async {

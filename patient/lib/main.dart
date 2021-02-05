@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:patient/screens/onboarding.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/auth_provider.dart';
@@ -52,7 +53,11 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'EhrPatient',
             theme: theme.chosentheme,
-            home: auth.isLoggedIn ? SplashScreen() : LandingPage(),
+            home: auth.isLoggedIn
+                ? SplashScreen()
+                : auth.shownboarding
+                    ? OnboardingScreen()
+                    : LandingPage(),
             routes: {
               'add_visit': (ctx) => AddVisit(),
               'edit_account': (ctx) => EditAccount(),
