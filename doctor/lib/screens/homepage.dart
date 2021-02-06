@@ -96,77 +96,89 @@ class _HomePageState extends State<HomePage> {
               : Container(
                   height: deviceheight,
                   padding: EdgeInsets.all(10),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      CustomText(
-                        'Change calender view by tapping the view button below',
-                        fontsize: 12,
-                        color: Colors.grey,
-                        alignment: TextAlign.center,
-                      ),
-                      TableCalendar(
-                        headerStyle: HeaderStyle(
-                          formatButtonShowsNext: false,
-                          centerHeaderTitle: false,
-                          formatButtonDecoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(10),
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      setState(() {
+                        _isloading = true;
+                      });
+                      fetch().then((_) {
+                        setState(() {
+                          _isloading = false;
+                        });
+                      });
+                    },
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        CustomText(
+                          'Change calender view by tapping the view button below',
+                          fontsize: 12,
+                          color: Colors.grey,
+                          alignment: TextAlign.center,
+                        ),
+                        TableCalendar(
+                          headerStyle: HeaderStyle(
+                            formatButtonShowsNext: false,
+                            centerHeaderTitle: false,
+                            formatButtonDecoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            formatButtonPadding: EdgeInsets.all(7),
                           ),
-                          formatButtonPadding: EdgeInsets.all(7),
-                        ),
-                        events: _events,
-                        availableCalendarFormats: {
-                          CalendarFormat.month: 'Month view',
-                          CalendarFormat.week: 'Week view',
-                          CalendarFormat.twoWeeks: 'Two Week view'
-                        },
-                        formatAnimation: FormatAnimation.scale,
-                        calendarController: _calendarController,
-                        startingDayOfWeek: StartingDayOfWeek.sunday,
-                        availableGestures: AvailableGestures.horizontalSwipe,
-                        initialCalendarFormat: deviceheight < 768
-                            ? CalendarFormat.twoWeeks
-                            : CalendarFormat.month,
-                        daysOfWeekStyle: DaysOfWeekStyle(
-                            weekendStyle: TextStyle(
-                                color: Theme.of(context).accentColor)),
-                        calendarStyle: CalendarStyle(
-                          weekendStyle:
-                              TextStyle(color: Theme.of(context).accentColor),
-                          selectedColor:
-                              Theme.of(context).accentColor.withOpacity(0.7),
-                          todayColor: Colors.grey,
-                          markersColor: Theme.of(context).primaryColor,
-                          outsideDaysVisible: false,
-                          outsideWeekendStyle:
-                              TextStyle(color: Theme.of(context).accentColor),
-                        ),
-                        onDaySelected: (day, events, holidays) {
-                          _chosen = day;
-                          setState(() {
-                            _selectedEvents = events;
-                          });
-                        },
-                        builders: CalendarBuilders(
-                          markersBuilder: (context, date, events, holidays) {
-                            final children = <Widget>[];
-                            if (events.isNotEmpty) {
-                              children.add(
-                                Positioned(
-                                  right: 1,
-                                  bottom: 1,
-                                  child: _buildEventsMarker(date, events),
-                                ),
-                              );
-                            }
-                            return children;
+                          events: _events,
+                          availableCalendarFormats: {
+                            CalendarFormat.month: 'Month view',
+                            CalendarFormat.week: 'Week view',
+                            CalendarFormat.twoWeeks: 'Two Week view'
                           },
+                          formatAnimation: FormatAnimation.scale,
+                          calendarController: _calendarController,
+                          startingDayOfWeek: StartingDayOfWeek.sunday,
+                          availableGestures: AvailableGestures.horizontalSwipe,
+                          initialCalendarFormat: deviceheight < 768
+                              ? CalendarFormat.twoWeeks
+                              : CalendarFormat.month,
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                              weekendStyle: TextStyle(
+                                  color: Theme.of(context).accentColor)),
+                          calendarStyle: CalendarStyle(
+                            weekendStyle:
+                                TextStyle(color: Theme.of(context).accentColor),
+                            selectedColor:
+                                Theme.of(context).accentColor.withOpacity(0.7),
+                            todayColor: Colors.grey,
+                            markersColor: Theme.of(context).primaryColor,
+                            outsideDaysVisible: false,
+                            outsideWeekendStyle:
+                                TextStyle(color: Theme.of(context).accentColor),
+                          ),
+                          onDaySelected: (day, events, holidays) {
+                            _chosen = day;
+                            setState(() {
+                              _selectedEvents = events;
+                            });
+                          },
+                          builders: CalendarBuilders(
+                            markersBuilder: (context, date, events, holidays) {
+                              final children = <Widget>[];
+                              if (events.isNotEmpty) {
+                                children.add(
+                                  Positioned(
+                                    right: 1,
+                                    bottom: 1,
+                                    child: _buildEventsMarker(date, events),
+                                  ),
+                                );
+                              }
+                              return children;
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 30),
-                      _buildEventList(_chosen)
-                    ],
+                        SizedBox(height: 30),
+                        _buildEventList(_chosen)
+                      ],
+                    ),
                   ),
                 ),
       floatingActionButton: _erroroccurred

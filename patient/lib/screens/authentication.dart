@@ -166,6 +166,7 @@ class _AuthenticationState extends State<Authentication> {
                                     CustomFormField(
                                       icondata: Icons.person,
                                       labeltext: 'Username',
+                                      maxlines: 1,
                                       textInputAction: TextInputAction.next,
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -189,6 +190,7 @@ class _AuthenticationState extends State<Authentication> {
                             focusNode: _emailnode,
                             labeltext: 'Email',
                             icondata: Icons.email,
+                            maxlines: 1,
                             textInputAction: TextInputAction.next,
                             validator: (value) {
                               if (value.trim().isEmpty ||

@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         builder: (ctx, theme, _) => Consumer<UserAuthProvider>(
           builder: (ctx, auth, _) => MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'EhrPatient',
+            title: 'Ehr Patient',
             theme: theme.chosentheme,
             home: auth.isLoggedIn
                 ? SplashScreen()

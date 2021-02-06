@@ -171,6 +171,7 @@ class _AuthenticationState extends State<Authentication> {
                                       icondata: Icons.assignment_ind,
                                       labeltext: 'Doctor id',
                                       textInputAction: TextInputAction.next,
+                                      maxlines: 1,
                                       keyboardtype: TextInputType.number,
                                       validator: (value) {
                                         if (value.isEmpty) {
@@ -190,6 +191,7 @@ class _AuthenticationState extends State<Authentication> {
                                     CustomFormField(
                                       focusNode: _usernamenode,
                                       icondata: Icons.person,
+                                      maxlines: 1,
                                       labeltext: 'Username',
                                       textInputAction: TextInputAction.next,
                                       validator: (value) {
@@ -213,6 +215,7 @@ class _AuthenticationState extends State<Authentication> {
                           CustomFormField(
                             focusNode: _emailnode,
                             labeltext: 'Email',
+                            maxlines: 1,
                             icondata: Icons.email,
                             textInputAction: TextInputAction.next,
                             validator: (value) {
