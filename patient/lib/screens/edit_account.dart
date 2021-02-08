@@ -50,7 +50,6 @@ class _EditAccountState extends State<EditAccount> {
     _userData = {
       'name': snapshot['name'],
       'email': snapshot['email'],
-      'location': snapshot['location'],
     };
     return _isLoading
         ? Scaffold(body: Center(child: CircularProgressIndicator()))
@@ -109,22 +108,6 @@ class _EditAccountState extends State<EditAccount> {
                             _userData['email'] = value.trim();
                           },
                         ),
-                        SizedBox(height: 20),
-                        CustomFormField(
-                          initialvalue: _userData['location'],
-                          icondata: Icons.location_on,
-                          labeltext: 'Location',
-                          textInputAction: TextInputAction.go,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Location can\'t be empty!';
-                            }
-                            return null;
-                          },
-                          onsaved: (value) {
-                            _userData['location'] = value.trim();
-                          },
-                        ),
                       ],
                     ),
                   )
@@ -144,12 +127,6 @@ class _EditAccountState extends State<EditAccount> {
                         title: 'Email',
                         subtitle: snapshot['email'].toLowerCase(),
                         leadingiconData: Icons.email,
-                      ),
-                      Divider(),
-                      CustomTile(
-                        title: 'Location',
-                        subtitle: snapshot['location'],
-                        leadingiconData: Icons.location_on,
                       ),
                     ],
                   ),
