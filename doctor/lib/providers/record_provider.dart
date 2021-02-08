@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../models/block.dart';
 import '../models/details.dart';
 import '../models/transaction.dart' as EhrTransaction;
+import '../providers/auth_provider.dart';
 import '../secrets.dart' as secrets;
 
 class RecordsProvider with ChangeNotifier {
@@ -211,9 +211,7 @@ class RecordsProvider with ChangeNotifier {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   Future<void> getOpenTransactions(int port) async {

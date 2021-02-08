@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:patient/theme/customtheme.dart';
 import 'package:provider/provider.dart';
+
+import '../theme/customtheme.dart';
 
 class CustomImage extends StatelessWidget {
   final String path;
@@ -18,6 +19,15 @@ class CustomImage extends StatelessWidget {
               ? Theme.of(context).accentColor
               : null
           : null,
+      frameBuilder: (BuildContext context, Widget child, int frame,
+          bool wasSynchronouslyLoaded) {
+        return AnimatedOpacity(
+          child: child,
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+      },
     );
   }
 }

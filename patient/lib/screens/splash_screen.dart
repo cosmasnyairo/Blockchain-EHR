@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:patient/providers/auth_provider.dart';
-import 'package:patient/screens/screen.dart';
-import 'package:patient/widgets/custom_image.dart';
-import 'package:patient/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth_provider.dart';
+import '../screens/screen.dart';
+import '../widgets/custom_image.dart';
 import 'pending_activation.dart';
 
 class SplashScreen extends StatefulWidget {

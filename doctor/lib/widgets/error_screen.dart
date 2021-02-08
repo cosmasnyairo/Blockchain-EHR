@@ -1,6 +1,6 @@
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/custom_text.dart';
 import 'custom_image.dart';
 
 class ErrorPage extends StatelessWidget {

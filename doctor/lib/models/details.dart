@@ -1,4 +1,3 @@
-import 'package:doctor/models/doctor.dart';
 import 'package:flutter/cupertino.dart';
 
 class Details {

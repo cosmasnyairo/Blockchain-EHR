@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:patient/widgets/custom_image.dart';
 
 import '../models/transaction.dart' as UserTransaction;
+import '../widgets/custom_image.dart';
 import '../widgets/custom_text.dart';
 import '../widgets/custom_tile.dart';
 

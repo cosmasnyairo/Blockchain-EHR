@@ -2,18 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:patient/widgets/custom_floating_action_button.dart';
-import 'package:patient/widgets/custom_image.dart';
-import 'package:patient/widgets/error_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../models/block.dart';
 import '../models/transaction.dart';
 import '../providers/record_provider.dart';
-import '../widgets/custom_button.dart';
+import '../widgets/custom_floating_action_button.dart';
+import '../widgets/custom_image.dart';
 import '../widgets/custom_text.dart';
 import '../widgets/custom_tile.dart';
+import '../widgets/error_screen.dart';
 import 'visit_details.dart';
 
 class HomePage extends StatefulWidget {
@@ -64,8 +63,6 @@ class _HomePageState extends State<HomePage> {
       await provider.resolveConflicts(provider.peernode);
 
       _updatedrecords = provider.records;
-      print(_updatedrecords);
-
       while (i < _updatedrecords.length) {
         _events.putIfAbsent(
           DateTime.fromMillisecondsSinceEpoch(

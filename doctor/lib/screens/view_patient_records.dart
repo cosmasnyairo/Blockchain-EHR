@@ -1,13 +1,11 @@
-import 'package:doctor/models/block.dart';
-import 'package:doctor/models/transaction.dart';
-import 'package:doctor/providers/auth_provider.dart';
-import 'package:doctor/providers/record_provider.dart';
-import 'package:doctor/widgets/custom_text.dart';
-import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../models/block.dart';
+import '../models/transaction.dart';
+import '../providers/record_provider.dart';
+import '../widgets/custom_tile.dart';
 import 'visit_details.dart';
 
 class ViewPatientRecords extends StatefulWidget {
@@ -33,7 +31,6 @@ class _ViewPatientRecordsState extends State<ViewPatientRecords> {
     fetchedrecords = provider.patientrecords;
 
     fetchedrecords.forEach((e) {
-      print(e.timestamp);
       e.transaction.forEach((f) {
         patienttransaction.add(f);
       });

@@ -1,17 +1,13 @@
 import 'dart:ui';
 
-import 'package:doctor/widgets/custom_floating_action_button.dart';
-import 'package:doctor/widgets/custom_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
-import '../providers/record_provider.dart';
 import '../widgets/alert_dialog.dart';
-import '../widgets/custom_button.dart';
 import '../widgets/custom_form_field.dart';
+import '../widgets/custom_image.dart';
 import '../widgets/custom_text.dart';
 import 'landingpage.dart';
 import 'splash_screen.dart';

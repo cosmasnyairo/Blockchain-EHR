@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:patient/theme/customtheme.dart';
-import 'package:patient/widgets/custom_floating_action_button.dart';
-import 'package:patient/widgets/custom_form_field.dart';
-import 'package:patient/widgets/custom_image.dart';
-import 'package:patient/widgets/custom_text.dart';
-import 'package:patient/widgets/custom_tile.dart';
-import 'package:patient/widgets/error_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../models/node.dart';
 import '../providers/node_provider.dart';
 import '../providers/record_provider.dart';
+import '../theme/customtheme.dart';
 import '../widgets/alert_dialog.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_floating_action_button.dart';
+import '../widgets/custom_form_field.dart';
+import '../widgets/custom_image.dart';
+import '../widgets/custom_text.dart';
+import '../widgets/custom_tile.dart';
+import '../widgets/error_screen.dart';
 
 class AddVisit extends StatefulWidget {
   @override

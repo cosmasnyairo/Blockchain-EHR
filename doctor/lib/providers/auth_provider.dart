@@ -2,20 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/providers/record_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/doctor.dart';
-
+import '../providers/record_provider.dart';
 import '../secrets.dart' as secrets;
-import 'node_provider.dart';
 
 class DoctorAuthProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -138,7 +133,6 @@ class DoctorAuthProvider extends ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (error) {
-      print(error);
       switch (error.code) {
         case "invalid-email":
           errorMessage = "You entered an invalid email.";

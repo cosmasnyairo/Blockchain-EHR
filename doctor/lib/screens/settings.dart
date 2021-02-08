@@ -1,10 +1,10 @@
-import 'package:doctor/providers/auth_provider.dart';
-import 'package:doctor/theme/customtheme.dart';
-import 'package:doctor/widgets/alert_dialog.dart';
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth_provider.dart';
+import '../theme/customtheme.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_text.dart';
 import '../widgets/custom_tile.dart';
 import 'landingpage.dart';
 

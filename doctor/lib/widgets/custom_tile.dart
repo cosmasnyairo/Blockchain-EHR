@@ -1,7 +1,8 @@
-import 'package:doctor/theme/customtheme.dart';
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../theme/customtheme.dart';
+import '../widgets/custom_text.dart';
 
 class CustomTile extends StatelessWidget {
   final String title;

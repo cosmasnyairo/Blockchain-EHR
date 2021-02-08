@@ -1,17 +1,10 @@
-import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:patient/providers/auth_provider.dart';
-import 'package:patient/screens/profile.dart';
-import 'package:patient/widgets/alert_dialog.dart';
-import 'package:patient/widgets/custom_image.dart';
-import 'package:patient/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'add_visit.dart';
-import 'homepage.dart';
+import '../providers/auth_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_image.dart';
+import '../widgets/custom_text.dart';
 import 'landingpage.dart';
 
 class PendingActivation extends StatefulWidget {
@@ -137,7 +130,6 @@ class _PendingActivationState extends State<PendingActivation> {
                           _isloading = false;
                         });
                       } catch (e) {
-                        print(e);
                         final message = e[0];
                         final statuscode = e[1];
                         await showDialog(

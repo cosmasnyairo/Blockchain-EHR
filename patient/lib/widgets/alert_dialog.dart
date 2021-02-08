@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:patient/widgets/custom_button.dart';
 
+import '../widgets/custom_button.dart';
 import 'custom_image.dart';
 import 'custom_text.dart';
 

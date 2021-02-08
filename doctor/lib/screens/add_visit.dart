@@ -1,11 +1,4 @@
 import 'package:barcode_scan/barcode_scan.dart';
-import 'package:doctor/screens/view_patient_records.dart';
-import 'package:doctor/widgets/custom_floating_action_button.dart';
-import 'package:doctor/widgets/custom_image.dart';
-import 'package:doctor/widgets/custom_tile.dart';
-import 'package:doctor/widgets/error_screen.dart';
-import '../widgets/custom_form_field.dart';
-import '../widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +6,15 @@ import '../models/node.dart';
 import '../models/transaction.dart';
 import '../providers/node_provider.dart';
 import '../providers/record_provider.dart';
+import '../screens/view_patient_records.dart';
 import '../widgets/alert_dialog.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_floating_action_button.dart';
+import '../widgets/custom_form_field.dart';
+import '../widgets/custom_image.dart';
+import '../widgets/custom_text.dart';
+import '../widgets/custom_tile.dart';
+import '../widgets/error_screen.dart';
 
 class AddVisit extends StatefulWidget {
   @override
@@ -270,7 +270,6 @@ class _AddVisitState extends State<AddVisit> {
                                           });
                                         }
                                       } catch (e) {
-                                        print(e);
                                         await showDialog(
                                           context: context,
                                           builder: (ctx) => CustomAlertDialog(

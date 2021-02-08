@@ -1,16 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/widgets/custom_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/details.dart';
-import '../models/doctor.dart';
-import '../providers/auth_provider.dart';
 import '../providers/record_provider.dart';
 import '../widgets/alert_dialog.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_text.dart';
 import '../widgets/custom_form_field.dart';
+import '../widgets/custom_text.dart';
 
 class AddRecord extends StatefulWidget {
   @override
@@ -154,7 +149,6 @@ class _StepperBodyState extends State<StepperBody> {
 
   @override
   Widget build(BuildContext context) {
-    print(_enteredDetails);
     List<Step> steps = [
       customStepper(
         title: 'Medical Notes',

@@ -44,7 +44,6 @@ class RecordsProvider with ChangeNotifier {
 
   Future<void> getPortNumber(BuildContext context) async {
     final userid = Provider.of<UserAuthProvider>(context, listen: false).userid;
-    print(userid);
     final peernode = await FirebaseFirestore.instance
         .collection('Users')
         .doc(userid)
@@ -52,7 +51,6 @@ class RecordsProvider with ChangeNotifier {
         .then((f) {
       return f['peer_node'];
     });
-    print(peernode);
     _peernode = peernode;
   }
 

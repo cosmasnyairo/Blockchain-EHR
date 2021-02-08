@@ -1,10 +1,5 @@
 import 'dart:ui';
 
-import 'package:doctor/widgets/custom_floating_action_button.dart';
-import 'package:doctor/widgets/custom_form_field.dart';
-import 'package:doctor/widgets/custom_image.dart';
-import 'package:doctor/widgets/custom_tile.dart';
-import 'package:doctor/widgets/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +8,11 @@ import 'package:table_calendar/table_calendar.dart';
 import '../models/block.dart';
 import '../models/transaction.dart';
 import '../providers/record_provider.dart';
-import '../widgets/custom_button.dart';
+import '../widgets/custom_floating_action_button.dart';
+import '../widgets/custom_image.dart';
 import '../widgets/custom_text.dart';
+import '../widgets/custom_tile.dart';
+import '../widgets/error_screen.dart';
 import 'visit_details.dart';
 
 class HomePage extends StatefulWidget {
@@ -74,7 +72,6 @@ class _HomePageState extends State<HomePage> {
       _selectedEvents = _events[_selectedDay] ?? [];
       _calendarController = CalendarController();
     } catch (e) {
-      print(e);
       setState(() {
         _erroroccurred = true;
         _isloading = false;

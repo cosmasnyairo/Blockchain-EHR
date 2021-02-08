@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/widgets/custom_floating_action_button.dart';
-import 'package:doctor/widgets/custom_text.dart';
-import 'package:doctor/widgets/error_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../widgets/custom_text.dart';
 import '../widgets/custom_tile.dart';
-import 'landingpage.dart';
+import '../widgets/error_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -39,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.hasError) {
               return ErrorPage();
             }
+
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             }

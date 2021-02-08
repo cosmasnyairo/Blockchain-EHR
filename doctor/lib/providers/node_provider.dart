@@ -30,9 +30,7 @@ class NodeProvider extends ChangeNotifier {
         });
       });
       _nodes = loadednodes;
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   Future<void> addNodes(int port, String node) async {

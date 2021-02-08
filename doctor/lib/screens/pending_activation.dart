@@ -1,18 +1,11 @@
-import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctor/providers/auth_provider.dart';
-import 'package:doctor/screens/profile.dart';
-import 'package:doctor/widgets/alert_dialog.dart';
-import 'package:doctor/widgets/custom_image.dart';
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'add_visit.dart';
-import 'homepage.dart';
+import '../providers/auth_provider.dart';
+import '../widgets/alert_dialog.dart';
+import '../widgets/custom_image.dart';
+import '../widgets/custom_text.dart';
 import 'landingpage.dart';
 
 class PendingActivation extends StatefulWidget {

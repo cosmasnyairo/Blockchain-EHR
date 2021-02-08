@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:patient/screens/onboarding.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/auth_provider.dart';
@@ -13,33 +11,30 @@ import 'screens/edit_account.dart';
 import 'screens/ehrinformation.dart';
 import 'screens/landingpage.dart';
 import 'screens/libraries_used.dart';
+import 'screens/onboarding.dart';
 import 'screens/settings.dart';
-import 'screens/screen.dart';
-import 'screens/pending_activation.dart';
 import 'screens/splash_screen.dart';
 import 'theme/customtheme.dart';
 
+final customThemeProvider = CustomThemeProvider();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  await customThemeProvider.getChosenTheme();
+  await customThemeProvider.setTheme(customThemeProvider.darkthemechosen);
+
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // precacheImage(AssetImage('assets/male_patient.png'), context);
-    // precacheImage(AssetImage('assets/female_patient.png'), context);
-    // precacheImage(AssetImage('assets/auth_background.png'), context);
-    // precacheImage(AssetImage('assets/landing_background.png'), context);
-
-    final primarycolor = Color(0xff3FD5AE);
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Color(0xff3FD5AE),
-      ),
-    );
+        SystemUiOverlayStyle(statusBarColor: customThemeProvider.appcolor));
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => CustomThemeProvider()),
@@ -52,7 +47,9 @@ class MyApp extends StatelessWidget {
           builder: (ctx, auth, _) => MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Ehr Patient',
-            theme: theme.chosentheme,
+            theme: theme.lighttheme,
+            darkTheme: theme.darktheme,
+            themeMode: theme.darkthemechosen ? ThemeMode.dark : ThemeMode.light,
             home: auth.isLoggedIn
                 ? SplashScreen()
                 : auth.shownboarding

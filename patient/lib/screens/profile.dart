@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:patient/providers/auth_provider.dart';
-import 'package:patient/screens/landingpage.dart';
-import 'package:patient/widgets/custom_floating_action_button.dart';
-import 'package:patient/widgets/custom_tile.dart';
-import 'package:provider/provider.dart';
-import '../widgets/custom_text.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/auth_provider.dart';
+import '../widgets/custom_text.dart';
+import '../widgets/custom_tile.dart';
+import '../widgets/error_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -32,11 +32,11 @@ class _ProfilePageState extends State<ProfilePage> {
             .snapshots(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
-            return Center(child: CustomText('Something went wrong'));
+            return ErrorPage();
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CustomText("Loading"));
+            return Center(child: CircularProgressIndicator());
           }
           return Container(
             height: deviceheight,

@@ -1,7 +1,6 @@
 import 'package:doctor/widgets/custom_image.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/custom_button.dart';
 import '../widgets/custom_text.dart';
 import 'authentication.dart';
 

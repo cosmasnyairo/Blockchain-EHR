@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:patient/providers/auth_provider.dart';
-import 'package:patient/widgets/custom_floating_action_button.dart';
-import 'package:patient/widgets/custom_image.dart';
-import 'package:patient/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/auth_provider.dart';
+import '../widgets/custom_floating_action_button.dart';
+import '../widgets/custom_image.dart';
+import '../widgets/custom_text.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -39,7 +40,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               body: PageView.builder(
                 itemCount: _pages.length,
                 onPageChanged: (int index) {
-                  print(index);
                   setState(() {
                     currentindex = index;
                   });

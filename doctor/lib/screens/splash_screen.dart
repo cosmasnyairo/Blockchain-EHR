@@ -1,10 +1,10 @@
-import 'package:doctor/providers/auth_provider.dart';
-import 'package:doctor/screens/pending_activation.dart';
-import 'package:doctor/screens/screen.dart';
-import 'package:doctor/widgets/custom_image.dart';
-import 'package:doctor/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/auth_provider.dart';
+import '../screens/pending_activation.dart';
+import '../screens/screen.dart';
+import '../widgets/custom_image.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -44,10 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
             padding: EdgeInsets.all(20),
             physics: ClampingScrollPhysics(),
             children: [
-              Container(
-                height: deviceheight * 0.2,
-                child: CustomImage('assets/background.png', BoxFit.contain),
-              ),
+              CustomImage('assets/background.png', BoxFit.contain),
               SizedBox(height: deviceheight * 0.025),
               Center(child: CircularProgressIndicator())
             ],

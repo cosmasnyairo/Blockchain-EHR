@@ -1,5 +1,6 @@
-import 'package:doctor/widgets/custom_image.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/custom_image.dart';
 
 class LibrariesUsed extends StatelessWidget {
   @override

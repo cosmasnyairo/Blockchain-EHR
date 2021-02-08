@@ -221,14 +221,23 @@ ThemeData _darkmode = ThemeData(
 );
 
 class CustomThemeProvider with ChangeNotifier {
-  bool _darkthemechosen = false;
+  static bool _darkthemechosen = false;
+  final appcolor = Color(0xff3FD5AE);
+
+  ThemeMode currenttheme() {
+    return _darkthemechosen ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  ThemeData get lighttheme {
+    return _lightmode;
+  }
+
+  ThemeData get darktheme {
+    return _darkmode;
+  }
 
   bool get darkthemechosen {
     return _darkthemechosen;
-  }
-
-  ThemeData get chosentheme {
-    return _darkthemechosen ? _darkmode : _lightmode;
   }
 
   Future<void> getChosenTheme() async {
@@ -239,9 +248,8 @@ class CustomThemeProvider with ChangeNotifier {
 
   Future<void> setTheme(bool chosen) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     prefs.setBool("darkthemechosen", chosen);
-    _darkthemechosen = chosen;
+    await getChosenTheme();
     notifyListeners();
   }
 }
