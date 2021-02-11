@@ -44,7 +44,10 @@ class _SplashScreenState extends State<SplashScreen> {
             padding: EdgeInsets.all(20),
             physics: ClampingScrollPhysics(),
             children: [
-              CustomImage('assets/background.png', BoxFit.contain),
+              Container(
+                height: deviceheight * 0.33,
+                child: CustomImage('assets/background.png', BoxFit.contain),
+              ),
               SizedBox(height: deviceheight * 0.025),
               Center(child: CircularProgressIndicator())
             ],

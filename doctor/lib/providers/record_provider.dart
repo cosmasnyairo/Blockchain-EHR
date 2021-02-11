@@ -60,11 +60,19 @@ class RecordsProvider with ChangeNotifier {
     _peernode = peernode;
   }
 
-  Future<void> getChain(int port) async {
+  Future<void> getChain(int port, String doctorkey) async {
     try {
-      final url = '$_apiurl:$port/chain';
-      final response = await http.get(url).timeout(const Duration(seconds: 10),
-          onTimeout: () {
+      final url = '$_apiurl:$port/doctorchain';
+      Map<String, String> doctorrequest = {"sender": doctorkey};
+      print(doctorrequest);
+      print(url);
+      final response = await http.post(
+        url,
+        body: json.encode(doctorrequest),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
       });
@@ -151,7 +159,7 @@ class RecordsProvider with ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      ).timeout(const Duration(seconds: 10), onTimeout: () {
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
       });
@@ -195,7 +203,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> mine(int port) async {
     try {
       final url = '$_apiurl:$port/mine';
-      await http.post(url).timeout(const Duration(seconds: 10), onTimeout: () {
+      await http.post(url).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
       });
@@ -207,7 +215,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> resolveConflicts(int port) async {
     try {
       final url = '$_apiurl:$port/resolve_conflicts';
-      await http.post(url).timeout(const Duration(seconds: 20), onTimeout: () {
+      await http.post(url).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
       });
@@ -256,7 +264,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> createKeys(int port) async {
     try {
       final url = '$_apiurl:$port/create_keys';
-      final response = await http.post(url).timeout(const Duration(seconds: 10),
+      final response = await http.post(url).timeout(const Duration(seconds: 30),
           onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');
@@ -273,7 +281,7 @@ class RecordsProvider with ChangeNotifier {
   Future<void> loadKeys(int port) async {
     try {
       final url = '$_apiurl:$port/load_keys';
-      final response = await http.get(url).timeout(const Duration(seconds: 10),
+      final response = await http.get(url).timeout(const Duration(seconds: 30),
           onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again!');

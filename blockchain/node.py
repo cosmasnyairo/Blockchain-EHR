@@ -202,6 +202,12 @@ def f(tx, receiver):
         finaltransaction = transaction
     return finaltransaction
 
+def d(tx, sender):
+    transaction = tx.__dict__.copy()
+    finaltransaction = {}
+    if(transaction['sender'] == sender):
+        finaltransaction = transaction
+    return finaltransaction
 
 @app.route('/patientchain', methods=['POST'])
 def get_patient_chain():
@@ -229,6 +235,34 @@ def get_patient_chain():
     new_chain = [item for item in dict_chain if item['transactions'] != []]
 
     return jsonify(new_chain), 200
+
+
+@app.route('/doctorchain', methods=['POST'])
+def get_doctor_chain():
+    values = request.get_json()
+    if not values:
+        response = {'message': 'No data found!'}
+        return jsonify(response), 400
+    required_fields = ['sender']
+    if not all(f in values for f in required_fields):
+        response = {'message': 'Required data missing!'}
+        return jsonify(response), 400
+    sender = values['sender']
+
+    chain_snapshot = blockchain.get_chain()
+    dict_chain = [block.__dict__.copy() for block in chain_snapshot]
+
+    for dt in dict_chain:
+        dt['transactions'] = [d(tx, sender) for tx in dt['transactions']]
+        # work on this duplicate
+        [dt['transactions'].remove(tx)
+         for tx in dt['transactions'] if tx == {}]
+        [dt['transactions'].remove(tx)
+         for tx in dt['transactions'] if tx == {}]
+
+    new_chain = [item for item in dict_chain if item['transactions'] != []]
+    return jsonify(new_chain), 200
+
 
 
 @app.route('/chain', methods=['GET'])
@@ -318,7 +352,6 @@ def check_status():
                 response = {'message': 'Your request is in the queue'}
                 unassigned.append(data)
                 with open(path, mode='w') as f:
-                    print('bcjdd')
                     json.dump(loaded, f, indent=4)
                     response = {'message': 'Your request has been received'}
                     return jsonify(response), 401

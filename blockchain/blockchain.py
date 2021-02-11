@@ -31,17 +31,6 @@ class Blockchain:
         self.hostname = hostname
         self.load_data()
 
-        # We will Store patient details in the blockchain
-        # work on transaction validity
-
-        # conn = sqlite3.connect('blockchain.db')
-        # cursor = conn.cursor()
-
-        # def createtable():
-        #     cursor.execute(
-        #         "CREATE TABLE IF NOT EXISTS blockchainstore(item Text,quantity Text)")
-        #     conn.commit()
-
     def get_chain(self):
 
         return self.__chain[:]
@@ -217,17 +206,6 @@ class Blockchain:
         last_block = self.__chain[-1]
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
-
-        # mined_details = {
-        #     'visit_date': time,
-        #     'mining_points': Gold_points,
-        # }
-
-        # mined_transaction = Transaction('MINING', self.public_key, ,'', mined_details)
-        # copied_tx = self.__open_transactions[:]
-        # copied_tx.append(mined_transaction)
-
-        # #alternatively append open transactions instead of copied_tx
 
         block = Block(
             len(self.__chain),

@@ -57,10 +57,12 @@ class _HomePageState extends State<HomePage> {
     final provider = Provider.of<RecordsProvider>(context, listen: false);
     try {
       await provider.getPortNumber(context);
+      await provider.loadKeys(provider.peernode);
       await provider.resolveConflicts(provider.peernode);
-      await provider.getChain(provider.peernode);
+      await provider.getChain(provider.peernode, provider.publickey);
 
       _updatedrecords = provider.records;
+      print(_updatedrecords);
       while (i < _updatedrecords.length) {
         _events.putIfAbsent(
           DateTime.fromMillisecondsSinceEpoch(

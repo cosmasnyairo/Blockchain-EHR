@@ -174,7 +174,6 @@ class UserAuthProvider extends ChangeNotifier {
           .set({
         'name': name,
         'email': email,
-        'location': '',
         'joindate': DateTime.now().toIso8601String(),
         'gender': gender,
         'authenticated': false

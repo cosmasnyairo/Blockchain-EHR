@@ -82,7 +82,7 @@ class DoctorAuthProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      ).timeout(const Duration(seconds: 2), onTimeout: () {
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The connection has timed out, Please try again');
       });
@@ -194,7 +194,7 @@ class DoctorAuthProvider extends ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
         },
-      ).timeout(const Duration(seconds: 2), onTimeout: () {
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
         throw TimeoutException(
             'The server is offline, proceed to login as we assign you a port');
       });

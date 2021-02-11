@@ -5,7 +5,6 @@ class EhrUser {
   final String privatekey;
   final String gender;
   final String imageurl;
-  final String location;
   final DateTime joindate;
 
   EhrUser({
@@ -15,7 +14,6 @@ class EhrUser {
     this.privatekey,
     this.gender,
     this.imageurl,
-    this.location,
     this.joindate,
   });
 }

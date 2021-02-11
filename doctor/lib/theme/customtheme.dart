@@ -243,6 +243,7 @@ class CustomThemeProvider with ChangeNotifier {
   Future<void> getChosenTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _darkthemechosen = prefs.getBool("darkthemechosen");
+    _darkthemechosen == null ? await setTheme(false) : null;
     notifyListeners();
   }
 
